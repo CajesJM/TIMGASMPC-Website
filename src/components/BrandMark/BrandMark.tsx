@@ -1,4 +1,4 @@
-import { Sprout } from "lucide-react";
+import logo from "../../assets/images/timgas-logo.png";
 import styles from "./BrandMark.module.css";
 
 type BrandMarkProps = { compact?: boolean; inverse?: boolean };
@@ -10,7 +10,7 @@ export function BrandMark({
   return (
     <div className={`${styles.brand} ${inverse ? styles.inverse : ""}`}>
       <span className={styles.mark} aria-hidden="true">
-        <Sprout size={25} strokeWidth={2.2} />
+        <img src={logo} alt="" />
       </span>
       <span className={styles.copy}>
         <strong>TIMGAS</strong>

@@ -9,11 +9,25 @@
 .threeGrid { display: grid; gap: 2rem; }
 .threeGrid article { padding-top: 1.4rem; border-top: 3px solid var(--color-gold-500); }
 .threeGrid h3 { font-family: var(--font-display); font-size: 1.5rem; }
+.twoGrid { display: grid; gap: 2rem; }
+.twoGrid article { padding: 1.5rem; background: white; border-top: 3px solid var(--color-gold-500); box-shadow: var(--shadow-sm); }
+.twoGrid h3 { font-family: var(--font-display); font-size: 1.5rem; }
+.twoGrid article > p:last-child { margin-bottom: 0; }
+.valueGrid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-top: 2.5rem; }
+.valueGrid article { display: flex; gap: 1rem; align-items: center; padding: 1.25rem; background: var(--color-surface); border: 1px solid var(--color-border); }
+.valueGrid strong { display: grid; flex: 0 0 auto; width: 2.5rem; height: 2.5rem; place-items: center; color: white; background: var(--color-brand-800); border-radius: 50%; font-size: 1.1rem; }
+.valueGrid span { color: var(--color-brand-900); font-weight: 700; }
+.numberedList { display: grid; gap: 1rem; margin: 2.5rem 0 0; padding: 0; counter-reset: objectives; list-style: none; }
+.numberedList li { position: relative; min-height: 2.5rem; padding: 1.1rem 1.1rem 1.1rem 4.5rem; background: white; border: 1px solid var(--color-border); }
+.numberedList li::before { position: absolute; top: 1rem; left: 1.1rem; display: grid; width: 2.3rem; height: 2.3rem; place-items: center; color: white; background: var(--color-brand-800); border-radius: 50%; counter-increment: objectives; content: counter(objectives, decimal-leading-zero); font-weight: 700; }
 .serviceList { display: grid; border-top: 1px solid var(--color-border); }
 .serviceItem { display: grid; grid-template-columns: auto 1fr; gap: 1.2rem; padding: 1.8rem 0; border-bottom: 1px solid var(--color-border); }
 .serviceItem > svg { box-sizing: content-box; padding: .8rem; color: var(--color-brand-800); background: var(--color-brand-50); border-radius: 50%; }
 .serviceItem h2 { margin-bottom: .5rem; font-family: var(--font-display); font-size: 1.5rem; }
 .serviceItem p { margin: 0; }
+.serviceDetails { display: flex; flex-wrap: wrap; gap: .5rem; margin: 1rem 0 0; padding: 0; list-style: none; }
+.serviceDetails li { padding: .35rem .7rem; color: var(--color-brand-900); background: var(--color-brand-50); border: 1px solid #cbded3; border-radius: 999px; font-size: .78rem; font-weight: 700; }
+.serviceNotice { margin-top: 2rem; padding: 1rem 1.2rem; color: var(--color-text-muted); background: var(--color-surface); border-left: 3px solid var(--color-gold-500); font-size: .9rem; }
 .steps { counter-reset: steps; display: grid; gap: 1.5rem; margin-top: 2.5rem; }
 .steps div { position: relative; padding: 1.5rem 1.5rem 1.5rem 4.5rem; background: white; border: 1px solid var(--color-border); }
 .steps div::before { counter-increment: steps; content: counter(steps); position: absolute; top: 1.5rem; left: 1.4rem; display: grid; width: 2rem; height: 2rem; place-items: center; color: white; background: var(--color-brand-800); border-radius: 50%; font-weight: 700; }
@@ -35,6 +49,10 @@
 .contactMethods svg { color: var(--color-gold-600); }
 .contactMethods h3 { margin: 0 0 .3rem; }
 .contactMethods p, .contactMethods a { margin: 0; color: var(--color-text-muted); text-decoration: none; }
-.map { min-height: 25rem; display: grid; place-items: center; padding: 2rem; text-align: center; background: #dfe7e1; border: 1px solid #cad6ce; }
-.map svg { margin: 0 auto 1rem; color: var(--color-brand-700); }
-@media (min-width: 48rem) { .split { grid-template-columns: 1fr 1fr; } .threeGrid { grid-template-columns: repeat(3, 1fr); } .serviceList { grid-template-columns: 1fr 1fr; } .serviceItem:nth-child(odd) { padding-right: 2rem; border-right: 1px solid var(--color-border); } .serviceItem:nth-child(even) { padding-left: 2rem; } .steps { grid-template-columns: repeat(3, 1fr); } .newsList article { display: grid; grid-template-columns: 11rem 1fr; gap: 2rem; } .newsList h2 { margin-top: 0; } .contactGrid { grid-template-columns: .8fr 1.2fr; } }
+.officePhoto { position: relative; min-height: 25rem; margin: 0; overflow: hidden; background: #dfe7e1; border: 1px solid #cad6ce; }
+.officePhoto > img { width: 100%; min-height: 25rem; height: 100%; object-fit: cover; object-position: center; }
+.officePhoto figcaption { position: absolute; right: 1rem; bottom: 1rem; left: 1rem; display: flex; gap: .8rem; align-items: flex-start; padding: 1rem; color: white; background: rgb(11 45 34 / .92); box-shadow: var(--shadow-md); }
+.officePhoto figcaption > svg { flex: 0 0 auto; margin-top: .15rem; color: var(--color-gold-500); }
+.officePhoto figcaption h2 { margin: 0 0 .2rem; color: white; font-family: var(--font-sans); font-size: 1rem; }
+.officePhoto figcaption p { margin: 0; color: #d7e4de; font-size: .78rem; }
+@media (min-width: 48rem) { .split { grid-template-columns: 1fr 1fr; } .threeGrid { grid-template-columns: repeat(3, 1fr); } .twoGrid { grid-template-columns: 1fr 1fr; } .valueGrid { grid-template-columns: repeat(3, 1fr); } .numberedList { grid-template-columns: 1fr 1fr; } .serviceList { grid-template-columns: 1fr 1fr; } .serviceItem:nth-child(odd) { padding-right: 2rem; border-right: 1px solid var(--color-border); } .serviceItem:nth-child(even) { padding-left: 2rem; } .steps { grid-template-columns: repeat(3, 1fr); } .newsList article { display: grid; grid-template-columns: 11rem 1fr; gap: 2rem; } .newsList h2 { margin-top: 0; } .contactGrid { grid-template-columns: .8fr 1.2fr; } }

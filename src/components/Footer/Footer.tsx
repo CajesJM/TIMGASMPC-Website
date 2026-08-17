@@ -10,8 +10,7 @@ export function Footer() {
         <div className={styles.summary}>
           <BrandMark inverse />
           <p>
-            Building sustainable livelihoods through cooperation, responsible
-            finance, and shared opportunity.
+            <i>"Your partner in financial growth."</i>
           </p>
         </div>
         <div>
@@ -24,13 +23,14 @@ export function Footer() {
         <div>
           <h2>Get in touch</h2>
           <span>
-            <MapPin size={17} /> Barangay Timogas, Philippines
+            <MapPin size={17} /> Purok 5, Poblacion, Trinidad, Bohol,
+            Philippines
           </span>
           <a href="tel:+639171234567">
-            <Phone size={17} /> +63 917 123 4567
+            <Phone size={17} /> +63 938 224 2376
           </a>
-          <a href="mailto:hello@timgasmpc.org">
-            <Mail size={17} /> hello@timgasmpc.org
+          <a href="mailto:timgascooperative@gmail.com">
+            <Mail size={17} /> timgascooperative@gmail.com
           </a>
         </div>
       </div>
@@ -42,7 +42,6 @@ export function Footer() {
           <a href="#" aria-label="TIMGAS social page">
             <Globe2 size={18} />
           </a>
-          <Link to="/manager/login">Manager portal</Link>
         </div>
       </div>
     </footer>

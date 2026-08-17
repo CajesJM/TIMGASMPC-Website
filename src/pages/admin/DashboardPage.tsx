@@ -17,7 +17,7 @@ export function DashboardPage() {
     <aside className={`${styles.sidebar} ${open ? styles.open : ''}`}>
       <div className={styles.sidebarHead}><BrandMark inverse compact /><button onClick={() => setOpen(false)} aria-label="Close menu"><X /></button></div>
       <nav><a className={styles.active} href="#dashboard"><LayoutDashboard /> Overview</a><a href="#applications"><FileText /> Applications <span>8</span></a><a href="#members"><Users /> Officers</a><a href="#content"><Megaphone /> Website content</a><a href="#settings"><Settings /> Settings</a></nav>
-      <div className={styles.sidebarFoot}><Link to="/"><Home /> View public website</Link><Link to="/manager/login"><LogOut /> Sign out</Link></div>
+      <div className={styles.sidebarFoot}><Link to="/"><Home /> View public website</Link><Link to="/manager-login"><LogOut /> Sign out</Link></div>
     </aside>
     <main className={styles.main}>
       <header className={styles.topbar}><button className={styles.mobileMenu} onClick={() => setOpen(true)} aria-label="Open menu"><Menu /></button><div className={styles.search}><Search size={18} /><input aria-label="Search dashboard" placeholder="Search applications" /></div><div className={styles.profile}><button aria-label="Notifications"><Bell /></button><span>JM</span><div><strong>Juan Manager</strong><small>Administrator</small></div><ChevronDown size={16} /></div></header>

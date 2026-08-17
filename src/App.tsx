@@ -23,8 +23,8 @@ export function App() {
           <Route path="news" element={<NewsPage />} />
           <Route path="apply" element={<ApplicationPage />} />
           <Route path="contact" element={<ContactPage />} />
-          <Route path="manager/login" element={<LoginPage />} />
         </Route>
+        <Route path="manager-login" element={<LoginPage />} />
         <Route path="manager/preview" element={<DashboardPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>

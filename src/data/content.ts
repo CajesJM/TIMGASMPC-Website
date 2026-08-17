@@ -1,49 +1,74 @@
-import {
-  Banknote,
-  Handshake,
-  Leaf,
-  PackageOpen,
-  PiggyBank,
-  Tractor,
-} from "lucide-react";
+import { Building2, FileText, ReceiptText, Send } from "lucide-react";
 
 export const services = [
   {
-    icon: PiggyBank,
-    title: "Savings & deposits",
+    icon: FileText,
+    title: "PSA online assistance",
     description:
-      "Build financial confidence with accessible savings products created for cooperative members.",
+      "Request assistance for CENOMAR, death certificates, marriage certificates, and birth certificates.",
+    items: [
+      "CENOMAR",
+      "Death certificate",
+      "Marriage certificate",
+      "Birth certificate",
+    ],
   },
   {
-    icon: Banknote,
-    title: "Responsible loans",
+    icon: Send,
+    title: "TrueMoney online",
     description:
-      "Practical financing for farms, livelihoods, education, and other productive needs.",
+      "Send or claim domestic and international remittances through the cooperative office.",
+    items: [
+      "Money Padala",
+      "Domestic remittances",
+      "International remittances",
+      "Claims",
+    ],
   },
   {
-    icon: Tractor,
-    title: "Farm support",
+    icon: ReceiptText,
+    title: "Bills payment",
     description:
-      "Access agricultural inputs, equipment coordination, and technical learning opportunities.",
+      "Access selected payment and electronic loading services in one convenient location.",
+    items: ["Mobile load", "Cable", "Airlines", "Internet"],
   },
   {
-    icon: PackageOpen,
-    title: "Market linkage",
+    icon: Building2,
+    title: "Government service assistance",
     description:
-      "Connect local products with fairer markets through collective selling and shared logistics.",
+      "Get assistance with selected online government transactions and voluntary contributions.",
+    items: [
+      "DFA",
+      "LTO",
+      "NBI",
+      "Pag-IBIG",
+      "SSS",
+      "PhilHealth voluntary contributions",
+    ],
   },
-  {
-    icon: Handshake,
-    title: "Member development",
-    description:
-      "Strengthen skills through financial literacy, leadership training, and cooperative education.",
-  },
-  {
-    icon: Leaf,
-    title: "Community programs",
-    description:
-      "Take part in initiatives supporting food security, resilience, and environmental stewardship.",
-  },
+];
+
+export const coreValues = [
+  ["T", "Trustworthy"],
+  ["I", "Integrity"],
+  ["M", "Model cooperative"],
+  ["G", "God-fearing"],
+  ["A", "Articulate"],
+  ["S", "Sincerity"],
+];
+
+export const objectives = [
+  "Provide financial support to members who want additional capital for their businesses and an additional source of income.",
+  "Develop the self-help mentality and self-employment capacity of individual members.",
+  "Help members overcome dependency on moneylenders.",
+  "Introduce an alternative system of banking to poor communities.",
+  "Improve the lives of poor communities through participation in community and related activities.",
+  "Cover program implementation costs through interest income and attain institutional self-reliance.",
+];
+
+export const socialGoals = [
+  "A viable cooperative equipped with complete facilities and empowered in the pursuit of sustainable rural development.",
+  "An institutionalized training program that develops and improves the cooperative's systems, policies, and procedures.",
 ];
 
 export const announcements = [
