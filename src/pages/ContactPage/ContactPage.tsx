@@ -1,4 +1,4 @@
-import { Clock3, Mail, MapPin, Phone } from "lucide-react";
+import { ArrowUpRight, Clock3, Mail, MapPin, Phone } from "lucide-react";
 import { PageHeader } from "../../components/PageHeader/PageHeader";
 import officeImage from "../../assets/images/timgas-office.jpg";
 import styles from "../shared/ContentPage.module.css";
@@ -58,13 +58,26 @@ export function ContactPage() {
               <MapPin size={22} />
               <div>
                 <h2>TIMGAS Cooperative Office</h2>
-                <p>
-                  The official map pin will be added after the manager confirms
-                  the complete address.
-                </p>
+                <p>Purok 5, Poblacion, Trinidad, Bohol, Philippines</p>
               </div>
             </figcaption>
           </figure>
+          <div className={styles.mapWrap}>
+            <iframe
+              title="Map of the TIMGAS Cooperative Office in Trinidad, Bohol"
+              src="https://www.google.com/maps?q=Purok%205%2C%20Poblacion%2C%20Trinidad%2C%20Bohol%2C%20Philippines&output=embed"
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              allowFullScreen
+            />
+            <a
+              href="https://www.google.com/maps/dir/?api=1&destination=Purok%205%2C%20Poblacion%2C%20Trinidad%2C%20Bohol%2C%20Philippines"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Get directions <ArrowUpRight size={16} />
+            </a>
+          </div>
         </div>
       </section>
     </>

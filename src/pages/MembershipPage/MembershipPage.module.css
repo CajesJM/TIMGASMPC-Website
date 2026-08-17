@@ -1,0 +1,44 @@
+.requirements {
+  display: grid;
+  gap: 0.75rem;
+  margin: 2.5rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+.requirements li {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 1rem 1.2rem;
+  background: white;
+  border: 1px solid var(--color-border);
+}
+.requirements svg {
+  flex: 0 0 auto;
+  color: var(--color-success);
+}
+.note {
+  margin: 1.5rem 0 0;
+  padding: 1rem 1.2rem;
+  color: var(--color-text-muted);
+  background: white;
+  border-left: 3px solid var(--color-gold-500);
+  font-size: 0.9rem;
+}
+.ctaActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1.25rem;
+}
+.download {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: white;
+  font-weight: 700;
+  text-decoration: none;
+}
+.download:hover {
+  color: var(--color-gold-500);
+}

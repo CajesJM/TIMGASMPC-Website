@@ -16,29 +16,33 @@
 .heroStats p { display: grid; margin: 0; color: white; }
 .heroStats strong { font-family: var(--font-display); font-size: 1.45rem; }
 .heroStats span { color: #bfd0c8; font-size: .7rem; }
-.intro, .valuesHeader { display: grid; gap: 2rem; align-items: end; }
+.servicesSection { overflow: hidden; }
+.intro, .valuesHeader { display: grid; gap: 1.5rem; align-items: end; }
 .intro h2, .valuesHeader h2 { max-width: 38rem; margin: 0; }
 .intro > div:last-child > p, .valuesHeader > p { max-width: 34rem; }
 .textLink { display: inline-flex; align-items: center; gap: .45rem; color: var(--color-brand-800); font-weight: 700; text-decoration: none; }
 .textLink:hover { color: var(--color-gold-600); }
-.serviceGrid { display: grid; margin-top: 3.5rem; border-top: 1px solid var(--color-border); }
-.service { position: relative; padding: 2rem 0; border-bottom: 1px solid var(--color-border); }
-.service > svg:first-child { width: 2rem; height: 2rem; margin-bottom: 2.5rem; color: var(--color-brand-700); }
-.service > span { position: absolute; top: 2rem; right: 0; color: #94a29c; font-size: .75rem; font-weight: 700; }
-.service h3 { font-family: var(--font-display); font-size: 1.5rem; }
-.service > a { display: grid; width: 2.5rem; height: 2.5rem; margin-top: 1.5rem; place-items: center; color: var(--color-brand-800); border: 1px solid var(--color-border); border-radius: 50%; }
+.serviceGrid { display: grid; gap: 1rem; margin-top: 2.5rem; }
+.service { position: relative; display: flex; min-width: 0; flex-direction: column; padding: 1.35rem; background: var(--color-background); border: 1px solid var(--color-border); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); }
+.service > svg:first-child { box-sizing: content-box; width: 1.5rem; height: 1.5rem; margin-bottom: 1.25rem; padding: .65rem; color: var(--color-brand-700); background: var(--color-brand-50); border-radius: 50%; }
+.service > span { position: absolute; top: 1.35rem; right: 1.35rem; color: #7f9189; font-size: .7rem; font-weight: 700; letter-spacing: .08em; }
+.service h3 { margin-bottom: .6rem; font-family: var(--font-display); font-size: clamp(1.2rem, 2vw, 1.4rem); }
+.service p { flex: 1; margin-bottom: 0; font-size: .88rem; line-height: 1.55; }
+.service > a { display: grid; width: 2.25rem; height: 2.25rem; margin-top: 1.2rem; place-items: center; color: var(--color-brand-800); border: 1px solid var(--color-border); border-radius: 50%; }
+.service > a:hover { color: white; background: var(--color-brand-800); border-color: var(--color-brand-800); }
 .impact { padding: var(--space-16) 0; background: var(--color-surface); }
-.impactGrid { display: grid; gap: 3rem; align-items: center; }
-.impactPhoto { position: relative; }
-.impactPhoto img { width: 100%; min-height: 26rem; max-height: 36rem; object-fit: cover; object-position: center; }
-.impactPhoto div { position: absolute; right: 0; bottom: 0; display: grid; padding: 1.3rem 1.6rem; color: var(--color-brand-950); background: var(--color-gold-500); }
-.impactPhoto strong { font-family: var(--font-display); font-size: 2rem; line-height: 1; }
-.impactPhoto span { font-size: .72rem; font-weight: 700; }
-.impactCopy h2 { max-width: 35rem; }
-.impactCopy > p:not(.eyebrow) { max-width: 34rem; }
-.impactCopy ul { display: grid; gap: .8rem; margin: 1.8rem 0 2.2rem; padding: 0; list-style: none; }
-.impactCopy li { display: flex; gap: .7rem; align-items: flex-start; font-weight: 600; }
-.impactCopy li svg { flex: 0 0 auto; color: var(--color-success); }
+.impactGrid { display: grid; gap: 2rem; align-items: center; }
+.impactPhoto { position: relative; margin: 0; overflow: hidden; aspect-ratio: 4 / 3; background: var(--color-brand-100); border: 1px solid #cbd8d1; border-radius: var(--radius-lg); box-shadow: var(--shadow-md); }
+.impactPhoto::after { position: absolute; inset: 0; pointer-events: none; content: ''; background: linear-gradient(180deg, transparent 60%, rgb(5 29 21 / .38)); }
+.impactPhoto img { width: 100%; height: 100%; object-fit: cover; object-position: center; }
+.impactPhoto figcaption { position: absolute; z-index: 1; bottom: 1rem; left: 1rem; display: grid; gap: .1rem; padding: .7rem .9rem; color: white; background: rgb(7 32 24 / .86); border: 1px solid rgb(255 255 255 / .18); border-radius: var(--radius-sm); backdrop-filter: blur(8px); }
+.impactPhoto figcaption span { color: #d7e5de; font-size: .65rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+.impactPhoto figcaption time { font-family: var(--font-display); font-size: 1.15rem; font-weight: 700; line-height: 1.15; }
+.impactCopy h2 { max-width: 34rem; margin-bottom: 1rem; font-size: clamp(2rem, 4vw, 3rem); }
+.impactCopy > p:not(.eyebrow) { max-width: 35rem; margin-bottom: 0; font-size: .95rem; }
+.impactCopy ul { display: grid; gap: .65rem; margin: 1.4rem 0 1.8rem; padding: 0; list-style: none; }
+.impactCopy li { display: flex; gap: .65rem; align-items: flex-start; font-size: .9rem; font-weight: 600; line-height: 1.45; }
+.impactCopy li svg { width: 1.15rem; height: 1.15rem; flex: 0 0 auto; margin-top: .12rem; color: var(--color-success); }
 .principles { display: grid; margin-top: 3rem; border-top: 1px solid var(--color-border); }
 .principles article { padding: 2rem 0; border-bottom: 1px solid var(--color-border); }
 .principles span { color: var(--color-gold-600); font-size: .75rem; font-weight: 700; }
@@ -65,5 +69,7 @@
 .download .eyebrow { color: #efd38e; }
 .downloadInner > div:last-child { display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; }
 .downloadInner a:not([class]) { display: flex; gap: .5rem; align-items: center; color: white; font-weight: 700; text-decoration: none; }
-@media (min-width: 48rem) { .heroStats span { font-size: .8rem; } .heroStats strong { font-size: 1.8rem; } .heroStats p { padding-left: 1.5rem; border-left: 1px solid rgb(255 255 255 / .2); } .intro, .valuesHeader { grid-template-columns: 1.1fr .9fr; } .serviceGrid, .principles, .newsGrid { grid-template-columns: repeat(3, 1fr); } .service, .principles article, .newsGrid article { padding: 2rem; border-right: 1px solid var(--color-border); } .service:first-child, .principles article:first-child, .newsGrid article:first-child { padding-left: 0; } .service:last-child, .principles article:last-child, .newsGrid article:last-child { padding-right: 0; border-right: 0; } .impactGrid { grid-template-columns: 1fr 1fr; } .impact { padding: var(--space-24) 0; } .quote blockquote { font-size: 2.25rem; } .downloadInner { grid-template-columns: 1fr auto; } }
+@media (min-width: 36rem) { .serviceGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 48rem) { .heroStats span { font-size: .8rem; } .heroStats strong { font-size: 1.8rem; } .heroStats p { padding-left: 1.5rem; border-left: 1px solid rgb(255 255 255 / .2); } .intro, .valuesHeader { grid-template-columns: 1.1fr .9fr; } .principles, .newsGrid { grid-template-columns: repeat(3, 1fr); } .principles article, .newsGrid article { padding: 2rem; border-right: 1px solid var(--color-border); } .principles article:first-child, .newsGrid article:first-child { padding-left: 0; } .principles article:last-child, .newsGrid article:last-child { padding-right: 0; border-right: 0; } .impactGrid { grid-template-columns: minmax(0, .95fr) minmax(0, 1.05fr); gap: clamp(2rem, 5vw, 4rem); } .impact { padding: var(--space-20) 0; } .quote blockquote { font-size: 2.25rem; } .downloadInner { grid-template-columns: 1fr auto; } }
+@media (min-width: 64rem) { .serviceGrid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 @media (max-width: 40rem) { .hero { min-height: 43rem; } .heroOverlay { background: linear-gradient(90deg, rgb(7 32 24 / .84), rgb(7 32 24 / .45)), linear-gradient(0deg, rgb(7 32 24 / .78), transparent 60%); } .hero h1 { font-size: 3.2rem; } .heroContent { padding-top: 4rem; } }

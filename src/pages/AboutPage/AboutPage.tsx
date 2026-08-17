@@ -31,16 +31,16 @@ export function AboutPage() {
             </p>
             <div className={styles.facts}>
               <div>
-                <strong>2008</strong>
-                <span>Year established</span>
+                <strong>July 25, 1995</strong>
+                <span>Registered and established</span>
               </div>
               <div>
-                <strong>1,200+</strong>
-                <span>Active cooperative members</span>
+                <strong>31 years</strong>
+                <span>Serving the community</span>
               </div>
               <div>
-                <strong>100%</strong>
-                <span>Member-owned and locally governed</span>
+                <strong>Member-owned</strong>
+                <span>Locally governed cooperative</span>
               </div>
             </div>
           </div>

@@ -8,7 +8,7 @@ import {
 import { Link } from "react-router-dom";
 import { Button } from "../../components/Button/Button";
 import { announcements, principles, services } from "../../data/content";
-import heroImage from "../../assets/images/timgas-farmers-hero.jpg";
+import heroImage from "../../assets/images/timgas-office-hero-v2.jpg";
 import officeImage from "../../assets/images/timgas-office.jpg";
 import styles from "./HomePage.module.css";
 
@@ -19,7 +19,7 @@ export function HomePage() {
         <img
           className={styles.heroImage}
           src={heroImage}
-          alt="Cooperative farmers inspecting rice during harvest season"
+          alt="TIMGAS Multi-Purpose Cooperative office in Trinidad, Bohol"
         />
         <div className={styles.heroOverlay} />
         <div className={`container ${styles.heroContent}`}>
@@ -49,45 +49,43 @@ export function HomePage() {
         <div className={styles.heroStats}>
           <div className="container">
             <p>
-              <strong>1,200+</strong>
-              <span>Active members</span>
+              <strong>Since 1995</strong>
+              <span>Established July 25</span>
             </p>
             <p>
-              <strong>18 years</strong>
+              <strong>31 years</strong>
               <span>Serving together</span>
             </p>
             <p>
-              <strong>6</strong>
-              <span>Core services</span>
+              <strong>4</strong>
+              <span>Service groups</span>
             </p>
           </div>
         </div>
       </section>
 
-      <section className="section">
+      <section className={`section ${styles.servicesSection}`}>
         <div className={`container ${styles.intro}`}>
           <div>
             <p className="eyebrow">Your cooperative advantage</p>
-            <h2>Opportunity grows when we grow it together.</h2>
+            <h2>Essential services in one convenient place.</h2>
           </div>
           <div>
             <p>
-              At TIMGAS, members pool their strengths to access better financial
-              tools, productive resources, and fair opportunities. Every service
-              is designed around one goal: helping our community thrive.
+              TIMGAS provides in-office assistance for PSA civil registry
+              documents, TrueMoney remittances, bills payment, and selected
+              government transactions. Availability and requirements may vary.
             </p>
-            <Link className={styles.textLink} to="/about">
-              How our cooperative works <ArrowRight size={17} />
+            <Link className={styles.textLink} to="/services">
+              View all service details <ArrowRight size={17} />
             </Link>
           </div>
         </div>
         <div className={`container ${styles.serviceGrid}`}>
-          {services.slice(0, 3).map(({ icon: Icon, title, description }) => (
+          {services.map(({ icon: Icon, title, description }, index) => (
             <article className={styles.service} key={title}>
               <Icon aria-hidden="true" />
-              <span>
-                0{services.findIndex((item) => item.title === title) + 1}
-              </span>
+              <span aria-hidden="true">0{index + 1}</span>
               <h3>{title}</h3>
               <p>{description}</p>
               <Link to="/services" aria-label={`Learn more about ${title}`}>
@@ -100,39 +98,40 @@ export function HomePage() {
 
       <section className={styles.impact}>
         <div className={`container ${styles.impactGrid}`}>
-          <div className={styles.impactPhoto}>
+          <figure className={styles.impactPhoto}>
             <img
               src={officeImage}
               alt="Exterior of the TIMGAS Multi-Purpose Cooperative office"
             />
-            <div>
-              <strong>₱32M+</strong>
-              <span>in member loans supported</span>
-            </div>
-          </div>
+            <figcaption>
+              <span>Established</span>
+              <time dateTime="1995-07-25">July 25, 1995</time>
+            </figcaption>
+          </figure>
           <div className={styles.impactCopy}>
-            <p className="eyebrow">Real impact, close to home</p>
-            <h2>More than finance. A partner in every season.</h2>
+            <p className="eyebrow">Community purpose, close to home</p>
+            <h2>A long-standing partner in financial growth.</h2>
             <p>
-              Our progress is measured in livelihoods made stronger, families
-              given more choices, and local enterprises that can confidently
-              move forward.
+              Established on July 25, 1995, TIMGAS MPC continues to pursue its
+              mission of uplifting every member’s economic status through
+              quality products and services. Its published objectives include:
             </p>
             <ul>
               <li>
-                <CheckCircle2 /> Fair, transparent member services
+                <CheckCircle2 /> Financial support for members seeking
+                additional business capital and income opportunities
               </li>
               <li>
-                <CheckCircle2 /> Practical support from people who understand
-                local needs
+                <CheckCircle2 /> Development of self-help and self-employment
+                capacity among individual members
               </li>
               <li>
-                <CheckCircle2 /> Shared returns reinvested in members and
-                community
+                <CheckCircle2 /> An alternative banking option for underserved
+                communities
               </li>
             </ul>
             <Button to="/services">
-              Explore member services <ArrowRight size={18} />
+              Explore cooperative services <ArrowRight size={18} />
             </Button>
           </div>
         </div>
@@ -216,7 +215,7 @@ export function HomePage() {
             <Button to="/apply" variant="light">
               Apply online <ArrowRight size={18} />
             </Button>
-            <a href="#" onClick={(event) => event.preventDefault()}>
+            <a href="/application-form.pdf" download>
               <Download size={18} /> Download application form
             </a>
           </div>

@@ -35,4 +35,30 @@ describe("TIMGAS website", () => {
       screen.getByRole("button", { name: /submit application/i }),
     ).toBeEnabled();
   });
+
+  it("explains how to become a member on the membership page", () => {
+    renderApp("/membership");
+    expect(
+      screen.getByRole("heading", { name: /four simple steps to membership/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/pay your share capital/i),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: /apply online/i }),
+    ).toHaveAttribute("href", "/apply");
+    expect(
+      screen.getByRole("link", { name: /download application form/i }),
+    ).toHaveAttribute("href", "/application-form.pdf");
+  });
+
+  it("answers common questions on the FAQ page", () => {
+    renderApp("/faq");
+    expect(
+      screen.getByRole("heading", { name: /answers to common questions/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/who can become a member of timgas/i),
+    ).toBeInTheDocument();
+  });
 });

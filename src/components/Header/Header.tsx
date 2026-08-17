@@ -8,6 +8,7 @@ import styles from "./Header.module.css";
 const navItems = [
   ["/", "Home"],
   ["/about", "About"],
+  ["/membership", "Membership"],
   ["/services", "Services"],
   ["/news", "News"],
   ["/contact", "Contact"],
