@@ -1,0 +1,10 @@
+.header { position: sticky; z-index: 50; top: 0; height: var(--header-height); background: rgb(255 255 255 / 0.96); border-bottom: 1px solid var(--color-border); backdrop-filter: blur(12px); }
+.inner { display: flex; height: 100%; align-items: center; justify-content: space-between; }
+.logo { text-decoration: none; }
+.menuButton { display: grid; width: 2.75rem; height: 2.75rem; place-items: center; color: var(--color-brand-900); background: transparent; border: 0; cursor: pointer; }
+.nav { position: absolute; top: var(--header-height); right: 0; left: 0; display: none; padding: 1rem; background: white; border-bottom: 1px solid var(--color-border); box-shadow: var(--shadow-md); }
+.nav.open { display: grid; }
+.nav > a:not(.apply) { padding: 0.8rem 0.5rem; color: var(--color-text-muted); font-weight: 600; text-decoration: none; }
+.nav > a.active:not(.apply), .nav > a:hover:not(.apply) { color: var(--color-brand-800); }
+.apply { margin-top: 0.5rem; }
+@media (min-width: 64rem) { .menuButton { display: none; } .nav { position: static; display: flex; align-items: center; gap: 1.4rem; padding: 0; background: transparent; border: 0; box-shadow: none; } .nav > a:not(.apply) { padding: 0.5rem 0; font-size: 0.92rem; } .nav > a.active:not(.apply) { box-shadow: inset 0 -2px var(--color-gold-500); } .apply { margin: 0 0 0 0.2rem; } }

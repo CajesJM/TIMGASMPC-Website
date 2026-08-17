@@ -1,0 +1,40 @@
+.split { display: grid; gap: 3rem; align-items: start; }
+.split h2 { max-width: 34rem; }
+.lead { font-size: 1.12rem; }
+.facts { display: grid; border-top: 1px solid var(--color-border); }
+.facts div { display: grid; grid-template-columns: 6rem 1fr; gap: 1rem; padding: 1.2rem 0; border-bottom: 1px solid var(--color-border); }
+.facts strong { color: var(--color-brand-900); }
+.facts span { color: var(--color-text-muted); }
+.muted { background: var(--color-surface); }
+.threeGrid { display: grid; gap: 2rem; }
+.threeGrid article { padding-top: 1.4rem; border-top: 3px solid var(--color-gold-500); }
+.threeGrid h3 { font-family: var(--font-display); font-size: 1.5rem; }
+.serviceList { display: grid; border-top: 1px solid var(--color-border); }
+.serviceItem { display: grid; grid-template-columns: auto 1fr; gap: 1.2rem; padding: 1.8rem 0; border-bottom: 1px solid var(--color-border); }
+.serviceItem > svg { box-sizing: content-box; padding: .8rem; color: var(--color-brand-800); background: var(--color-brand-50); border-radius: 50%; }
+.serviceItem h2 { margin-bottom: .5rem; font-family: var(--font-display); font-size: 1.5rem; }
+.serviceItem p { margin: 0; }
+.steps { counter-reset: steps; display: grid; gap: 1.5rem; margin-top: 2.5rem; }
+.steps div { position: relative; padding: 1.5rem 1.5rem 1.5rem 4.5rem; background: white; border: 1px solid var(--color-border); }
+.steps div::before { counter-increment: steps; content: counter(steps); position: absolute; top: 1.5rem; left: 1.4rem; display: grid; width: 2rem; height: 2rem; place-items: center; color: white; background: var(--color-brand-800); border-radius: 50%; font-weight: 700; }
+.steps h3 { margin-bottom: .4rem; }
+.steps p { margin: 0; font-size: .9rem; }
+.cta { padding: var(--space-16) 0; color: white; background: var(--color-brand-900); }
+.cta > div { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 2rem; }
+.cta h2 { margin-bottom: .5rem; color: white; }
+.cta p { margin: 0; color: #d5e4dd; }
+.newsList { display: grid; gap: 0; border-top: 1px solid var(--color-border); }
+.newsList article { padding: 2rem 0; border-bottom: 1px solid var(--color-border); }
+.newsMeta { display: flex; flex-wrap: wrap; gap: .8rem; color: var(--color-text-muted); font-size: .78rem; }
+.newsMeta span { color: var(--color-gold-600); font-weight: 700; text-transform: uppercase; }
+.newsList h2 { margin: 1rem 0 .6rem; font-size: 1.8rem; }
+.newsList a { display: inline-flex; align-items: center; gap: .5rem; margin-top: .4rem; color: var(--color-brand-800); font-weight: 700; text-decoration: none; }
+.contactGrid { display: grid; gap: 3rem; }
+.contactMethods { display: grid; gap: 1.5rem; }
+.contactMethods article { display: grid; grid-template-columns: auto 1fr; gap: 1rem; }
+.contactMethods svg { color: var(--color-gold-600); }
+.contactMethods h3 { margin: 0 0 .3rem; }
+.contactMethods p, .contactMethods a { margin: 0; color: var(--color-text-muted); text-decoration: none; }
+.map { min-height: 25rem; display: grid; place-items: center; padding: 2rem; text-align: center; background: #dfe7e1; border: 1px solid #cad6ce; }
+.map svg { margin: 0 auto 1rem; color: var(--color-brand-700); }
+@media (min-width: 48rem) { .split { grid-template-columns: 1fr 1fr; } .threeGrid { grid-template-columns: repeat(3, 1fr); } .serviceList { grid-template-columns: 1fr 1fr; } .serviceItem:nth-child(odd) { padding-right: 2rem; border-right: 1px solid var(--color-border); } .serviceItem:nth-child(even) { padding-left: 2rem; } .steps { grid-template-columns: repeat(3, 1fr); } .newsList article { display: grid; grid-template-columns: 11rem 1fr; gap: 2rem; } .newsList h2 { margin-top: 0; } .contactGrid { grid-template-columns: .8fr 1.2fr; } }

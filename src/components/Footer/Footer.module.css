@@ -1,0 +1,10 @@
+.footer { padding: var(--space-16) 0 var(--space-6); color: #d5e2dc; background: var(--color-brand-950); }
+.grid { display: grid; gap: var(--space-10); }
+.grid h2 { margin-bottom: var(--space-4); color: white; font-family: var(--font-sans); font-size: 0.82rem; letter-spacing: 0.11em; text-transform: uppercase; }
+.grid a, .grid span { display: flex; align-items: center; gap: 0.55rem; margin-bottom: 0.65rem; color: #d5e2dc; font-size: 0.9rem; text-decoration: none; }
+.grid a:hover { color: white; }
+.summary p { max-width: 25rem; margin-top: var(--space-5); color: #b6c9c0; font-size: 0.92rem; }
+.bottom { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem; margin-top: var(--space-12); padding-top: var(--space-5); border-top: 1px solid rgb(255 255 255 / 0.14); }
+.bottom div { display: flex; align-items: center; gap: 1.25rem; }
+.bottom a { color: #d5e2dc; font-size: 0.85rem; text-decoration: none; }
+@media (min-width: 48rem) { .grid { grid-template-columns: 2fr 1fr 1.4fr; } }

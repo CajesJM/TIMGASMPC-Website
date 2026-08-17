@@ -1,0 +1,16 @@
+.page { min-height: calc(100vh - var(--header-height)); display: grid; place-items: center; padding: 3rem 1rem; background: var(--color-surface); }
+.panel { width: min(100%, 29rem); padding: 2rem; background: white; border: 1px solid var(--color-border); box-shadow: var(--shadow-md); }
+.back { display: inline-flex; align-items: center; gap: .4rem; margin-bottom: 2rem; color: var(--color-text-muted); font-size: .85rem; font-weight: 600; text-decoration: none; }
+.icon { display: grid; width: 3rem; height: 3rem; margin-bottom: 1.2rem; place-items: center; color: var(--color-brand-950); background: var(--color-gold-500); border-radius: 50%; }
+.panel h1 { margin-bottom: .7rem; font-size: 2.7rem; }
+.notice { display: flex; gap: .6rem; margin: 1.5rem 0; padding: .8rem; background: #eef5fb; border-left: 3px solid var(--color-info); }
+.notice svg { flex: 0 0 auto; color: var(--color-info); }
+.notice span { color: var(--color-text-muted); font-size: .76rem; }
+.panel form { display: grid; gap: .5rem; }
+.panel form label { margin-top: .7rem; color: var(--color-brand-950); font-size: .85rem; font-weight: 700; }
+.panel input { width: 100%; min-height: 3rem; padding: .7rem .8rem; border: 1px solid #aebcb5; border-radius: var(--radius-sm); }
+.password { position: relative; }
+.password button { position: absolute; top: 0; right: 0; display: grid; width: 3rem; height: 3rem; place-items: center; color: var(--color-text-muted); background: transparent; border: 0; cursor: pointer; }
+.panel form small { color: var(--color-error); }
+.panel form > button { margin-top: 1.2rem; }
+.panel form > a { margin-top: .8rem; color: var(--color-brand-800); font-size: .82rem; font-weight: 700; text-align: center; text-decoration: none; }

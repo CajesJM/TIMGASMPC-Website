@@ -1,0 +1,36 @@
+# Dependencies and build output
+node_modules/
+dist/
+coverage/
+playwright-report/
+test-results/
+
+# Local environment files
+.env
+.env.*
+!.env.example
+*.local
+
+# Firebase local state, emulator logs, and credentials
+.firebase/
+firebase-debug.log*
+firestore-debug.log*
+database-debug.log*
+pubsub-debug.log*
+ui-debug.log*
+service-account*.json
+*-firebase-adminsdk-*.json
+
+# Local preview and document QA artifacts
+.vite-preview*.log
+.docx-qa/
+
+# Package-manager logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Operating-system files
+.DS_Store
+Thumbs.db
