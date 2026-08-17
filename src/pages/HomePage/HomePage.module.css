@@ -32,12 +32,6 @@
 .service > a:hover { color: white; background: var(--color-brand-800); border-color: var(--color-brand-800); }
 .impact { padding: var(--space-16) 0; background: var(--color-surface); }
 .impactGrid { display: grid; gap: 2rem; align-items: center; }
-.impactPhoto { position: relative; margin: 0; overflow: hidden; aspect-ratio: 4 / 3; background: var(--color-brand-100); border: 1px solid #cbd8d1; border-radius: var(--radius-lg); box-shadow: var(--shadow-md); }
-.impactPhoto::after { position: absolute; inset: 0; pointer-events: none; content: ''; background: linear-gradient(180deg, transparent 60%, rgb(5 29 21 / .38)); }
-.impactPhoto img { width: 100%; height: 100%; object-fit: cover; object-position: center; }
-.impactPhoto figcaption { position: absolute; z-index: 1; bottom: 1rem; left: 1rem; display: grid; gap: .1rem; padding: .7rem .9rem; color: white; background: rgb(7 32 24 / .86); border: 1px solid rgb(255 255 255 / .18); border-radius: var(--radius-sm); backdrop-filter: blur(8px); }
-.impactPhoto figcaption span { color: #d7e5de; font-size: .65rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
-.impactPhoto figcaption time { font-family: var(--font-display); font-size: 1.15rem; font-weight: 700; line-height: 1.15; }
 .impactCopy h2 { max-width: 34rem; margin-bottom: 1rem; font-size: clamp(2rem, 4vw, 3rem); }
 .impactCopy > p:not(.eyebrow) { max-width: 35rem; margin-bottom: 0; font-size: .95rem; }
 .impactCopy ul { display: grid; gap: .65rem; margin: 1.4rem 0 1.8rem; padding: 0; list-style: none; }

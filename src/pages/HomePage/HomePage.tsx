@@ -7,10 +7,31 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "../../components/Button/Button";
+import { PhotoCarousel, type CarouselPhoto } from "../../components/PhotoCarousel/PhotoCarousel";
 import { announcements, principles, services } from "../../data/content";
 import heroImage from "../../assets/images/timgas-office-hero-v2.jpg";
 import officeImage from "../../assets/images/timgas-office.jpg";
+import officeFacadeImage from "../../assets/images/timgas-office-facade.jpg";
+import roadsideSignImage from "../../assets/images/timgas-roadside-sign.jpg";
 import styles from "./HomePage.module.css";
+
+const officePhotos: CarouselPhoto[] = [
+  {
+    src: officeImage,
+    alt: "Front entrance of the TIMGAS Multi-Purpose Cooperative office",
+    caption: "TIMGAS cooperative office",
+  },
+  {
+    src: officeFacadeImage,
+    alt: "Upper facade and main sign of the TIMGAS MPC office",
+    caption: "Office facade and main sign",
+  },
+  {
+    src: roadsideSignImage,
+    alt: "TIMGAS MPC roadside sign in Trinidad, Bohol",
+    caption: "TIMGAS roadside sign",
+  },
+];
 
 export function HomePage() {
   return (
@@ -98,16 +119,10 @@ export function HomePage() {
 
       <section className={styles.impact}>
         <div className={`container ${styles.impactGrid}`}>
-          <figure className={styles.impactPhoto}>
-            <img
-              src={officeImage}
-              alt="Exterior of the TIMGAS Multi-Purpose Cooperative office"
-            />
-            <figcaption>
-              <span>Established</span>
-              <time dateTime="1995-07-25">July 25, 1995</time>
-            </figcaption>
-          </figure>
+          <PhotoCarousel
+            ariaLabel="TIMGAS office photo gallery"
+            photos={officePhotos}
+          />
           <div className={styles.impactCopy}>
             <p className="eyebrow">Community purpose, close to home</p>
             <h2>A long-standing partner in financial growth.</h2>

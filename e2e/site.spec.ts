@@ -7,8 +7,14 @@ test('home page provides clear path to application', async ({ page }) => {
   await expect(page.getByText('Since 1995', { exact: true })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Government service assistance' })).toBeVisible();
   await expect(page.getByRole('heading', { name: /long-standing partner in financial growth/i })).toBeVisible();
-  await expect(page.getByText('July 25, 1995', { exact: true }).last()).toBeVisible();
+  await expect(page.getByText(/Established on July 25, 1995, TIMGAS MPC/)).toBeVisible();
   await expect(page.getByText(/₱32M/)).toHaveCount(0);
+  const gallery = page.getByRole('region', { name: 'TIMGAS office photo gallery' });
+  await expect(gallery.getByAltText('Front entrance of the TIMGAS Multi-Purpose Cooperative office')).toBeVisible();
+  await expect(gallery.getByText(/July 25, 1995/)).toHaveCount(0);
+  await gallery.getByRole('button', { name: 'Next gallery photo' }).click();
+  await expect(gallery.getByAltText('Upper facade and main sign of the TIMGAS MPC office')).toBeVisible();
+  await expect(gallery.getByText('Office facade and main sign', { exact: true })).toBeVisible();
   await page.getByRole('link', { name: /become a member/i }).click();
   await expect(page).toHaveURL(/\/apply$/);
   await expect(page.getByRole('heading', { name: /take the first step/i })).toBeVisible();
