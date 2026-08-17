@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "../../components/Button/Button";
+import { HeroMarquee } from "../../components/HeroMarquee/HeroMarquee";
 import { PhotoCarousel, type CarouselPhoto } from "../../components/PhotoCarousel/PhotoCarousel";
 import { announcements, principles, services } from "../../data/content";
 import heroImage from "../../assets/images/timgas-office-hero-v2.jpg";
@@ -32,6 +33,9 @@ const officePhotos: CarouselPhoto[] = [
     caption: "TIMGAS roadside sign",
   },
 ];
+
+const cooperativeFullName =
+  "Tinabangay sa Igsoong Mag-uuma Gasa ni San Isidro Multi-Purpose Cooperative";
 
 export function HomePage() {
   return (
@@ -67,22 +71,7 @@ export function HomePage() {
             </Button>
           </div>
         </div>
-        <div className={styles.heroStats}>
-          <div className="container">
-            <p>
-              <strong>Since 1995</strong>
-              <span>Established July 25</span>
-            </p>
-            <p>
-              <strong>31 years</strong>
-              <span>Serving together</span>
-            </p>
-            <p>
-              <strong>4</strong>
-              <span>Service groups</span>
-            </p>
-          </div>
-        </div>
+        <HeroMarquee text={cooperativeFullName} />
       </section>
 
       <section className={`section ${styles.servicesSection}`}>

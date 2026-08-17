@@ -4,7 +4,12 @@ test('home page provides clear path to application', async ({ page }) => {
   await page.goto('/');
   await expect(page.getByRole('heading', { name: /your partner in financial growth/i })).toBeVisible();
   await expect(page.getByAltText('TIMGAS Multi-Purpose Cooperative office in Trinidad, Bohol')).toBeVisible();
-  await expect(page.getByText('Since 1995', { exact: true })).toBeVisible();
+  await expect(page.getByTestId('hero-marquee').locator('[aria-hidden="true"]').getByText(
+    'Tinabangay sa Igsoong Mag-uuma Gasa ni San Isidro Multi-Purpose Cooperative'
+  ).first()).toBeVisible();
+  await expect(page.getByTestId('hero-marquee').getByRole('button')).toHaveCount(0);
+  const marqueeWidth = await page.getByTestId('hero-marquee').evaluate((element) => element.getBoundingClientRect().width);
+  expect(marqueeWidth).toBeGreaterThanOrEqual(page.viewportSize()!.width - 1);
   await expect(page.getByRole('heading', { name: 'Government service assistance' })).toBeVisible();
   await expect(page.getByRole('heading', { name: /long-standing partner in financial growth/i })).toBeVisible();
   await expect(page.getByText(/Established on July 25, 1995, TIMGAS MPC/)).toBeVisible();
