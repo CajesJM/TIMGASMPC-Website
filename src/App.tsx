@@ -11,6 +11,15 @@ const LoginPage = lazy(() =>
 const DashboardPage = lazy(() =>
   import('./pages/admin/DashboardPage').then((module) => ({ default: module.DashboardPage })),
 );
+const ManagerProfilePage = lazy(() =>
+  import('./pages/admin/ManagerProfilePage').then((module) => ({ default: module.ManagerProfilePage })),
+);
+const ManagerPostsPage = lazy(() =>
+  import('./pages/admin/ManagerPostsPage').then((module) => ({ default: module.ManagerPostsPage })),
+);
+const ManagerLayout = lazy(() =>
+  import('./layouts/ManagerLayout/ManagerLayout').then((module) => ({ default: module.ManagerLayout })),
+);
 const ProtectedManagerRoute = lazy(() =>
   import('./components/ProtectedManagerRoute/ProtectedManagerRoute').then((module) => ({
     default: module.ProtectedManagerRoute,
@@ -34,14 +43,12 @@ export function App() {
           <Route path="apply" element={<Navigate to="/#application" replace />} />
         </Route>
         <Route path="manager-login" element={<LoginPage />} />
-        <Route
-          path="manager/preview"
-          element={
-            <ProtectedManagerRoute>
-              <DashboardPage />
-            </ProtectedManagerRoute>
-          }
-        />
+        <Route path="manager" element={<ProtectedManagerRoute><ManagerLayout /></ProtectedManagerRoute>}>
+          <Route index element={<Navigate to="preview" replace />} />
+          <Route path="preview" element={<DashboardPage />} />
+          <Route path="posts" element={<ManagerPostsPage />} />
+          <Route path="profile" element={<ManagerProfilePage />} />
+        </Route>
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
       </Suspense>

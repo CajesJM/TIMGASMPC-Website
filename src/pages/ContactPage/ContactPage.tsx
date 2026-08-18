@@ -46,10 +46,6 @@ export function ContactPage() {
                 </div>
               </article>
             </div>
-            <p className={styles.contactNote}>
-              Contact the office directly to confirm operating hours, service
-              availability, requirements, and processing schedules.
-            </p>
           </div>
 
           <figure className={styles.officePhoto}>

@@ -1,4 +1,4 @@
-export type PostCategory = 'announcement' | 'news' | 'achievement';
+export type PostCategory = 'announcement' | 'news' | 'achievement' | 'certification';
 
 export type PublishedPost = {
   id: string;
@@ -14,10 +14,14 @@ export const postCategoryLabels: Record<PostCategory, string> = {
   announcement: 'Announcement',
   news: 'News',
   achievement: 'Achievement',
+  certification: 'Certification',
 };
 
 export function isPostCategory(value: unknown): value is PostCategory {
-  return value === 'announcement' || value === 'news' || value === 'achievement';
+  return value === 'announcement'
+    || value === 'news'
+    || value === 'achievement'
+    || value === 'certification';
 }
 
 export function formatPostDate(date: string) {

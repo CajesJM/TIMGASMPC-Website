@@ -48,11 +48,6 @@ export function ServicesPage() {
             </article>
           ))}
         </div>
-        <p className={`container ${styles.serviceNotice}`}>
-          Prices are intentionally not shown. Availability, documentary
-          requirements, provider charges, and processing times should be
-          confirmed directly with the TIMGAS MPC office.
-        </p>
       </section>
 
       <section className={`${styles.section} ${styles.muted}`}>

@@ -494,28 +494,6 @@
   width: 0.9rem;
 }
 
-.postGroupEmpty {
-  display: flex;
-  min-height: 6rem;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  padding: 1.25rem;
-  color: var(--color-text-muted);
-  background: var(--color-surface);
-  border: 1px dashed #c8d3cd;
-  text-align: center;
-}
-
-.postGroupEmpty svg {
-  width: 1.15rem;
-}
-
-.postGroupEmpty p {
-  margin: 0;
-  font-size: 0.8rem;
-}
-
 .carouselDots {
   display: none;
   align-items: center;
@@ -532,7 +510,9 @@
   border: 0;
   border-radius: 50%;
   cursor: pointer;
-  transition: width 160ms ease, background-color 160ms ease;
+  transition:
+    width 160ms ease,
+    background-color 160ms ease;
 }
 
 .carouselDots button.activeDot {
@@ -635,14 +615,6 @@
 .contactMethods a:hover,
 .contactLinks a:hover {
   color: var(--color-brand-950);
-}
-
-.contactNote {
-  margin: 1rem 0 0;
-  padding: 0.8rem 0.9rem;
-  background: var(--color-surface);
-  border-left: 3px solid var(--color-gold-500);
-  font-size: 0.8rem;
 }
 
 .officePhoto {

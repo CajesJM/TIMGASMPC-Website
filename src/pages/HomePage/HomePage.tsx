@@ -9,6 +9,7 @@ import roadsideSignImage from "../../assets/images/timgas-roadside-sign.jpg";
 import { principles, services } from "../../data/content";
 import { AboutPage } from "../AboutPage/AboutPage";
 import { ContactPage } from "../ContactPage/ContactPage";
+import { CertificationsSection } from "../CertificationsSection/CertificationsSection";
 import { MembershipPage } from "../MembershipPage/MembershipPage";
 import { NewsPage } from "../NewsPage/NewsPage";
 import { ServicesPage } from "../ServicesPage/ServicesPage";
@@ -180,6 +181,7 @@ export function HomePage() {
       </section>
 
       <AboutPage />
+      <CertificationsSection />
       <MembershipPage />
       <ServicesPage />
       <NewsPage />

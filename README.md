@@ -44,7 +44,8 @@ The dashboard route verifies both Firebase Authentication and the `admin: true` 
 
 - `applications` — `reference`, `applicantName`, `applicationType`, `submittedAt`, and `status`
 - `members` — one document per authorized member record
-- `posts` — announcements, news, and achievements with a publication date,
+- `adminProfiles` — manager name, position, contact number, and authentication email
+- `posts` — announcements, news, achievements, and certifications with a publication date,
   title, description, optional Storage photo, and `published` status
 
 The application workflow remains disabled until TIMGAS supplies the official form. Its public submission rules and any file-storage requirements must be designed before accepting personal information.
@@ -53,6 +54,7 @@ The application workflow remains disabled until TIMGAS supplies the official for
 
 The manager dashboard provides CRUD controls for the `posts` collection. Only
 an authenticated user with the `admin: true` custom claim can publish or edit
-content. Published post text is readable on the public News section. Optional
+content. Published updates are readable in the public News section, while
+certifications appear in their own public section near About. Optional
 JPEG, PNG, and WebP photos are stored under `posts/{postId}/` with a 5 MB limit;
 only administrators can upload or delete them.

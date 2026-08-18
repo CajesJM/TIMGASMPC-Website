@@ -10,7 +10,7 @@ import {
   updateDoc,
 } from 'firebase/firestore';
 import { deleteObject, getDownloadURL, ref, uploadBytes } from 'firebase/storage';
-import { FileImage, Pencil, Plus, Trash2, X } from 'lucide-react';
+import { ChevronLeft, ChevronRight, FileImage, Pencil, Plus, Search, Trash2, X } from 'lucide-react';
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { db } from '../../lib/firestore';
 import { storage } from '../../lib/storage';
@@ -25,6 +25,7 @@ import styles from './AdminPostsManager.module.css';
 
 const maximumImageSize = 5 * 1024 * 1024;
 const acceptedImageTypes = ['image/jpeg', 'image/png', 'image/webp'];
+const postsPerPage = 5;
 
 function today() {
   return new Date().toISOString().slice(0, 10);
@@ -49,7 +50,11 @@ export function AdminPostsManager() {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState(db ? '' : 'Firestore is not configured.');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState<'all' | PostCategory>('all');
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const publishedListRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!db) return;
@@ -76,6 +81,23 @@ export function AdminPostsManager() {
       setError('Unable to load posts from Firestore.');
     });
   }, []);
+
+  const normalizedSearch = searchQuery.trim().toLowerCase();
+  const filteredPosts = posts.filter((post) => {
+    const matchesCategory = categoryFilter === 'all' || post.category === categoryFilter;
+    const matchesSearch = !normalizedSearch
+      || post.title.toLowerCase().includes(normalizedSearch)
+      || post.description.toLowerCase().includes(normalizedSearch);
+    return matchesCategory && matchesSearch;
+  });
+  const totalPages = Math.max(1, Math.ceil(filteredPosts.length / postsPerPage));
+  const safeCurrentPage = Math.min(currentPage, totalPages);
+  const visiblePosts = filteredPosts.slice((safeCurrentPage - 1) * postsPerPage, safeCurrentPage * postsPerPage);
+
+  const changePage = (page: number) => {
+    setCurrentPage(Math.min(Math.max(page, 1), totalPages));
+    publishedListRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
 
   const resetForm = () => {
     setCategory('announcement');
@@ -158,6 +180,7 @@ export function AdminPostsManager() {
         await deleteObject(ref(storage, existingPhotoPath)).catch(() => undefined);
       }
       setMessage(editingId ? 'Post updated successfully.' : 'Post published successfully.');
+      if (!editingId) setCurrentPage(1);
       resetForm();
     } catch (saveError) {
       console.error('Unable to save post.', saveError);
@@ -185,7 +208,7 @@ export function AdminPostsManager() {
 
   return <section className={styles.manager} id="posts" aria-labelledby="posts-heading">
     <div className={styles.heading}>
-      <div><p className="eyebrow">Public content</p><h2 id="posts-heading">News, announcements & achievements</h2><p>Published items appear automatically in the public News section.</p></div>
+      <div><p className="eyebrow">Public content</p><h2 id="posts-heading">Updates and certifications</h2><p>Updates appear in the public News section, while certifications appear beside the cooperative’s About content.</p></div>
       <span>{posts.length} {posts.length === 1 ? 'post' : 'posts'}</span>
     </div>
 
@@ -193,7 +216,7 @@ export function AdminPostsManager() {
       <form className={styles.form} id="post-editor" onSubmit={savePost}>
         <div className={styles.formHeading}><div><h3>{editingId ? 'Edit post' : 'Create a post'}</h3><p>All fields except the photo are required.</p></div>{editingId && <button type="button" onClick={resetForm} aria-label="Cancel editing"><X /></button>}</div>
         <div className={styles.row}>
-          <label>Category<select value={category} onChange={(event) => setCategory(event.target.value as PostCategory)}><option value="announcement">Announcement</option><option value="news">News</option><option value="achievement">Achievement</option></select></label>
+          <label>Category<select value={category} onChange={(event) => setCategory(event.target.value as PostCategory)}><option value="announcement">Announcement</option><option value="news">News</option><option value="achievement">Achievement</option><option value="certification">Certification</option></select></label>
           <label>Date<input type="date" value={date} max="9999-12-31" onChange={(event) => setDate(event.target.value)} required /></label>
         </div>
         <label>Title<input value={title} onChange={(event) => setTitle(event.target.value)} minLength={3} maxLength={120} placeholder="Enter a clear title" required /></label>
@@ -207,12 +230,12 @@ export function AdminPostsManager() {
         <button className={styles.submit} type="submit" disabled={saving}>{editingId ? <Pencil /> : <Plus />}{saving ? 'Saving…' : editingId ? 'Save changes' : 'Publish post'}</button>
       </form>
 
-      <div className={styles.list} aria-busy={loading}>
-        <h3>Published posts</h3>
-        {loading ? <p className={styles.empty}>Loading posts…</p> : posts.length === 0 ? <p className={styles.empty}>No posts have been published yet.</p> : posts.map((post) => <article key={post.id}>
+      <div className={styles.list} aria-busy={loading} ref={publishedListRef}>
+        <div className={styles.listHeading}><div className={styles.listTitle}><h3>Published posts</h3>{posts.length > 0 && <span>{filteredPosts.length === posts.length ? `${posts.length} total` : `${filteredPosts.length} of ${posts.length}`}</span>}</div><div className={styles.listFilters}><label className={styles.search}><Search aria-hidden="true" /><span className="srOnly">Search published posts</span><input type="search" value={searchQuery} onChange={(event) => { setSearchQuery(event.target.value); setCurrentPage(1); }} placeholder="Search posts" /></label><label className={styles.categoryFilter}><span className="srOnly">Filter published posts by category</span><select value={categoryFilter} onChange={(event) => { setCategoryFilter(event.target.value as 'all' | PostCategory); setCurrentPage(1); }}><option value="all">All categories</option><option value="announcement">Announcements</option><option value="news">News</option><option value="achievement">Achievements</option><option value="certification">Certifications</option></select></label></div></div>
+        {loading ? <p className={styles.empty}>Loading posts…</p> : posts.length === 0 ? <p className={styles.empty}>No posts have been published yet.</p> : filteredPosts.length === 0 ? <div className={styles.empty}><Search aria-hidden="true" /><strong>No matching posts</strong><span>Try a different search term or category.</span></div> : <>{visiblePosts.map((post) => <article key={post.id}>
           {post.photoUrl ? <img src={post.photoUrl} alt="" /> : <div className={styles.noPhoto}><FileImage aria-hidden="true" /></div>}
           <div className={styles.postBody}><div className={styles.meta}><span>{postCategoryLabels[post.category]}</span><time dateTime={post.date}>{formatPostDate(post.date)}</time></div><h4>{post.title}</h4><p>{post.description}</p><div className={styles.controls}><button type="button" onClick={() => editPost(post)}><Pencil /> Edit</button><button type="button" onClick={() => void removePost(post)}><Trash2 /> Delete</button></div></div>
-        </article>)}
+        </article>)}{totalPages > 1 && <nav className={styles.pagination} aria-label="Published posts pagination"><button type="button" onClick={() => changePage(safeCurrentPage - 1)} disabled={safeCurrentPage === 1}><ChevronLeft /> Previous</button><span>Page <strong>{safeCurrentPage}</strong> of {totalPages}</span><button type="button" onClick={() => changePage(safeCurrentPage + 1)} disabled={safeCurrentPage === totalPages}>Next <ChevronRight /></button></nav>}</>}
       </div>
     </div>
   </section>;

@@ -6,8 +6,10 @@ import { fetchPublishedPosts } from '../../features/posts/publicPosts';
 import { formatPostDate, type PostCategory, type PublishedPost } from '../../features/posts/postTypes';
 import styles from '../shared/ContentPage.module.css';
 
+type NewsCategory = Exclude<PostCategory, 'certification'>;
+
 const showcaseGroups: Array<{
-  category: PostCategory;
+  category: NewsCategory;
   title: string;
   description: string;
   icon: LucideIcon;
@@ -37,9 +39,9 @@ export function NewsPage() {
   const [loading, setLoading] = useState(true);
   const [loadFailed, setLoadFailed] = useState(false);
   const [expandedPosts, setExpandedPosts] = useState<Set<string>>(() => new Set());
-  const [activeSlides, setActiveSlides] = useState<Record<PostCategory, number>>({ announcement: 0, news: 0, achievement: 0 });
-  const [overflowingCarousels, setOverflowingCarousels] = useState<Record<PostCategory, boolean>>({ announcement: false, news: false, achievement: false });
-  const carouselRefs = useRef<Partial<Record<PostCategory, HTMLDivElement | null>>>({});
+  const [activeSlides, setActiveSlides] = useState<Record<NewsCategory, number>>({ announcement: 0, news: 0, achievement: 0 });
+  const [overflowingCarousels, setOverflowingCarousels] = useState<Record<NewsCategory, boolean>>({ announcement: false, news: false, achievement: false });
+  const carouselRefs = useRef<Partial<Record<NewsCategory, HTMLDivElement | null>>>({});
   const dragState = useRef({ active: false, startX: 0, startScroll: 0 });
 
   useEffect(() => {
@@ -60,7 +62,7 @@ export function NewsPage() {
 
   useEffect(() => {
     const measureCarousels = () => {
-      const next = showcaseGroups.reduce<Record<PostCategory, boolean>>((result, { category }) => {
+      const next = showcaseGroups.reduce<Record<NewsCategory, boolean>>((result, { category }) => {
         const carousel = carouselRefs.current[category];
         result[category] = Boolean(carousel && carousel.scrollWidth > carousel.clientWidth + 1);
         return result;
@@ -96,20 +98,20 @@ export function NewsPage() {
     });
   };
 
-  const moveCarousel = (category: PostCategory, direction: -1 | 1) => {
+  const moveCarousel = (category: NewsCategory, direction: -1 | 1) => {
     const carousel = carouselRefs.current[category];
     if (!carousel) return;
     carousel.scrollBy({ left: direction * carousel.clientWidth, behavior: 'smooth' });
   };
 
-  const goToSlide = (category: PostCategory, index: number) => {
+  const goToSlide = (category: NewsCategory, index: number) => {
     const carousel = carouselRefs.current[category];
     const card = carousel?.children.item(index) as HTMLElement | null;
     if (!carousel || !card) return;
     carousel.scrollTo({ left: card.offsetLeft - carousel.offsetLeft, behavior: 'smooth' });
   };
 
-  const trackActiveSlide = (category: PostCategory, event: UIEvent<HTMLDivElement>) => {
+  const trackActiveSlide = (category: NewsCategory, event: UIEvent<HTMLDivElement>) => {
     const carousel = event.currentTarget;
     const cards = Array.from(carousel.children) as HTMLElement[];
     if (cards.length === 0) return;
@@ -138,6 +140,8 @@ export function NewsPage() {
     if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
   };
 
+  const newsPosts = posts.filter((post) => post.category !== 'certification');
+
   return (
     <div id="news">
       <PageHeader
@@ -149,14 +153,14 @@ export function NewsPage() {
 
       <section className={styles.section} aria-busy={loading}>
         <div className="container">
-          {loading ? <div className={styles.newsLoading} role="status">Loading official updates…</div> : posts.length > 0 ? <div className={styles.postShowcase}>{showcaseGroups.map(({ category, title, description, icon: Icon }) => {
-            const categoryPosts = posts.filter((post) => post.category === category);
+          {loading ? <div className={styles.newsLoading} role="status">Loading official updates…</div> : newsPosts.length > 0 ? <div className={styles.postShowcase}>{showcaseGroups.filter(({ category }) => newsPosts.some((post) => post.category === category)).map(({ category, title, description, icon: Icon }) => {
+            const categoryPosts = newsPosts.filter((post) => post.category === category);
             return <section className={styles.postGroup} key={category} aria-labelledby={`${category}-heading`}>
               <div className={styles.postGroupHeader}>
                 <div className={styles.postGroupTitle}><span><Icon aria-hidden="true" /></span><div><p className="eyebrow">{category}</p><h3 id={`${category}-heading`}>{title}</h3><p>{description}</p></div></div>
                 <span className={styles.postCount}>{categoryPosts.length} {categoryPosts.length === 1 ? 'update' : 'updates'}</span>
               </div>
-              {categoryPosts.length > 0 ? <div className={styles.carouselShell}>{overflowingCarousels[category] && <><button className={`${styles.carouselEdgeButton} ${styles.carouselPrevious}`} type="button" onClick={() => moveCarousel(category, -1)} aria-label={`Show previous ${title.toLowerCase()}`}><ArrowLeft /></button><button className={`${styles.carouselEdgeButton} ${styles.carouselNext}`} type="button" onClick={() => moveCarousel(category, 1)} aria-label={`Show next ${title.toLowerCase()}`}><ArrowRight /></button></>}<div className={styles.postGrid} ref={(element) => { carouselRefs.current[category] = element; }} role="region" aria-label={`${title} posts`} tabIndex={0} onScroll={(event) => trackActiveSlide(category, event)} onPointerDown={startMouseDrag} onPointerMove={continueMouseDrag} onPointerUp={stopMouseDrag} onPointerCancel={stopMouseDrag}>{categoryPosts.map((post) => {
+              <div className={styles.carouselShell}>{overflowingCarousels[category] && <><button className={`${styles.carouselEdgeButton} ${styles.carouselPrevious}`} type="button" onClick={() => moveCarousel(category, -1)} aria-label={`Show previous ${title.toLowerCase()}`}><ArrowLeft /></button><button className={`${styles.carouselEdgeButton} ${styles.carouselNext}`} type="button" onClick={() => moveCarousel(category, 1)} aria-label={`Show next ${title.toLowerCase()}`}><ArrowRight /></button></>}<div className={styles.postGrid} ref={(element) => { carouselRefs.current[category] = element; }} role="region" aria-label={`${title} posts`} tabIndex={0} onScroll={(event) => trackActiveSlide(category, event)} onPointerDown={startMouseDrag} onPointerMove={continueMouseDrag} onPointerUp={stopMouseDrag} onPointerCancel={stopMouseDrag}>{categoryPosts.map((post) => {
                 const isExpanded = expandedPosts.has(post.id);
                 const hasLongDescription = post.description.length > 240;
                 const descriptionId = `post-description-${post.id}`;
@@ -171,7 +175,7 @@ export function NewsPage() {
                   {hasLongDescription && <button className={styles.readMore} type="button" aria-expanded={isExpanded} aria-controls={descriptionId} onClick={() => toggleDescription(post.id)}>{isExpanded ? <>Show less <ChevronUp /></> : <>Read more <ChevronDown /></>}</button>}
                 </div>
               </article>;
-              })}</div>{categoryPosts.length > 1 && <div className={styles.carouselDots} aria-label={`${title} slide selection`}>{categoryPosts.map((post, index) => <button className={activeSlides[category] === index ? styles.activeDot : undefined} type="button" key={post.id} onClick={() => goToSlide(category, index)} aria-label={`Show ${title.toLowerCase()} item ${index + 1}`} aria-current={activeSlides[category] === index ? 'true' : undefined} />)}</div>}</div> : <div className={styles.postGroupEmpty}><Icon aria-hidden="true" /><p>No {title.toLowerCase()} have been published yet.</p></div>}
+              })}</div>{categoryPosts.length > 1 && <div className={styles.carouselDots} aria-label={`${title} slide selection`}>{categoryPosts.map((post, index) => <button className={activeSlides[category] === index ? styles.activeDot : undefined} type="button" key={post.id} onClick={() => goToSlide(category, index)} aria-label={`Show ${title.toLowerCase()} item ${index + 1}`} aria-current={activeSlides[category] === index ? 'true' : undefined} />)}</div>}</div>
             </section>;
           })}</div> : <div className={styles.emptyNews}>
             <Bell aria-hidden="true" />

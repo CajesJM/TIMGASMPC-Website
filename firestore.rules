@@ -15,7 +15,7 @@ service cloud.firestore {
           'category', 'date', 'title', 'description', 'photoUrl', 'photoPath',
           'status', 'createdAt', 'updatedAt'
         ])
-        && data.category in ['announcement', 'news', 'achievement']
+        && data.category in ['announcement', 'news', 'achievement', 'certification']
         && data.date is string
         && data.date.matches('^\\d{4}-\\d{2}-\\d{2}$')
         && data.title is string
