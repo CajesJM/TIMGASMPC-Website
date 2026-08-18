@@ -1,29 +1,45 @@
 import { doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore';
 import { updateProfile } from 'firebase/auth';
-import { Save, UserRound } from 'lucide-react';
-import { useEffect, useState, type FormEvent } from 'react';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import { Camera, Save, Trash2, UserRound, X } from 'lucide-react';
+import { useEffect, useMemo, useRef, useState, type ChangeEvent, type FormEvent } from 'react';
 import { auth } from '../../lib/firebase';
 import { db } from '../../lib/firestore';
+import { deleteStorageFile, storage } from '../../lib/storage';
 import styles from './AdminProfileManager.module.css';
 
 export type ManagerIdentity = {
   fullName: string;
   position: string;
+  avatarUrl: string;
 };
 
 type AdminProfileManagerProps = {
   onProfileChange: (profile: ManagerIdentity) => void;
 };
 
+const maximumAvatarSize = 2 * 1024 * 1024;
+const acceptedAvatarTypes = ['image/jpeg', 'image/png', 'image/webp'];
+
+function safeFileName(name: string) {
+  return name.toLowerCase().replace(/[^a-z0-9.-]+/g, '-').replace(/^-+|-+$/g, '');
+}
+
 export function AdminProfileManager({ onProfileChange }: AdminProfileManagerProps) {
   const user = auth?.currentUser;
   const [fullName, setFullName] = useState(user?.displayName ?? '');
   const [position, setPosition] = useState('Administrator');
   const [phone, setPhone] = useState('');
+  const [avatar, setAvatar] = useState<File | null>(null);
+  const [existingAvatarUrl, setExistingAvatarUrl] = useState(user?.photoURL ?? '');
+  const [existingAvatarPath, setExistingAvatarPath] = useState('');
+  const [removeAvatar, setRemoveAvatar] = useState(false);
   const [loading, setLoading] = useState(Boolean(db && user));
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState(db && user ? '' : 'Manager profile is unavailable.');
+  const avatarInputRef = useRef<HTMLInputElement>(null);
+  const avatarPreview = useMemo(() => avatar ? URL.createObjectURL(avatar) : '', [avatar]);
 
   useEffect(() => {
     if (!db || !user) return;
@@ -43,7 +59,10 @@ export function AdminProfileManager({ onProfileChange }: AdminProfileManagerProp
         setFullName(nextName);
         setPosition(nextPosition);
         setPhone(typeof data?.phone === 'string' ? data.phone : '');
-        onProfileChange({ fullName: nextName, position: nextPosition });
+        const nextAvatarUrl = typeof data?.avatarUrl === 'string' ? data.avatarUrl : user.photoURL ?? '';
+        setExistingAvatarUrl(nextAvatarUrl);
+        setExistingAvatarPath(typeof data?.avatarPath === 'string' ? data.avatarPath : '');
+        onProfileChange({ fullName: nextName, position: nextPosition, avatarUrl: nextAvatarUrl });
       })
       .catch((profileError) => {
         console.error('Unable to load the manager profile.', profileError);
@@ -56,6 +75,29 @@ export function AdminProfileManager({ onProfileChange }: AdminProfileManagerProp
     return () => { active = false; };
   }, [onProfileChange, user]);
 
+  useEffect(() => {
+    return () => {
+      if (avatarPreview) URL.revokeObjectURL(avatarPreview);
+    };
+  }, [avatarPreview]);
+
+  const selectAvatar = (event: ChangeEvent<HTMLInputElement>) => {
+    const selectedAvatar = event.target.files?.[0] ?? null;
+    if (!selectedAvatar) return;
+    if (!acceptedAvatarTypes.includes(selectedAvatar.type)) {
+      event.target.value = '';
+      return setError('Use a JPEG, PNG, or WebP profile photo.');
+    }
+    if (selectedAvatar.size > maximumAvatarSize) {
+      event.target.value = '';
+      return setError('The profile photo must be smaller than 2 MB.');
+    }
+    setError('');
+    setMessage('');
+    setAvatar(selectedAvatar);
+    setRemoveAvatar(false);
+  };
+
   const saveProfile = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!db || !user) return;
@@ -66,24 +108,63 @@ export function AdminProfileManager({ onProfileChange }: AdminProfileManagerProp
     setSaving(true);
     setMessage('');
     setError('');
+    let uploadedAvatarPath = '';
     try {
-      await Promise.all([
-        setDoc(doc(db, 'adminProfiles', user.uid), {
-          fullName: nextName,
-          position: nextPosition,
-          phone: phone.trim(),
-          email: user.email ?? '',
-          updatedAt: serverTimestamp(),
-        }, { merge: true }),
-        updateProfile(user, { displayName: nextName }),
-      ]);
+      let nextAvatarUrl = removeAvatar ? '' : existingAvatarUrl;
+      let nextAvatarPath = removeAvatar ? '' : existingAvatarPath;
+
+      if (avatar) {
+        if (!storage) throw new Error('Firebase Storage is not configured.');
+        uploadedAvatarPath = `profiles/${user.uid}/${Date.now()}-${safeFileName(avatar.name)}`;
+        const avatarReference = ref(storage, uploadedAvatarPath);
+        await uploadBytes(avatarReference, avatar, { contentType: avatar.type });
+        nextAvatarUrl = await getDownloadURL(avatarReference);
+        nextAvatarPath = uploadedAvatarPath;
+      }
+
+      await setDoc(doc(db, 'adminProfiles', user.uid), {
+        fullName: nextName,
+        position: nextPosition,
+        phone: phone.trim(),
+        email: user.email ?? '',
+        avatarUrl: nextAvatarUrl,
+        avatarPath: nextAvatarPath,
+        updatedAt: serverTimestamp(),
+      }, { merge: true });
+
+      try {
+        await updateProfile(user, { displayName: nextName, photoURL: nextAvatarUrl || null });
+      } catch (authProfileError) {
+        console.error('Firebase Authentication profile synchronization failed.', authProfileError);
+      }
+
+      let oldAvatarCleanupFailed = false;
+      const previousAvatarLocation = existingAvatarPath || existingAvatarUrl;
+      const nextAvatarLocation = nextAvatarPath || nextAvatarUrl;
+      if ((removeAvatar || uploadedAvatarPath) && previousAvatarLocation && previousAvatarLocation !== nextAvatarLocation) {
+        try {
+          await deleteStorageFile(existingAvatarPath, existingAvatarUrl);
+        } catch (cleanupError) {
+          oldAvatarCleanupFailed = true;
+          console.error('The previous profile photo could not be removed from Storage.', cleanupError);
+        }
+      }
+
       setFullName(nextName);
       setPosition(nextPosition);
       setPhone(phone.trim());
-      onProfileChange({ fullName: nextName, position: nextPosition });
-      setMessage('Profile updated successfully.');
+      setAvatar(null);
+      if (avatarInputRef.current) avatarInputRef.current.value = '';
+      setRemoveAvatar(false);
+      setExistingAvatarUrl(nextAvatarUrl);
+      setExistingAvatarPath(nextAvatarPath);
+      onProfileChange({ fullName: nextName, position: nextPosition, avatarUrl: nextAvatarUrl });
+      setMessage(oldAvatarCleanupFailed
+        ? 'Profile updated, but the previous photo could not be removed from Storage.'
+        : 'Profile updated successfully.');
     } catch (saveError) {
       console.error('Unable to save the manager profile.', saveError);
+      if (uploadedAvatarPath) await deleteStorageFile(uploadedAvatarPath).catch(() => undefined);
       setError('The profile could not be saved. Please try again.');
     } finally {
       setSaving(false);
@@ -97,6 +178,22 @@ export function AdminProfileManager({ onProfileChange }: AdminProfileManagerProp
         <span aria-hidden="true"><UserRound /></span>
       </div>
       <form className={styles.form} onSubmit={saveProfile} aria-busy={loading || saving}>
+        <div className={styles.avatarEditor}>
+          <div className={styles.avatarPreview}>
+            {avatarPreview || (!removeAvatar && existingAvatarUrl)
+              ? <img src={avatarPreview || existingAvatarUrl} alt="Manager profile preview" />
+              : <UserRound aria-hidden="true" />}
+          </div>
+          <div className={styles.avatarActions}>
+            <div><strong>Profile photo</strong><p>Use a square JPEG, PNG, or WebP image under 2 MB.</p></div>
+            <div className={styles.avatarButtons}>
+              <label className={styles.photoButton}><Camera /> {existingAvatarUrl || avatar ? 'Change photo' : 'Add photo'}<input ref={avatarInputRef} type="file" accept="image/jpeg,image/png,image/webp" onChange={selectAvatar} disabled={loading || saving} /></label>
+              {avatar && <button type="button" className={styles.removeButton} onClick={() => { setAvatar(null); if (avatarInputRef.current) avatarInputRef.current.value = ''; }}><X /> Cancel new photo</button>}
+              {!avatar && existingAvatarUrl && !removeAvatar && <button type="button" className={styles.removeButton} onClick={() => setRemoveAvatar(true)}><Trash2 /> Remove photo</button>}
+              {!avatar && removeAvatar && <button type="button" className={styles.removeButton} onClick={() => setRemoveAvatar(false)}>Keep current photo</button>}
+            </div>
+          </div>
+        </div>
         <div className={styles.fields}>
           <label>Full name<input value={fullName} onChange={(event) => setFullName(event.target.value)} minLength={2} maxLength={100} autoComplete="name" disabled={loading} required /></label>
           <label>Position<input value={position} onChange={(event) => setPosition(event.target.value)} minLength={2} maxLength={80} placeholder="Administrator" disabled={loading} required /></label>

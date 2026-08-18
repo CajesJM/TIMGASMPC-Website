@@ -14,6 +14,15 @@ service firebase.storage {
       allow delete: if isAdmin();
     }
 
+    match /profiles/{userId}/{fileName} {
+      allow read: if isAdmin() && request.auth.uid == userId;
+      allow create, update: if isAdmin()
+        && request.auth.uid == userId
+        && request.resource.size < 2 * 1024 * 1024
+        && request.resource.contentType.matches('image/(jpeg|png|webp)');
+      allow delete: if isAdmin() && request.auth.uid == userId;
+    }
+
     match /{allPaths=**} {
       allow read, write: if false;
     }

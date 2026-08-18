@@ -17,7 +17,8 @@
 .topbar { position: sticky; z-index: 30; top: 0; height: 4.5rem; display: flex; align-items: center; gap: 1rem; padding: 0 1rem; background: rgb(255 255 255 / .92); border-bottom: 1px solid var(--color-border); backdrop-filter: blur(12px); }
 .mobileMenu { display: grid; width: 2.5rem; height: 2.5rem; place-items: center; color: var(--color-text-muted); background: transparent; border: 0; cursor: pointer; }
 .profile { display: flex; align-items: center; gap: .65rem; margin-left: auto; }
-.profile > span { display: grid; width: 2.25rem; height: 2.25rem; place-items: center; color: white; background: var(--color-brand-700); border-radius: 50%; font-size: .75rem; font-weight: 700; }
+.profile > span { display: grid; width: 2.25rem; height: 2.25rem; overflow: hidden; place-items: center; color: white; background: var(--color-brand-700); border-radius: 50%; font-size: .75rem; font-weight: 700; }
+.profile > span img { width: 100%; height: 100%; object-fit: cover; }
 .profile div { display: block; min-width: 0; line-height: 1.2; }
 .profile strong, .profile small { display: block; }
 .profile strong { max-width: min(15rem, 34vw); overflow: hidden; font-size: .8rem; text-overflow: ellipsis; white-space: nowrap; }.profile small { color: var(--color-text-muted); font-size: .67rem; }

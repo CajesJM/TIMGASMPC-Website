@@ -9,11 +9,11 @@ import {
   setDoc,
   updateDoc,
 } from 'firebase/firestore';
-import { deleteObject, getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { ChevronLeft, ChevronRight, FileImage, Pencil, Plus, Search, Trash2, X } from 'lucide-react';
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { db } from '../../lib/firestore';
-import { storage } from '../../lib/storage';
+import { deleteStorageFile, storage } from '../../lib/storage';
 import {
   formatPostDate,
   isPostCategory,
@@ -176,15 +176,31 @@ export function AdminPostsManager() {
         await setDoc(postRef, { ...postData, createdAt: serverTimestamp() });
       }
 
-      if ((removePhoto || uploadedPath) && existingPhotoPath && storage && existingPhotoPath !== nextPhotoPath) {
-        await deleteObject(ref(storage, existingPhotoPath)).catch(() => undefined);
+      let oldPhotoCleanupFailed = false;
+      const previousPhotoLocation = existingPhotoPath || existingPhotoUrl;
+      const nextPhotoLocation = nextPhotoPath || nextPhotoUrl;
+      if (
+        (removePhoto || uploadedPath)
+        && previousPhotoLocation
+        && previousPhotoLocation !== nextPhotoLocation
+      ) {
+        try {
+          await deleteStorageFile(existingPhotoPath, existingPhotoUrl);
+        } catch (cleanupError) {
+          oldPhotoCleanupFailed = true;
+          console.error('The old post photo could not be removed from Storage.', cleanupError);
+        }
       }
-      setMessage(editingId ? 'Post updated successfully.' : 'Post published successfully.');
+
+      const successMessage = editingId ? 'Post updated successfully.' : 'Post published successfully.';
+      setMessage(oldPhotoCleanupFailed
+        ? `${successMessage} The previous photo could not be removed from Storage; please try editing the post again.`
+        : successMessage);
       if (!editingId) setCurrentPage(1);
       resetForm();
     } catch (saveError) {
       console.error('Unable to save post.', saveError);
-      if (uploadedPath && storage) await deleteObject(ref(storage, uploadedPath)).catch(() => undefined);
+      if (uploadedPath) await deleteStorageFile(uploadedPath).catch(() => undefined);
       setError('The post could not be saved. Confirm that Blaze Storage is active and try again.');
     } finally {
       setSaving(false);
@@ -197,9 +213,17 @@ export function AdminPostsManager() {
     setError('');
     try {
       await deleteDoc(doc(db, 'posts', post.id));
-      if (post.photoPath && storage) await deleteObject(ref(storage, post.photoPath)).catch(() => undefined);
+      let photoCleanupFailed = false;
+      try {
+        await deleteStorageFile(post.photoPath, post.photoUrl);
+      } catch (cleanupError) {
+        photoCleanupFailed = true;
+        console.error('The deleted post photo could not be removed from Storage.', cleanupError);
+      }
       if (editingId === post.id) resetForm();
-      setMessage('Post deleted.');
+      setMessage(photoCleanupFailed
+        ? 'Post deleted from Firestore, but its photo could not be removed from Storage.'
+        : 'Post and its photo deleted successfully.');
     } catch (deleteError) {
       console.error('Unable to delete post.', deleteError);
       setError('The post could not be deleted. Please try again.');

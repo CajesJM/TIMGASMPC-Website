@@ -77,6 +77,26 @@
   color: var(--color-brand-950);
   background: white;
 }
+.heroCurve {
+  position: absolute;
+  z-index: 2;
+  right: 0;
+  bottom: -1px;
+  left: 0;
+  height: clamp(4.75rem, 8vw, 7.5rem);
+  color: var(--color-background);
+  filter: drop-shadow(0 -0.45rem 0.9rem rgb(4 32 23 / 0.08));
+  line-height: 0;
+  pointer-events: none;
+}
+.heroCurve svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.heroCurve path {
+  fill: currentcolor;
+}
 .servicesSection {
   overflow: hidden;
 }
@@ -407,6 +427,7 @@
   }
   .heroContent {
     padding-top: 4rem;
+    padding-bottom: 8.5rem;
   }
 }
 @media (max-width: 30rem) {

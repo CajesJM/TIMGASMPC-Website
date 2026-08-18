@@ -37,6 +37,7 @@ export function ManagerLayout() {
   const [managerIdentity, setManagerIdentity] = useState<ManagerIdentity>({
     fullName: auth?.currentUser?.displayName ?? managerEmail.split('@')[0],
     position: 'Administrator',
+    avatarUrl: auth?.currentUser?.photoURL ?? '',
   });
   const handleProfileChange = useCallback((profile: ManagerIdentity) => setManagerIdentity(profile), []);
   const activeSection = location.pathname === '/manager/profile'
@@ -69,6 +70,7 @@ export function ManagerLayout() {
       setManagerIdentity({
         fullName: typeof data?.fullName === 'string' && data.fullName.trim() ? data.fullName : user.displayName ?? managerEmail.split('@')[0],
         position: typeof data?.position === 'string' && data.position.trim() ? data.position : 'Administrator',
+        avatarUrl: typeof data?.avatarUrl === 'string' ? data.avatarUrl : user.photoURL ?? '',
       });
     }).catch((error) => console.error('Unable to load the manager identity.', error));
     return () => { active = false; };
@@ -132,7 +134,7 @@ export function ManagerLayout() {
         <div className={styles.sidebarFoot}><Link to="/" aria-label={isSidebarCollapsed ? 'View public website' : undefined} title={isSidebarCollapsed ? 'View public website' : undefined}><Home /><span className={styles.sidebarLabel}>View public website</span></Link><button type="button" onClick={signOutManager} aria-label={isSidebarCollapsed ? 'Sign out' : undefined} title={isSidebarCollapsed ? 'Sign out' : undefined}><LogOut /><span className={styles.sidebarLabel}>Sign out</span></button></div>
       </aside>
       <main className={styles.main}>
-        <header className={styles.topbar}><button className={styles.mobileMenu} type="button" onClick={() => setOpen(true)} aria-label="Open menu"><Menu /></button><div className={styles.profile}><span>{initialsForName(managerIdentity.fullName)}</span><div><small className={styles.greeting}>{greetingForHour(currentHour)}</small><strong>{managerIdentity.fullName}</strong><small>{managerIdentity.position}</small></div></div></header>
+        <header className={styles.topbar}><button className={styles.mobileMenu} type="button" onClick={() => setOpen(true)} aria-label="Open menu"><Menu /></button><div className={styles.profile}><span>{managerIdentity.avatarUrl ? <img src={managerIdentity.avatarUrl} alt="" /> : initialsForName(managerIdentity.fullName)}</span><div><small className={styles.greeting}>{greetingForHour(currentHour)}</small><strong>{managerIdentity.fullName}</strong><small>{managerIdentity.position}</small></div></div></header>
         <Outlet context={{ onProfileChange: handleProfileChange } satisfies ManagerOutletContext} />
       </main>
     </div>

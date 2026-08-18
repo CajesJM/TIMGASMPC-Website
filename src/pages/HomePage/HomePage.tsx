@@ -1,6 +1,5 @@
 import { ArrowRight, CheckCircle2, ChevronRight } from "lucide-react";
 import { Button } from "../../components/Button/Button";
-import { HeroMarquee } from "../../components/HeroMarquee/HeroMarquee";
 import { PhotoCarousel, type CarouselPhoto } from "../../components/PhotoCarousel/PhotoCarousel";
 import heroImage from "../../assets/images/timgas-office-hero-v2.jpg";
 import officeImage from "../../assets/images/timgas-office.jpg";
@@ -14,9 +13,6 @@ import { MembershipPage } from "../MembershipPage/MembershipPage";
 import { NewsPage } from "../NewsPage/NewsPage";
 import { ServicesPage } from "../ServicesPage/ServicesPage";
 import styles from "./HomePage.module.css";
-
-const cooperativeFullName =
-  "Tinabangay sa Igsoong Mag-uuma Gasa ni San Isidro Multi-Purpose Cooperative";
 
 const officePhotos: CarouselPhoto[] = [
   {
@@ -70,7 +66,11 @@ export function HomePage() {
             </Button>
           </div>
         </div>
-        <HeroMarquee text={cooperativeFullName} />
+        <div className={styles.heroCurve} aria-hidden="true">
+          <svg viewBox="0 0 1440 130" preserveAspectRatio="none" focusable="false">
+            <path d="M0 25C210 83 390 96 620 40C820-9 980 78 1198 49C1305 35 1375 24 1440 34V130H0V25Z" />
+          </svg>
+        </div>
       </section>
 
       <section className={`section ${styles.servicesSection}`}>
