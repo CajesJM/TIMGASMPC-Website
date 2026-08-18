@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
 import { App } from "./App";
 
@@ -30,6 +31,7 @@ describe("TIMGAS website", () => {
   });
 
   it("keeps manager login available as a separate URL", async () => {
+    const user = userEvent.setup();
     renderApp("/manager-login");
     expect(
       await screen.findByRole("heading", { name: /manager sign in/i }),
@@ -42,6 +44,12 @@ describe("TIMGAS website", () => {
     expect(
       screen.getByRole("button", { name: /sign in securely/i }),
     ).toBeInTheDocument();
+    expect(screen.queryByText(/access requires a verified firebase account/i)).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: /forgot password/i }));
+    expect(screen.getByRole("heading", { name: /reset your password/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /send reset link/i })).toBeInTheDocument();
+    expect(screen.queryByLabelText(/^password$/i)).not.toBeInTheDocument();
   });
 
   it("directs membership inquiries to verified cooperative information", () => {

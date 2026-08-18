@@ -4,14 +4,14 @@ import type { ManagerOutletContext } from '../../layouts/ManagerLayout/ManagerLa
 import styles from './DashboardPage.module.css';
 
 export function ManagerProfilePage() {
-  const { onProfileChange } = useOutletContext<ManagerOutletContext>();
+  const { onProfileChange, showToast } = useOutletContext<ManagerOutletContext>();
 
   return (
     <div className={styles.content}>
       <div className={styles.welcome}>
         <div><p className="eyebrow">Account settings</p><h1>Manager profile</h1><p>Manage the personal information used to identify the signed-in TIMGAS MPC administrator.</p></div>
       </div>
-      <AdminProfileManager onProfileChange={onProfileChange} />
+      <AdminProfileManager onProfileChange={onProfileChange} showToast={showToast} />
     </div>
   );
 }

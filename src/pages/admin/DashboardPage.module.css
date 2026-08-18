@@ -23,6 +23,26 @@
 .profile strong, .profile small { display: block; }
 .profile strong { max-width: min(15rem, 34vw); overflow: hidden; font-size: .8rem; text-overflow: ellipsis; white-space: nowrap; }.profile small { color: var(--color-text-muted); font-size: .67rem; }
 .profile .greeting { margin-bottom: .12rem; color: var(--color-brand-700); font-size: .64rem; font-weight: 700; }
+
+.toastRegion { position: fixed; z-index: 1000; top: clamp(.75rem, 2vw, 1.25rem); left: 50%; width: min(calc(100% - 2rem), 28rem); pointer-events: none; transform: translateX(-50%); }
+.toast { display: flex; min-height: 3.1rem; gap: .65rem; align-items: center; padding: .75rem .9rem; color: #123b2b; background: rgb(255 255 255 / .97); border: 1px solid #b9d7c7; border-radius: .65rem; box-shadow: 0 .75rem 2.25rem rgb(9 45 32 / .2); font-size: .76rem; font-weight: 650; line-height: 1.4; animation: manager-toast 4s ease both; backdrop-filter: blur(12px); }
+.toast svg { width: 1.15rem; height: 1.15rem; flex: 0 0 auto; }
+.toastSuccess svg { color: #24734c; }
+.toastWarning { color: #5e4617; background: rgb(255 252 241 / .98); border-color: #e4ce8f; }
+.toastWarning svg { color: #a26d09; }
+.toastError { color: #742d2d; background: rgb(255 247 247 / .98); border-color: #e4bcbc; }
+.toastError svg { color: #b33b3b; }
+
+@keyframes manager-toast {
+  0% { opacity: 0; transform: translateY(-.75rem) scale(.98); }
+  10%, 85% { opacity: 1; transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(-.4rem) scale(.99); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toast { animation-name: manager-toast-reduced; }
+  @keyframes manager-toast-reduced { 0%, 85% { opacity: 1; } 100% { opacity: 0; } }
+}
 .content { width: min(100% - 2rem, 78rem); margin: 0 auto; padding: clamp(1.25rem, 3vw, 2rem) 0 4rem; }
 .overview, .tableSection, .bottomGrid, :global(#posts) { scroll-margin-top: 5.5rem; }
 .welcome { position: relative; display: flex; min-height: 10rem; overflow: hidden; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem; padding: clamp(1.35rem, 4vw, 2.2rem); color: white; background: linear-gradient(120deg, var(--color-brand-950), var(--color-brand-700)); border-radius: .55rem; box-shadow: 0 1rem 2.4rem rgb(10 58 40 / .14); }

@@ -14,6 +14,7 @@ import { ChevronLeft, ChevronRight, FileImage, Pencil, Plus, Search, Trash2, X }
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { db } from '../../lib/firestore';
 import { deleteStorageFile, storage } from '../../lib/storage';
+import type { ShowToast } from '../notifications/toastTypes';
 import {
   formatPostDate,
   isPostCategory,
@@ -35,7 +36,11 @@ function safeFileName(name: string) {
   return name.toLowerCase().replace(/[^a-z0-9.-]+/g, '-').replace(/^-+|-+$/g, '');
 }
 
-export function AdminPostsManager() {
+type AdminPostsManagerProps = {
+  showToast: ShowToast;
+};
+
+export function AdminPostsManager({ showToast }: AdminPostsManagerProps) {
   const [posts, setPosts] = useState<PublishedPost[]>([]);
   const [category, setCategory] = useState<PostCategory>('announcement');
   const [date, setDate] = useState(today());
@@ -48,7 +53,6 @@ export function AdminPostsManager() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [loading, setLoading] = useState(Boolean(db));
   const [saving, setSaving] = useState(false);
-  const [message, setMessage] = useState('');
   const [error, setError] = useState(db ? '' : 'Firestore is not configured.');
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
@@ -122,7 +126,6 @@ export function AdminPostsManager() {
     setExistingPhotoPath(post.photoPath);
     setRemovePhoto(false);
     setEditingId(post.id);
-    setMessage('');
     setError('');
     if (fileInputRef.current) fileInputRef.current.value = '';
     document.querySelector('#post-editor')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -137,7 +140,6 @@ export function AdminPostsManager() {
 
   const savePost = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setMessage('');
     setError('');
     if (!db) return setError('Firestore is not configured.');
     const imageError = validatePhoto(photo);
@@ -193,15 +195,20 @@ export function AdminPostsManager() {
       }
 
       const successMessage = editingId ? 'Post updated successfully.' : 'Post published successfully.';
-      setMessage(oldPhotoCleanupFailed
-        ? `${successMessage} The previous photo could not be removed from Storage; please try editing the post again.`
-        : successMessage);
+      showToast(
+        oldPhotoCleanupFailed
+          ? `${successMessage} The previous photo could not be removed from Storage; please try editing the post again.`
+          : successMessage,
+        oldPhotoCleanupFailed ? 'warning' : 'success',
+      );
       if (!editingId) setCurrentPage(1);
       resetForm();
     } catch (saveError) {
       console.error('Unable to save post.', saveError);
       if (uploadedPath) await deleteStorageFile(uploadedPath).catch(() => undefined);
-      setError('The post could not be saved. Confirm that Blaze Storage is active and try again.');
+      const failureMessage = 'The post could not be saved. Confirm that Blaze Storage is active and try again.';
+      setError(failureMessage);
+      showToast(failureMessage, 'error');
     } finally {
       setSaving(false);
     }
@@ -209,7 +216,6 @@ export function AdminPostsManager() {
 
   const removePost = async (post: PublishedPost) => {
     if (!db || !window.confirm(`Delete “${post.title}”? This cannot be undone.`)) return;
-    setMessage('');
     setError('');
     try {
       await deleteDoc(doc(db, 'posts', post.id));
@@ -221,12 +227,17 @@ export function AdminPostsManager() {
         console.error('The deleted post photo could not be removed from Storage.', cleanupError);
       }
       if (editingId === post.id) resetForm();
-      setMessage(photoCleanupFailed
-        ? 'Post deleted from Firestore, but its photo could not be removed from Storage.'
-        : 'Post and its photo deleted successfully.');
+      showToast(
+        photoCleanupFailed
+          ? 'Post deleted from Firestore, but its photo could not be removed from Storage.'
+          : 'Post and its photo deleted successfully.',
+        photoCleanupFailed ? 'warning' : 'success',
+      );
     } catch (deleteError) {
       console.error('Unable to delete post.', deleteError);
-      setError('The post could not be deleted. Please try again.');
+      const failureMessage = 'The post could not be deleted. Please try again.';
+      setError(failureMessage);
+      showToast(failureMessage, 'error');
     }
   };
 
@@ -250,7 +261,6 @@ export function AdminPostsManager() {
         {!photo && existingPhotoUrl && !removePhoto && <div className={styles.existingPhoto}><img src={existingPhotoUrl} alt="Current post" /><button type="button" onClick={() => setRemovePhoto(true)}>Remove current photo</button></div>}
         {removePhoto && <button className={styles.restore} type="button" onClick={() => setRemovePhoto(false)}>Keep current photo</button>}
         {error && <p className={styles.error} role="alert">{error}</p>}
-        {message && <p className={styles.success} role="status">{message}</p>}
         <button className={styles.submit} type="submit" disabled={saving}>{editingId ? <Pencil /> : <Plus />}{saving ? 'Saving…' : editingId ? 'Save changes' : 'Publish post'}</button>
       </form>
 

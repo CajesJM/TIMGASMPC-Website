@@ -1,16 +1,18 @@
 import { doc, getDoc } from 'firebase/firestore';
 import { signOut } from 'firebase/auth';
-import { ChevronsLeft, ChevronsRight, FileText, Home, LayoutDashboard, LogOut, Megaphone, Menu, UserRound, X } from 'lucide-react';
-import { useCallback, useEffect, useState } from 'react';
+import { CircleCheck, CircleX, ChevronsLeft, ChevronsRight, FileText, Home, LayoutDashboard, LogOut, Megaphone, Menu, TriangleAlert, UserRound, X } from 'lucide-react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { BrandMark } from '../../components/BrandMark/BrandMark';
 import type { ManagerIdentity } from '../../features/profile/AdminProfileManager';
+import type { ShowToast, ToastTone } from '../../features/notifications/toastTypes';
 import { auth } from '../../lib/firebase';
 import { db } from '../../lib/firestore';
 import styles from '../../pages/admin/DashboardPage.module.css';
 
 export type ManagerOutletContext = {
   onProfileChange: (profile: ManagerIdentity) => void;
+  showToast: ShowToast;
 };
 
 function greetingForHour(hour: number) {
@@ -39,7 +41,17 @@ export function ManagerLayout() {
     position: 'Administrator',
     avatarUrl: auth?.currentUser?.photoURL ?? '',
   });
+  const [toast, setToast] = useState<{ id: number; message: string; tone: ToastTone } | null>(null);
+  const toastTimerRef = useRef<ReturnType<typeof window.setTimeout> | null>(null);
   const handleProfileChange = useCallback((profile: ManagerIdentity) => setManagerIdentity(profile), []);
+  const showToast = useCallback<ShowToast>((message, tone = 'success') => {
+    if (toastTimerRef.current) window.clearTimeout(toastTimerRef.current);
+    setToast({ id: Date.now(), message, tone });
+    toastTimerRef.current = window.setTimeout(() => {
+      setToast(null);
+      toastTimerRef.current = null;
+    }, 4_000);
+  }, []);
   const activeSection = location.pathname === '/manager/profile'
     ? 'profile'
     : location.pathname === '/manager/posts'
@@ -57,6 +69,10 @@ export function ManagerLayout() {
   useEffect(() => {
     const timer = window.setInterval(() => setCurrentHour(new Date().getHours()), 60_000);
     return () => window.clearInterval(timer);
+  }, []);
+
+  useEffect(() => () => {
+    if (toastTimerRef.current) window.clearTimeout(toastTimerRef.current);
   }, []);
 
   useEffect(() => {
@@ -126,6 +142,12 @@ export function ManagerLayout() {
 
   return (
     <div className={`${styles.shell} ${isSidebarCollapsed ? styles.sidebarCollapsed : ''}`}>
+      <div className={styles.toastRegion} aria-live="polite" aria-atomic="true">
+        {toast && <div key={toast.id} className={`${styles.toast} ${styles[`toast${toast.tone[0].toUpperCase()}${toast.tone.slice(1)}`]}`} role={toast.tone === 'error' ? 'alert' : 'status'}>
+          {toast.tone === 'success' ? <CircleCheck aria-hidden="true" /> : toast.tone === 'warning' ? <TriangleAlert aria-hidden="true" /> : <CircleX aria-hidden="true" />}
+          <span>{toast.message}</span>
+        </div>}
+      </div>
       <aside className={`${styles.sidebar} ${open ? styles.open : ''}`}>
         <div className={styles.sidebarHead}><BrandMark inverse compact iconOnly={isSidebarCollapsed} /><button className={styles.mobileClose} type="button" onClick={() => setOpen(false)} aria-label="Close menu"><X /></button><button className={styles.collapseButton} type="button" onClick={toggleSidebar} aria-label={isSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'} title={isSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}>{isSidebarCollapsed ? <ChevronsRight /> : <ChevronsLeft />}</button></div>
         <nav aria-label="Manager navigation">{navigation.map(({ id, label, icon: Icon, to }) => (
@@ -135,7 +157,7 @@ export function ManagerLayout() {
       </aside>
       <main className={styles.main}>
         <header className={styles.topbar}><button className={styles.mobileMenu} type="button" onClick={() => setOpen(true)} aria-label="Open menu"><Menu /></button><div className={styles.profile}><span>{managerIdentity.avatarUrl ? <img src={managerIdentity.avatarUrl} alt="" /> : initialsForName(managerIdentity.fullName)}</span><div><small className={styles.greeting}>{greetingForHour(currentHour)}</small><strong>{managerIdentity.fullName}</strong><small>{managerIdentity.position}</small></div></div></header>
-        <Outlet context={{ onProfileChange: handleProfileChange } satisfies ManagerOutletContext} />
+        <Outlet context={{ onProfileChange: handleProfileChange, showToast } satisfies ManagerOutletContext} />
       </main>
     </div>
   );

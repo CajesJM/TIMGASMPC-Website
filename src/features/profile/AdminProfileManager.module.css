@@ -29,21 +29,30 @@
   font-size: .78rem;
 }
 
-.heading > span {
-  display: grid;
-  width: 2.8rem;
-  height: 2.8rem;
+.editToggle {
+  display: inline-flex;
+  min-height: 2.5rem;
+  gap: .5rem;
   flex: 0 0 auto;
-  place-items: center;
+  align-items: center;
+  padding: .45rem .55rem .45rem .7rem;
   color: var(--color-brand-800);
-  background: var(--color-brand-50);
-  border-radius: .7rem;
+  background: white;
+  border: 1px solid #cbd4cf;
+  border-radius: 999px;
+  font-size: .7rem;
+  font-weight: 750;
+  cursor: pointer;
 }
 
-.heading svg {
-  width: 1.25rem;
-  height: 1.25rem;
-}
+.editToggle svg { width: .9rem; height: .9rem; }
+.editToggle i { position: relative; width: 2rem; height: 1.15rem; background: #d5ddd9; border-radius: 999px; transition: background-color .2s ease; }
+.editToggle b { position: absolute; top: .15rem; left: .15rem; width: .85rem; height: .85rem; background: white; border-radius: 50%; box-shadow: 0 1px 3px rgb(0 0 0 / .18); transition: transform .2s ease; }
+.editToggleActive { color: white; background: var(--color-brand-800); border-color: var(--color-brand-800); }
+.editToggleActive i { background: var(--color-accent, #efc24e); }
+.editToggleActive b { transform: translateX(.85rem); }
+.editToggle:focus-visible { outline: 3px solid rgb(37 112 76 / .16); outline-offset: 2px; }
+.editToggle:disabled { cursor: wait; opacity: .6; }
 
 .form {
   display: grid;
@@ -96,8 +105,10 @@
 }
 
 .form .photoButton { display: inline-flex; color: white; background: var(--color-brand-800); border-color: var(--color-brand-800); }
+.formLocked .photoButton { color: #74817b; background: var(--color-surface); border-color: #d6ddd9; cursor: not-allowed; }
 .form .photoButton input { position: absolute; width: 1px; min-height: 0; height: 1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
 .removeButton { color: #7b2828; background: white; }
+.removeButton:disabled { color: #87908c; background: var(--color-surface); cursor: not-allowed; }
 .photoButton svg, .removeButton svg { width: .9rem; height: .9rem; }
 .photoButton:focus-within, .removeButton:focus-visible { outline: 3px solid rgb(37 112 76 / .14); outline-offset: 2px; }
 
@@ -175,7 +186,7 @@
 }
 
 .submit svg { width: 1rem; height: 1rem; }
-.submit:disabled { cursor: wait; opacity: .65; }
+.submit:disabled { cursor: not-allowed; opacity: .5; }
 
 @media (min-width: 42rem) {
   .fields { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -183,6 +194,8 @@
 }
 
 @media (max-width: 31rem) {
+  .heading { align-items: flex-start; }
+  .editToggle > span { display: none; }
   .avatarEditor { align-items: flex-start; }
   .avatarButtons { display: grid; }
 }
