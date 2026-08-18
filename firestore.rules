@@ -6,6 +6,46 @@ service cloud.firestore {
       return request.auth != null && request.auth.token.admin == true;
     }
 
+    function validPost(data) {
+      return data.keys().hasOnly([
+          'category', 'date', 'title', 'description', 'photoUrl', 'photoPath',
+          'status', 'createdAt', 'updatedAt'
+        ])
+        && data.keys().hasAll([
+          'category', 'date', 'title', 'description', 'photoUrl', 'photoPath',
+          'status', 'createdAt', 'updatedAt'
+        ])
+        && data.category in ['announcement', 'news', 'achievement']
+        && data.date is string
+        && data.date.matches('^\\d{4}-\\d{2}-\\d{2}$')
+        && data.title is string
+        && data.title.size() >= 3
+        && data.title.size() <= 120
+        && data.description is string
+        && data.description.size() >= 10
+        && data.description.size() <= 2000
+        && data.photoUrl is string
+        && data.photoUrl.size() <= 2048
+        && data.photoPath is string
+        && data.photoPath.size() <= 512
+        && data.status == 'published'
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    match /posts/{postId} {
+      allow read: if isAdmin() || resource.data.status == 'published';
+      allow create: if isAdmin()
+        && validPost(request.resource.data)
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedAt == request.time;
+      allow update: if isAdmin()
+        && validPost(request.resource.data)
+        && request.resource.data.createdAt == resource.data.createdAt
+        && request.resource.data.updatedAt == request.time;
+      allow delete: if isAdmin();
+    }
+
     match /{document=**} {
       allow read, write: if isAdmin();
     }

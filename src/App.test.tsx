@@ -37,9 +37,11 @@ describe("TIMGAS website", () => {
     expect(
       screen.queryByRole("navigation", { name: /primary navigation/i }),
     ).not.toBeInTheDocument();
+    expect(screen.getByLabelText(/email address/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/^password$/i)).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: /sign in securely/i }),
-    ).toBeDisabled();
+    ).toBeInTheDocument();
   });
 
   it("directs membership inquiries to verified cooperative information", () => {

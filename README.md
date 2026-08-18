@@ -26,7 +26,7 @@ npm run test:e2e
 - `src/components` — reusable interface components with colocated CSS Modules
 - `src/layouts` — page-level layout shells
 - `src/pages` — route-level features
-- `src/data` — typed placeholder content to be replaced by Firestore queries
+- `src/data` — typed public-site content supplied or confirmed by TIMGAS MPC
 - `src/styles` — design tokens and minimal global styles
 - `src/assets` — project-owned static assets
 
@@ -38,6 +38,21 @@ npm run test:e2e
 4. Assign that user the custom claim `admin: true` using a trusted Admin SDK environment. Never place service-account credentials in this repository or browser code.
 5. Copy `.env.example` to `.env` and fill in the Firebase Web app configuration.
 6. Reauthenticate the CLI with `firebase login --reauth`, then bind the project with `firebase use --add`.
-7. Deploy deny-by-default rules with `firebase deploy --only firestore:rules,storage`.
+7. Deploy admin-only Firestore rules with `firebase deploy --only firestore:rules,firestore:indexes`.
 
-The dashboard route verifies both Firebase Authentication and the `admin: true` claim. Firestore and Storage rules enforce the same claim server-side. The next backend phase should replace dashboard placeholder figures with Firestore queries and implement public application submission through a validated Cloud Function after the official form is received.
+The dashboard route verifies both Firebase Authentication and the `admin: true` claim. Firestore rules enforce the same claim server-side. The dashboard reads these collections without creating sample or fabricated records:
+
+- `applications` — `reference`, `applicantName`, `applicationType`, `submittedAt`, and `status`
+- `members` — one document per authorized member record
+- `posts` — announcements, news, and achievements with a publication date,
+  title, description, optional Storage photo, and `published` status
+
+The application workflow remains disabled until TIMGAS supplies the official form. Its public submission rules and any file-storage requirements must be designed before accepting personal information.
+
+## Public post publishing
+
+The manager dashboard provides CRUD controls for the `posts` collection. Only
+an authenticated user with the `admin: true` custom claim can publish or edit
+content. Published post text is readable on the public News section. Optional
+JPEG, PNG, and WebP photos are stored under `posts/{postId}/` with a 5 MB limit;
+only administrators can upload or delete them.

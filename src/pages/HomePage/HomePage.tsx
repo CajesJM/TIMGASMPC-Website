@@ -161,31 +161,6 @@ export function HomePage() {
         </div>
       </section>
 
-      <section className="section">
-        <div className={`container ${styles.newsHeading}`}>
-          <div>
-            <p className="eyebrow">Latest from TIMGAS</p>
-            <h2>News & notices</h2>
-          </div>
-          <a className={styles.textLink} href="#news">
-            View update status <ArrowRight size={17} />
-          </a>
-        </div>
-        <div className={`container ${styles.newsGrid}`}>
-          <article className={styles.newsPlaceholder}>
-            <div><span>Official updates</span></div>
-            <h3>No confirmed announcement has been posted yet.</h3>
-            <p>
-              Current advisories and program schedules should be confirmed
-              directly with the TIMGAS MPC office.
-            </p>
-            <a href="#news">
-              View news status <ArrowRight size={16} />
-            </a>
-          </article>
-        </div>
-      </section>
-
       <section className={styles.download}>
         <div className={`container ${styles.downloadInner}`}>
           <div>
