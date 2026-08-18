@@ -300,6 +300,10 @@
   font-weight: 700;
   text-decoration: none;
 }
+.newsPlaceholder {
+  grid-column: 1 / -1;
+  max-width: 46rem;
+}
 .download {
   padding: clamp(2rem, 3.5vw, 3rem) 0;
   background: var(--color-brand-800);

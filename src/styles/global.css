@@ -1,5 +1,6 @@
 *, *::before, *::after { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; scroll-padding-top: calc(var(--header-height) + 0.75rem); }
+[id] { scroll-margin-top: calc(var(--header-height) + 0.75rem); }
 body { margin: 0; min-width: 320px; color: var(--color-text); background: var(--color-background); font-family: var(--font-sans); line-height: 1.6; -webkit-font-smoothing: antialiased; }
 body, button, input, select, textarea { font-family: var(--font-sans); }
 button, input, select, textarea { font-size: 1rem; }

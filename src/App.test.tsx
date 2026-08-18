@@ -23,42 +23,53 @@ describe("TIMGAS website", () => {
     ).toBeInTheDocument();
     expect(
       screen.getByRole("link", { name: /become a member/i }),
-    ).toHaveAttribute("href", "/apply");
+    ).toHaveAttribute("href", "/#membership");
+    expect(document.querySelector("#about")).toBeInTheDocument();
+    expect(document.querySelector("#services")).toBeInTheDocument();
+    expect(document.querySelector("#contact")).toBeInTheDocument();
   });
 
-  it("labels the application as a frontend preview", () => {
-    renderApp("/apply");
+  it("keeps manager login available as a separate URL", async () => {
+    renderApp("/manager-login");
     expect(
-      screen.getByText(/this form validates locally/i),
+      await screen.findByRole("heading", { name: /manager sign in/i }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: /submit application/i }),
-    ).toBeEnabled();
+      screen.queryByRole("navigation", { name: /primary navigation/i }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /sign in securely/i }),
+    ).toBeDisabled();
   });
 
-  it("explains how to become a member on the membership page", () => {
+  it("directs membership inquiries to verified cooperative information", () => {
     renderApp("/membership");
     expect(
-      screen.getByRole("heading", { name: /four simple steps to membership/i }),
+      screen.getByRole("heading", { name: /start with verified information/i }),
     ).toBeInTheDocument();
     expect(
-      screen.getByText(/pay your share capital/i),
+      screen.getByText(/confirm the current share capital, fees/i),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("link", { name: /apply online/i }),
-    ).toHaveAttribute("href", "/apply");
+      screen.getAllByRole("link", { name: /contact the office/i })[0],
+    ).toHaveAttribute("href", "/#contact");
     expect(
-      screen.getByRole("link", { name: /download application form/i }),
-    ).toHaveAttribute("href", "/application-form.pdf");
+      screen.getByRole("button", { name: /official format pending/i }),
+    ).toBeDisabled();
+    expect(
+      screen.getByRole("button", { name: /download pending/i }),
+    ).toBeDisabled();
+    expect(document.querySelector('a[href="/application-form.pdf"]')).not.toBeInTheDocument();
   });
 
-  it("answers common questions on the FAQ page", () => {
-    renderApp("/faq");
-    expect(
-      screen.getByRole("heading", { name: /answers to common questions/i }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(/who can become a member of timgas/i),
-    ).toBeInTheDocument();
+  it("uses homepage anchors for the public navigation", () => {
+    const { container } = renderApp();
+    const navigation = container.querySelector("#primary-nav");
+    expect(navigation?.querySelector('a[href="#about"]')).toHaveTextContent("About");
+    expect(navigation?.querySelector('a[href="#membership"]')).toHaveTextContent("Membership");
+    expect(navigation?.querySelector('a[href="#services"]')).toHaveTextContent("Services");
+    expect(navigation?.querySelector('a[href="#news"]')).toHaveTextContent("News");
+    expect(navigation?.querySelector('a[href="#contact"]')).toHaveTextContent("Contact");
+    expect(navigation?.querySelector('a[href="/#application"]')).toHaveTextContent("Apply now");
   });
 });

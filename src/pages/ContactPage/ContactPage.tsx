@@ -1,67 +1,71 @@
-import { ArrowUpRight, Clock3, Mail, MapPin, Phone } from "lucide-react";
+import { ArrowUpRight, Mail, MapPin, Phone } from "lucide-react";
 import { PageHeader } from "../../components/PageHeader/PageHeader";
 import officeImage from "../../assets/images/timgas-office.jpg";
 import styles from "../shared/ContentPage.module.css";
 
 export function ContactPage() {
   return (
-    <>
+    <div id="contact">
       <PageHeader
-        eyebrow="Contact us"
-        title="We’re here to help."
-        description="Visit the cooperative office or contact our team for membership, service, and application questions."
+        headingLevel={2}
+        eyebrow="Contact TIMGAS MPC"
+        title="Connect with the cooperative office."
+        description="Use the confirmed office address, phone number, or email addresses below for membership and service inquiries."
       />
-      <section className="section">
+
+      <section className={styles.section}>
         <div className={`container ${styles.contactGrid}`}>
-          <div>
-            <p className="eyebrow">Cooperative office</p>
-            <h2>Let’s talk about your next step.</h2>
+          <div className={styles.contactPanel}>
+            <header className={styles.sectionHeading}>
+              <p className="eyebrow">Official contact details</p>
+              <h2>Plan your inquiry or visit.</h2>
+            </header>
             <div className={styles.contactMethods}>
               <article>
-                <MapPin />
+                <MapPin aria-hidden="true" />
                 <div>
-                  <h3>Visit us</h3>
+                  <h3>Office address</h3>
                   <p>Purok 5, Poblacion, Trinidad, Bohol, Philippines</p>
                 </div>
               </article>
               <article>
-                <Phone />
+                <Phone aria-hidden="true" />
                 <div>
-                  <h3>Call us</h3>
-                  <a href="tel:+639171234567">+63 938 224 2376</a>
+                  <h3>Phone</h3>
+                  <a href="tel:+639382242376">+63 938 224 2376</a>
                 </div>
               </article>
               <article>
-                <Mail />
+                <Mail aria-hidden="true" />
                 <div>
-                  <h3>Email us</h3>
+                  <h3>Email</h3>
+                  <a href="mailto:mpctimgas@yahoo.com">mpctimgas@yahoo.com</a>
                   <a href="mailto:timgascooperative@gmail.com">
                     timgascooperative@gmail.com
                   </a>
                 </div>
               </article>
-              <article>
-                <Clock3 />
-                <div>
-                  <h3>Office hours</h3>
-                  <p>Monday–Saturday, 8:00 AM–5:00 PM</p>
-                </div>
-              </article>
             </div>
+            <p className={styles.contactNote}>
+              Contact the office directly to confirm operating hours, service
+              availability, requirements, and processing schedules.
+            </p>
           </div>
+
           <figure className={styles.officePhoto}>
             <img
               src={officeImage}
               alt="Front entrance of the TIMGAS Multi-Purpose Cooperative office"
             />
             <figcaption>
-              <MapPin size={22} />
+              <MapPin size={20} aria-hidden="true" />
               <div>
                 <h2>TIMGAS Cooperative Office</h2>
-                <p>Purok 5, Poblacion, Trinidad, Bohol, Philippines</p>
+                <p>Purok 5, Poblacion, Trinidad, Bohol</p>
               </div>
             </figcaption>
           </figure>
+
           <div className={styles.mapWrap}>
             <iframe
               title="Map of the TIMGAS Cooperative Office in Trinidad, Bohol"
@@ -80,6 +84,6 @@ export function ContactPage() {
           </div>
         </div>
       </section>
-    </>
+    </div>
   );
 }

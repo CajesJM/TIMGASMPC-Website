@@ -1,5 +1,26 @@
-.header { padding: var(--space-16) 0; background: var(--color-brand-50); border-bottom: 1px solid var(--color-border); }
-.inner { max-width: var(--container-narrow); margin-left: max(1rem, calc((100% - var(--container)) / 2)); }
-.inner h1 { margin-bottom: var(--space-5); font-size: 3rem; }
-.inner > p:last-child { max-width: 42rem; margin: 0; font-size: 1.1rem; }
-@media (min-width: 48rem) { .header { padding: var(--space-20) 0; } .inner h1 { font-size: 4.2rem; } }
+.header {
+  padding: clamp(3rem, 7vw, 5rem) 0;
+  background: var(--color-brand-50);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.inner {
+  display: grid;
+  justify-items: start;
+}
+
+.inner h1,
+.inner h2 {
+  max-width: 54rem;
+  margin: 0 0 clamp(0.85rem, 2vw, 1.25rem);
+  font-size: clamp(2.25rem, 5vw, 3.25rem);
+  line-height: 1.08;
+  text-wrap: balance;
+}
+
+.inner > p:last-child {
+  max-width: 47rem;
+  margin: 0;
+  font-size: clamp(0.95rem, 1.7vw, 1.08rem);
+  line-height: 1.65;
+}

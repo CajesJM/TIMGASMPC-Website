@@ -1,13 +1,89 @@
-import { Button } from '../../components/Button/Button';
-import { PageHeader } from '../../components/PageHeader/PageHeader';
-import { services } from '../../data/content';
-import styles from '../shared/ContentPage.module.css';
+import { Button } from "../../components/Button/Button";
+import { PageHeader } from "../../components/PageHeader/PageHeader";
+import { services } from "../../data/content";
+import styles from "../shared/ContentPage.module.css";
+
+const visitSteps = [
+  [
+    "Confirm availability",
+    "Contact or visit TIMGAS MPC to confirm that the service is currently available.",
+  ],
+  [
+    "Check requirements",
+    "Ask which valid IDs, records, reference numbers, or supporting documents are needed.",
+  ],
+  [
+    "Follow office guidance",
+    "Processing steps and completion times depend on the service provider and current requirements.",
+  ],
+];
 
 export function ServicesPage() {
-  return <>
-    <PageHeader eyebrow="Available services" title="Everyday services, closer to home." description="Visit TIMGAS for assistance with civil registry documents, remittances, bills payment, and selected government transactions." />
-    <section className="section"><div className={`container ${styles.serviceList}`}>{services.map(({ icon: Icon, title, description, items }) => <article className={styles.serviceItem} key={title}><Icon aria-hidden="true" /><div><h2>{title}</h2><p>{description}</p><ul className={styles.serviceDetails}>{items.map((item) => <li key={item}>{item}</li>)}</ul></div></article>)}</div><p className={`container ${styles.serviceNotice}`}>Service availability, requirements, and processing times may change. Please contact or visit the TIMGAS office for current details.</p></section>
-    <section className={`section ${styles.muted}`}><div className="container"><p className="eyebrow">How to access services</p><h2>Three straightforward steps.</h2><div className={styles.steps}><div><h3>Become a member</h3><p>Complete the application and provide the basic membership requirements.</p></div><div><h3>Attend orientation</h3><p>Learn your rights, responsibilities, and the services available to you.</p></div><div><h3>Choose what fits</h3><p>Speak with our team to find the right program for your current goals.</p></div></div></div></section>
-    <section className={styles.cta}><div className="container"><div><h2>Questions about eligibility?</h2><p>Our cooperative team will help you understand your options.</p></div><Button to="/contact" variant="light">Talk to our team</Button></div></section>
-  </>;
+  return (
+    <div id="services">
+      <PageHeader
+        headingLevel={2}
+        eyebrow="Available office services"
+        title="Practical services in one local office."
+        description="TIMGAS MPC provides office assistance for PSA civil registry documents, TrueMoney remittances, bills payment, and selected government transactions."
+      />
+
+      <section className={styles.section}>
+        <div className={`container ${styles.serviceGrid}`}>
+          {services.map(({ icon: Icon, title, description, items }, index) => (
+            <article className={styles.serviceItem} key={title}>
+              <div className={styles.serviceIcon}>
+                <Icon aria-hidden="true" />
+                <span aria-hidden="true">0{index + 1}</span>
+              </div>
+              <div>
+                <h2>{title}</h2>
+                <p>{description}</p>
+                <ul className={styles.serviceDetails}>
+                  {items.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+            </article>
+          ))}
+        </div>
+        <p className={`container ${styles.serviceNotice}`}>
+          Prices are intentionally not shown. Availability, documentary
+          requirements, provider charges, and processing times should be
+          confirmed directly with the TIMGAS MPC office.
+        </p>
+      </section>
+
+      <section className={`${styles.section} ${styles.muted}`}>
+        <div className="container">
+          <header className={styles.sectionHeading}>
+            <p className="eyebrow">Before your visit</p>
+            <h2>Prepare for a smoother transaction.</h2>
+          </header>
+          <div className={styles.infoGrid}>
+            {visitSteps.map(([title, description], index) => (
+              <article key={title}>
+                <span aria-hidden="true">0{index + 1}</span>
+                <h3>{title}</h3>
+                <p>{description}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className={styles.cta}>
+        <div className="container">
+          <div>
+            <h2>Need current service information?</h2>
+            <p>Contact the TIMGAS MPC office before making your visit.</p>
+          </div>
+          <Button to="/#contact" variant="light">
+            Contact the office
+          </Button>
+        </div>
+      </section>
+    </div>
+  );
 }

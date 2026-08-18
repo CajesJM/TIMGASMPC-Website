@@ -6,6 +6,11 @@
 .notice { display: flex; gap: .6rem; margin: 1.5rem 0; padding: .8rem; background: #eef5fb; border-left: 3px solid var(--color-info); }
 .notice svg { flex: 0 0 auto; color: var(--color-info); }
 .notice span { color: var(--color-text-muted); font-size: .76rem; }
+.setupNotice { background: var(--color-gold-100); border-left-color: var(--color-gold-600); }
+.setupNotice svg { color: var(--color-gold-600); }
+.errorBanner, .successBanner { margin: 0 0 1rem; padding: .75rem .85rem; font-size: .8rem; line-height: 1.5; }
+.errorBanner { color: #7a1d1d; background: #fff0f0; border-left: 3px solid var(--color-error); }
+.successBanner { color: var(--color-brand-900); background: var(--color-brand-50); border-left: 3px solid var(--color-success); }
 .panel form { display: grid; gap: .5rem; }
 .panel form label { margin-top: .7rem; color: var(--color-brand-950); font-size: .85rem; font-weight: 700; }
 .panel input { width: 100%; min-height: 3rem; padding: .7rem .8rem; border: 1px solid #aebcb5; border-radius: var(--radius-sm); }
@@ -13,4 +18,5 @@
 .password button { position: absolute; top: 0; right: 0; display: grid; width: 3rem; height: 3rem; place-items: center; color: var(--color-text-muted); background: transparent; border: 0; cursor: pointer; }
 .panel form small { color: var(--color-error); }
 .panel form > button { margin-top: 1.2rem; }
-.panel form > a { margin-top: .8rem; color: var(--color-brand-800); font-size: .82rem; font-weight: 700; text-align: center; text-decoration: none; }
+.reset { margin-top: .8rem; padding: .3rem; color: var(--color-brand-800); background: transparent; border: 0; font-size: .82rem; font-weight: 700; text-align: center; cursor: pointer; }
+.reset:disabled { color: var(--color-text-muted); cursor: not-allowed; }

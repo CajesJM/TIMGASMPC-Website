@@ -9,7 +9,7 @@ npm install
 npm run dev
 ```
 
-Open the URL shown by Vite. Public application submission and manager authentication are intentionally preview-only until Firebase is configured.
+Open the URL shown by Vite. Public application submission remains unavailable until TIMGAS provides its official form format.
 
 ## Quality checks
 
@@ -30,6 +30,14 @@ npm run test:e2e
 - `src/styles` — design tokens and minimal global styles
 - `src/assets` — project-owned static assets
 
-## Backend handoff
+## Firebase manager setup
 
-The next phase should replace mock content with Firebase services, submit applications through a validated TypeScript Cloud Function, protect manager routes using the `admin: true` custom claim, and connect private Cloud Storage uploads. Environment variable names are listed in `.env.example`; no secrets are included.
+1. Create or select a Firebase project and register a Web app.
+2. Enable Authentication → Email/Password.
+3. Create the first manager user in Firebase Authentication.
+4. Assign that user the custom claim `admin: true` using a trusted Admin SDK environment. Never place service-account credentials in this repository or browser code.
+5. Copy `.env.example` to `.env` and fill in the Firebase Web app configuration.
+6. Reauthenticate the CLI with `firebase login --reauth`, then bind the project with `firebase use --add`.
+7. Deploy deny-by-default rules with `firebase deploy --only firestore:rules,storage`.
+
+The dashboard route verifies both Firebase Authentication and the `admin: true` claim. Firestore and Storage rules enforce the same claim server-side. The next backend phase should replace dashboard placeholder figures with Firestore queries and implement public application submission through a validated Cloud Function after the official form is received.

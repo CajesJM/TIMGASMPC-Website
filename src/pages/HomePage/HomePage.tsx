@@ -1,20 +1,21 @@
-import {
-  ArrowRight,
-  CheckCircle2,
-  ChevronRight,
-  Download,
-  Quote,
-} from "lucide-react";
-import { Link } from "react-router-dom";
+import { ArrowRight, CheckCircle2, ChevronRight } from "lucide-react";
 import { Button } from "../../components/Button/Button";
 import { HeroMarquee } from "../../components/HeroMarquee/HeroMarquee";
 import { PhotoCarousel, type CarouselPhoto } from "../../components/PhotoCarousel/PhotoCarousel";
-import { announcements, principles, services } from "../../data/content";
 import heroImage from "../../assets/images/timgas-office-hero-v2.jpg";
 import officeImage from "../../assets/images/timgas-office.jpg";
 import officeFacadeImage from "../../assets/images/timgas-office-facade.jpg";
 import roadsideSignImage from "../../assets/images/timgas-roadside-sign.jpg";
+import { principles, services } from "../../data/content";
+import { AboutPage } from "../AboutPage/AboutPage";
+import { ContactPage } from "../ContactPage/ContactPage";
+import { MembershipPage } from "../MembershipPage/MembershipPage";
+import { NewsPage } from "../NewsPage/NewsPage";
+import { ServicesPage } from "../ServicesPage/ServicesPage";
 import styles from "./HomePage.module.css";
+
+const cooperativeFullName =
+  "Tinabangay sa Igsoong Mag-uuma Gasa ni San Isidro Multi-Purpose Cooperative";
 
 const officePhotos: CarouselPhoto[] = [
   {
@@ -34,13 +35,10 @@ const officePhotos: CarouselPhoto[] = [
   },
 ];
 
-const cooperativeFullName =
-  "Tinabangay sa Igsoong Mag-uuma Gasa ni San Isidro Multi-Purpose Cooperative";
-
 export function HomePage() {
   return (
     <>
-      <section className={styles.hero}>
+      <section id="home" className={styles.hero}>
         <img
           className={styles.heroImage}
           src={heroImage}
@@ -59,11 +57,11 @@ export function HomePage() {
             financial services, farm support, and the power of cooperation.
           </p>
           <div className={styles.heroActions}>
-            <Button to="/apply" variant="light">
+            <Button to="/#membership" variant="light">
               Become a member <ArrowRight size={18} />
             </Button>
             <Button
-              to="/about"
+              to="/#about"
               variant="secondary"
               className={styles.heroSecondary}
             >
@@ -86,9 +84,9 @@ export function HomePage() {
               documents, TrueMoney remittances, bills payment, and selected
               government transactions. Availability and requirements may vary.
             </p>
-            <Link className={styles.textLink} to="/services">
+            <a className={styles.textLink} href="#services">
               View all service details <ArrowRight size={17} />
-            </Link>
+            </a>
           </div>
         </div>
         <div className={`container ${styles.serviceGrid}`}>
@@ -98,9 +96,9 @@ export function HomePage() {
               <span aria-hidden="true">0{index + 1}</span>
               <h3>{title}</h3>
               <p>{description}</p>
-              <Link to="/services" aria-label={`Learn more about ${title}`}>
+              <a href="#services" aria-label={`View details for ${title}`}>
                 <ChevronRight />
-              </Link>
+              </a>
             </article>
           ))}
         </div>
@@ -116,9 +114,9 @@ export function HomePage() {
             <p className="eyebrow">Community purpose, close to home</p>
             <h2>A long-standing partner in financial growth.</h2>
             <p>
-              Established on July 25, 1995, TIMGAS MPC continues to pursue its
-              mission of uplifting every member’s economic status through
-              quality products and services. Its published objectives include:
+              Established on July 25, 1995, TIMGAS MPC works to uplift the
+              economic status of its members through quality products and
+              services. Its published objectives include:
             </p>
             <ul>
               <li>
@@ -134,8 +132,8 @@ export function HomePage() {
                 communities
               </li>
             </ul>
-            <Button to="/services">
-              Explore cooperative services <ArrowRight size={18} />
+            <Button to="/#about">
+              Learn about the cooperative <ArrowRight size={18} />
             </Button>
           </div>
         </div>
@@ -148,8 +146,8 @@ export function HomePage() {
             <h2>Built on trust. Driven by purpose.</h2>
           </div>
           <p>
-            Our cooperative principles shape every decision—from how we serve
-            one member to how we plan for the whole community.
+            These cooperative principles support member participation,
+            community-rooted service, and responsible long-term development.
           </p>
         </div>
         <div className={`container ${styles.principles}`}>
@@ -163,45 +161,28 @@ export function HomePage() {
         </div>
       </section>
 
-      <section className={styles.testimonial}>
-        <div className={`container ${styles.quote}`}>
-          <Quote aria-hidden="true" />
-          <blockquote>
-            “Through the cooperative, I was able to prepare for planting on time
-            and sell our harvest with more confidence. You feel that you are
-            building something with your neighbors, not doing it alone.”
-          </blockquote>
-          <p>
-            <strong>Maria L.</strong>
-            <span>Member-farmer since 2016</span>
-          </p>
-        </div>
-      </section>
-
       <section className="section">
         <div className={`container ${styles.newsHeading}`}>
           <div>
             <p className="eyebrow">Latest from TIMGAS</p>
             <h2>News & notices</h2>
           </div>
-          <Link className={styles.textLink} to="/news">
-            View all updates <ArrowRight size={17} />
-          </Link>
+          <a className={styles.textLink} href="#news">
+            View update status <ArrowRight size={17} />
+          </a>
         </div>
         <div className={`container ${styles.newsGrid}`}>
-          {announcements.map((item) => (
-            <article key={item.id}>
-              <div>
-                <span>{item.category}</span>
-                <time>{item.date}</time>
-              </div>
-              <h3>{item.title}</h3>
-              <p>{item.excerpt}</p>
-              <Link to="/news">
-                Read update <ArrowRight size={16} />
-              </Link>
-            </article>
-          ))}
+          <article className={styles.newsPlaceholder}>
+            <div><span>Official updates</span></div>
+            <h3>No confirmed announcement has been posted yet.</h3>
+            <p>
+              Current advisories and program schedules should be confirmed
+              directly with the TIMGAS MPC office.
+            </p>
+            <a href="#news">
+              View news status <ArrowRight size={16} />
+            </a>
+          </article>
         </div>
       </section>
 
@@ -209,22 +190,25 @@ export function HomePage() {
         <div className={`container ${styles.downloadInner}`}>
           <div>
             <p className="eyebrow">Ready to get started?</p>
-            <h2>Your cooperative journey begins here.</h2>
+            <h2>Your cooperative journey begins with an inquiry.</h2>
             <p>
-              Apply online or download the membership form and visit our office.
-              Our team is ready to guide you.
+              Contact TIMGAS MPC for the current membership process, or
+              review the available application methods before visiting the office.
             </p>
           </div>
           <div>
-            <Button to="/apply" variant="light">
-              Apply online <ArrowRight size={18} />
+            <Button to="/#application" variant="light">
+              View application options <ArrowRight size={18} />
             </Button>
-            <a href="/application-form.pdf" download>
-              <Download size={18} /> Download application form
-            </a>
           </div>
         </div>
       </section>
+
+      <AboutPage />
+      <MembershipPage />
+      <ServicesPage />
+      <NewsPage />
+      <ContactPage />
     </>
   );
 }

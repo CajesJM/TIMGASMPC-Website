@@ -1,5 +1,4 @@
 import { Globe2, Mail, MapPin, Phone } from "lucide-react";
-import { Link } from "react-router-dom";
 import officeCutout from "../../assets/images/timgas-office-footer-cutout.webp";
 import { BrandMark } from "../BrandMark/BrandMark";
 import styles from "./Footer.module.css";
@@ -19,12 +18,12 @@ export function Footer() {
         </div>
         <div>
           <h2>Explore</h2>
-          <Link to="/about">Our cooperative</Link>
-          <Link to="/membership">Membership</Link>
-          <Link to="/services">Member services</Link>
-          <Link to="/news">News & updates</Link>
-          <Link to="/faq">FAQs</Link>
-          <Link to="/apply">Membership application</Link>
+          <a href="#about">Our cooperative</a>
+          <a href="#membership">Membership</a>
+          <a href="#services">Member services</a>
+          <a href="#news">News & updates</a>
+          <a href="#contact">Contact details</a>
+          <a href="#application">Application options</a>
         </div>
         <div>
           <h2>Get in touch</h2>
@@ -32,7 +31,7 @@ export function Footer() {
             <MapPin size={17} /> Purok 5, Poblacion, Trinidad, Bohol,
             Philippines
           </span>
-          <a href="tel:+639171234567">
+          <a href="tel:+639382242376">
             <Phone size={17} /> +63 938 224 2376
           </a>
           <a href="mailto:timgascooperative@gmail.com">

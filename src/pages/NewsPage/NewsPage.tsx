@@ -1,8 +1,40 @@
-import { ChevronDown } from 'lucide-react';
-import { PageHeader } from '../../components/PageHeader/PageHeader';
-import { announcements } from '../../data/content';
-import styles from '../shared/ContentPage.module.css';
+import { Bell, Mail, Phone } from "lucide-react";
+import { Button } from "../../components/Button/Button";
+import { PageHeader } from "../../components/PageHeader/PageHeader";
+import styles from "../shared/ContentPage.module.css";
 
 export function NewsPage() {
-  return <><PageHeader eyebrow="News & announcements" title="Stay connected with your cooperative." description="Important member advisories, program openings, training schedules, and stories from across our community." /><section className="section"><div className={`container ${styles.newsList}`}>{announcements.map(item => <article key={item.id}><div className={styles.newsMeta}><span>{item.category}</span><time>{item.date}</time></div><div><h2>{item.title}</h2><p>{item.excerpt}</p><details className={styles.readMore}><summary>Read full update <ChevronDown size={17} /></summary><p className={styles.readMoreBody}>{item.body}</p></details></div></article>)}</div></section></>;
+  return (
+    <div id="news">
+      <PageHeader
+        headingLevel={2}
+        eyebrow="News and notices"
+        title="Verified updates from TIMGAS MPC."
+        description="Official announcements will be published here after they are confirmed by the cooperative."
+      />
+
+      <section className={styles.section}>
+        <div className={`container ${styles.emptyNews}`}>
+          <Bell aria-hidden="true" />
+          <div>
+            <p className="eyebrow">Current status</p>
+            <h2>No official announcement has been posted yet.</h2>
+            <p>
+              For current advisories, schedules, program availability, and
+              member notices, contact or visit the TIMGAS MPC office directly.
+            </p>
+            <div className={styles.contactLinks}>
+              <a href="tel:+639382242376">
+                <Phone size={17} /> +63 938 224 2376
+              </a>
+              <a href="mailto:timgascooperative@gmail.com">
+                <Mail size={17} /> timgascooperative@gmail.com
+              </a>
+            </div>
+          </div>
+          <Button to="/#contact">View contact details</Button>
+        </div>
+      </section>
+    </div>
+  );
 }

@@ -4,8 +4,9 @@
 .sidebarHead { display: flex; align-items: center; justify-content: space-between; padding: 0 .5rem 1.5rem; border-bottom: 1px solid rgb(255 255 255 / .12); }
 .sidebarHead button { color: white; background: transparent; border: 0; }
 .sidebar nav { display: grid; gap: .35rem; margin-top: 1.5rem; }
-.sidebar nav a, .sidebarFoot a { display: flex; align-items: center; gap: .8rem; padding: .75rem .8rem; color: #bacdc4; border-radius: var(--radius-sm); font-size: .88rem; font-weight: 600; text-decoration: none; }
-.sidebar nav a svg, .sidebarFoot a svg { width: 1.15rem; }
+.sidebar nav a, .sidebarFoot a, .sidebarFoot button { display: flex; width: 100%; align-items: center; gap: .8rem; padding: .75rem .8rem; color: #bacdc4; background: transparent; border: 0; border-radius: var(--radius-sm); font-size: .88rem; font-weight: 600; text-align: left; text-decoration: none; cursor: pointer; }
+.sidebar nav a svg, .sidebarFoot a svg, .sidebarFoot button svg { width: 1.15rem; }
+.sidebarFoot a:hover, .sidebarFoot button:hover { color: white; background: rgb(255 255 255 / .1); }
 .sidebar nav a:hover, .sidebar nav a.active { color: white; background: rgb(255 255 255 / .1); }
 .sidebar nav a span { margin-left: auto; padding: .08rem .42rem; color: var(--color-brand-950); background: var(--color-gold-500); border-radius: var(--radius-pill); font-size: .7rem; }
 .sidebarFoot { display: grid; gap: .2rem; margin-top: auto; padding-top: 1rem; border-top: 1px solid rgb(255 255 255 / .12); }
