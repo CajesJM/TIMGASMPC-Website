@@ -1,25 +1,152 @@
-*, *::before, *::after { box-sizing: border-box; }
-html { scroll-behavior: smooth; scroll-padding-top: calc(var(--header-height) + 0.75rem); }
-[id] { scroll-margin-top: calc(var(--header-height) + 0.75rem); }
-body { margin: 0; min-width: 320px; color: var(--color-text); background: var(--color-background); font-family: var(--font-sans); line-height: 1.6; -webkit-font-smoothing: antialiased; }
-body, button, input, select, textarea { font-family: var(--font-sans); }
-button, input, select, textarea { font-size: 1rem; }
-button, a { -webkit-tap-highlight-color: transparent; }
-img, svg { display: block; max-width: 100%; }
-a { color: inherit; }
-h1, h2, h3, p { margin-top: 0; }
-h1, h2, h3 { color: var(--color-brand-950); line-height: 1.12; }
-h1, h2 { font-family: var(--font-display); }
-h1 { font-size: 3rem; letter-spacing: -0.03em; }
-h2 { font-size: 2.2rem; letter-spacing: -0.02em; }
-h3 { font-size: 1.15rem; }
-p { color: var(--color-text-muted); }
-button, input, select, textarea, a { outline-offset: 3px; }
-:focus-visible { outline: 3px solid var(--color-gold-500); }
-.container { width: min(100% - 2rem, var(--container)); margin-inline: auto; }
-.section { padding-block: var(--space-16); }
-.eyebrow { margin-bottom: var(--space-3); color: var(--color-gold-600); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.13em; text-transform: uppercase; }
-.srOnly { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
-@media (min-width: 48rem) { h1 { font-size: 4.75rem; } h2 { font-size: 3rem; } .section { padding-block: var(--space-24); } .container { width: min(100% - 3rem, var(--container)); } }
-@media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; } }
-@media print { header, footer, nav, button, .noPrint { display: none !important; } body { color: #000; background: #fff; } .section { padding: 1rem 0; } }
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--header-height) + 0.75rem);
+}
+[id] {
+  scroll-margin-top: calc(var(--header-height) + 0.75rem);
+}
+body {
+  margin: 0;
+  min-width: 320px;
+  color: var(--color-text);
+  background: var(--color-background);
+  font-family: var(--font-sans);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+body,
+button,
+input,
+select,
+textarea {
+  font-family: var(--font-sans);
+}
+button,
+input,
+select,
+textarea {
+  font-size: 1rem;
+}
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+a {
+  color: inherit;
+}
+h1,
+h2,
+h3,
+p {
+  margin-top: 0;
+}
+h1,
+h2,
+h3 {
+  color: var(--color-brand-950);
+  line-height: 1.12;
+}
+h1,
+h2 {
+  font-family: var(--font-display);
+}
+h1 {
+  font-size: 3rem;
+  letter-spacing: -0.03em;
+}
+h2 {
+  font-size: 2.2rem;
+  letter-spacing: -0.02em;
+}
+h3 {
+  font-size: 1.15rem;
+}
+p {
+  color: var(--color-text-muted);
+}
+button,
+input,
+select,
+textarea,
+a {
+  outline-offset: 3px;
+}
+:focus-visible {
+  outline: 3px solid var(--color-gold-500);
+}
+.container {
+  width: min(100% - 2rem, var(--container));
+  margin-inline: auto;
+}
+.section {
+  padding-block: var(--space-16);
+}
+.eyebrow {
+  margin-bottom: var(--space-3);
+  color: var(--color-gold-600);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+@media (min-width: 48rem) {
+  h1 {
+    font-size: 4.75rem;
+  }
+  h2 {
+    font-size: 3rem;
+  }
+  .section {
+    padding-block: var(--space-24);
+  }
+  .container {
+    width: min(100% - 3rem, var(--container));
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+@media print {
+  header,
+  footer,
+  nav,
+  button,
+  .noPrint {
+    display: none !important;
+  }
+  body {
+    color: #000;
+    background: #fff;
+  }
+  .section {
+    padding: 1rem 0;
+  }
+}

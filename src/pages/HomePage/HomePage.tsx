@@ -1,6 +1,9 @@
 import { ArrowRight, CheckCircle2, ChevronRight } from "lucide-react";
 import { Button } from "../../components/Button/Button";
-import { PhotoCarousel, type CarouselPhoto } from "../../components/PhotoCarousel/PhotoCarousel";
+import {
+  PhotoCarousel,
+  type CarouselPhoto,
+} from "../../components/PhotoCarousel/PhotoCarousel";
 import heroImage from "../../assets/images/timgas-office-hero-v2.jpg";
 import officeImage from "../../assets/images/timgas-office.jpg";
 import officeFacadeImage from "../../assets/images/timgas-office-facade.jpg";
@@ -67,7 +70,11 @@ export function HomePage() {
           </div>
         </div>
         <div className={styles.heroCurve} aria-hidden="true">
-          <svg viewBox="0 0 1440 130" preserveAspectRatio="none" focusable="false">
+          <svg
+            viewBox="0 0 1440 130"
+            preserveAspectRatio="none"
+            focusable="false"
+          >
             <path d="M0 25C210 83 390 96 620 40C820-9 980 78 1198 49C1305 35 1375 24 1440 34V130H0V25Z" />
           </svg>
         </div>
@@ -168,8 +175,8 @@ export function HomePage() {
             <p className="eyebrow">Ready to get started?</p>
             <h2>Your cooperative journey begins with an inquiry.</h2>
             <p>
-              Contact TIMGAS MPC for the current membership process, or
-              review the available application methods before visiting the office.
+              Contact TIMGAS MPC for the current membership process, or review
+              the available application methods before visiting the office.
             </p>
           </div>
           <div>

@@ -1,7 +1,7 @@
 import { getIdTokenResult, onAuthStateChanged, signOut } from "firebase/auth";
 import { useEffect, useState, type ReactNode } from "react";
 import { Navigate, useLocation } from "react-router-dom";
-import { auth, isFirebaseConfigured } from "../../lib/firebase";
+import { auth, isFirebaseConfigured } from "../../../lib/firebase";
 import styles from "./ProtectedManagerRoute.module.css";
 
 type AccessState =

@@ -1,4 +1,10 @@
-import { ArrowRight, Building2, CheckCircle2, FileDown, FilePenLine } from "lucide-react";
+import {
+  ArrowRight,
+  Building2,
+  CheckCircle2,
+  FileDown,
+  FilePenLine,
+} from "lucide-react";
 import { Button } from "../../components/Button/Button";
 import { PageHeader } from "../../components/PageHeader/PageHeader";
 import { objectives } from "../../data/content";
@@ -71,8 +77,8 @@ export function MembershipPage() {
             <p className="eyebrow">Application options</p>
             <h2>Choose how you want to complete the official form.</h2>
             <p>
-              TIMGAS MPC will support online completion and a downloadable
-              form for applicants who prefer to fill it out manually.
+              TIMGAS MPC will support online completion and a downloadable form
+              for applicants who prefer to fill it out manually.
             </p>
           </header>
           <div className={pageStyles.applicationGrid}>
@@ -82,11 +88,13 @@ export function MembershipPage() {
                 <span>Online option</span>
                 <h3>Fill out the application online</h3>
                 <p>
-                  Complete the official application through the website once
-                  the manager confirms all required fields.
+                  Complete the official application through the website once the
+                  manager confirms all required fields.
                 </p>
               </div>
-              <button type="button" disabled>Official format pending</button>
+              <button type="button" disabled>
+                Official format pending
+              </button>
             </article>
             <article>
               <FileDown aria-hidden="true" />
@@ -98,7 +106,9 @@ export function MembershipPage() {
                   it according to the cooperative office’s instructions.
                 </p>
               </div>
-              <button type="button" disabled>Download pending</button>
+              <button type="button" disabled>
+                Download pending
+              </button>
             </article>
           </div>
           <aside className={pageStyles.pendingNotice}>
@@ -116,7 +126,10 @@ export function MembershipPage() {
         <div className="container">
           <div>
             <h2>Ready to ask about membership?</h2>
-            <p>Contact the office while the official application format is being prepared.</p>
+            <p>
+              Contact the office while the official application format is being
+              prepared.
+            </p>
           </div>
           <div className={pageStyles.ctaActions}>
             <Button to="/#contact" variant="light">

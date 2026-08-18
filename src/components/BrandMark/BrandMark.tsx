@@ -1,7 +1,11 @@
 import logo from "../../assets/images/timgas-logo.png";
 import styles from "./BrandMark.module.css";
 
-type BrandMarkProps = { compact?: boolean; iconOnly?: boolean; inverse?: boolean };
+type BrandMarkProps = {
+  compact?: boolean;
+  iconOnly?: boolean;
+  inverse?: boolean;
+};
 
 export function BrandMark({
   compact = false,
@@ -9,7 +13,9 @@ export function BrandMark({
   inverse = false,
 }: BrandMarkProps) {
   return (
-    <div className={`${styles.brand} ${compact ? styles.compact : ""} ${iconOnly ? styles.iconOnly : ""} ${inverse ? styles.inverse : ""}`}>
+    <div
+      className={`${styles.brand} ${compact ? styles.compact : ""} ${iconOnly ? styles.iconOnly : ""} ${inverse ? styles.inverse : ""}`}
+    >
       <span className={styles.mark} aria-hidden="true">
         <img src={logo} alt="" />
       </span>

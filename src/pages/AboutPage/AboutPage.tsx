@@ -54,8 +54,8 @@ export function AboutPage() {
             <p className="eyebrow">Our mission</p>
             <h2>Uplift every member’s economic status.</h2>
             <p>
-              To uplift the economic status of every member by providing
-              quality products and services.
+              To uplift the economic status of every member by providing quality
+              products and services.
             </p>
           </article>
           <article>

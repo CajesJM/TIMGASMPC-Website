@@ -5,7 +5,12 @@ type PageHeaderProps = {
   description: string;
   headingLevel?: 1 | 2;
 };
-export function PageHeader({ eyebrow, title, description, headingLevel = 1 }: PageHeaderProps) {
+export function PageHeader({
+  eyebrow,
+  title,
+  description,
+  headingLevel = 1,
+}: PageHeaderProps) {
   const Heading = headingLevel === 1 ? "h1" : "h2";
   return (
     <section className={styles.header}>

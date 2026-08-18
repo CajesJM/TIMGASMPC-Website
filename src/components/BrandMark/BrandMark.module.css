@@ -1,13 +1,60 @@
-.brand { display: inline-flex; align-items: center; gap: 0.7rem; color: var(--color-brand-900); }
-.mark { display: grid; width: 3.15rem; height: 3.15rem; flex: 0 0 auto; place-items: center; }
-.mark img { width: 100%; height: 100%; object-fit: contain; }
-.copy { display: grid; line-height: 1.08; }
-.copy strong { font-family: var(--font-display); font-size: 1.45rem; letter-spacing: 0.02em; }
-.copy small { margin-top: 0.18rem; font-size: 0.62rem; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; }
-.compact { gap: 0.55rem; }
-.compact .mark { width: 2.7rem; height: 2.7rem; }
-.compact .copy strong { font-size: 1.08rem; }
-.compact .copy small { margin-top: 0.12rem; font-size: 0.52rem; letter-spacing: 0.14em; }
-.iconOnly .copy { display: none; }
-.inverse { color: white; }
-@media (max-width: 25rem) { .copy small { display: none; } }
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  color: var(--color-brand-900);
+}
+.mark {
+  display: grid;
+  width: 3.15rem;
+  height: 3.15rem;
+  flex: 0 0 auto;
+  place-items: center;
+}
+.mark img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.copy {
+  display: grid;
+  line-height: 1.08;
+}
+.copy strong {
+  font-family: var(--font-display);
+  font-size: 1.45rem;
+  letter-spacing: 0.02em;
+}
+.copy small {
+  margin-top: 0.18rem;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+.compact {
+  gap: 0.55rem;
+}
+.compact .mark {
+  width: 2.7rem;
+  height: 2.7rem;
+}
+.compact .copy strong {
+  font-size: 1.08rem;
+}
+.compact .copy small {
+  margin-top: 0.12rem;
+  font-size: 0.52rem;
+  letter-spacing: 0.14em;
+}
+.iconOnly .copy {
+  display: none;
+}
+.inverse {
+  color: white;
+}
+@media (max-width: 25rem) {
+  .copy small {
+    display: none;
+  }
+}

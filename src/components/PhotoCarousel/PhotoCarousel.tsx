@@ -87,7 +87,9 @@ export function PhotoCarousel({ ariaLabel, photos }: PhotoCarouselProps) {
       <div className={styles.footer}>
         <p aria-live="polite">
           <strong>{currentPhoto.caption}</strong>
-          <span>{currentIndex + 1} of {photos.length}</span>
+          <span>
+            {currentIndex + 1} of {photos.length}
+          </span>
         </p>
         <div className={styles.dots} aria-label="Choose a gallery photo">
           {photos.map((photo, index) => (
