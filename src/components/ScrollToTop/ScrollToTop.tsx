@@ -5,10 +5,10 @@ export function ScrollToTop() {
   useEffect(() => {
     if (hash) {
       window.requestAnimationFrame(() => {
-        document.getElementById(hash.slice(1))?.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
+        const section = document.getElementById(hash.slice(1));
+        if (typeof section?.scrollIntoView === "function") {
+          section.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
       });
       return;
     }

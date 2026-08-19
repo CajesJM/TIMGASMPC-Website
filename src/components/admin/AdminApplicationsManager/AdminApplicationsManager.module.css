@@ -1,0 +1,29 @@
+.manager { display: grid; gap: 1rem; }
+.toolbar { display: flex; gap: .75rem; justify-content: flex-end; }
+.toolbar label { position: relative; min-width: min(100%, 20rem); }
+.toolbar label svg { position: absolute; top: .75rem; left: .75rem; width: 1rem; color: #66736d; }
+.toolbar input,
+.toolbar select,
+.detail select,
+.detail textarea { min-height: 2.65rem; padding: .65rem .8rem; background: #fff; border: 1px solid var(--color-border); border-radius: .45rem; font: inherit; }
+.toolbar input { width: 100%; padding-left: 2.25rem; }
+.tableWrap { overflow-x: auto; background: #fff; border: 1px solid var(--color-border); }
+.tableWrap table { width: 100%; border-collapse: collapse; font-size: .82rem; }
+.tableWrap th,
+.tableWrap td { padding: .85rem 1rem; border-bottom: 1px solid var(--color-border); text-align: left; white-space: nowrap; }
+.tableWrap th { color: var(--color-text-muted); background: #f7f9f8; font-size: .68rem; letter-spacing: .06em; text-transform: uppercase; }
+.tableWrap td small { display: block; color: var(--color-text-muted); }
+.reference { padding: 0; color: var(--color-brand-700); background: transparent; border: 0; font-weight: 800; cursor: pointer; }
+.status { display: inline-flex; padding: .3rem .55rem; border-radius: 999px; font-size: .69rem; font-weight: 800; }
+.new { color: #174e78; background: #e5f2fc; }.in_review { color: #745415; background: #fff3ce; }.for_verification { color: #674178; background: #f2e8f7; }.approved { color: #24633f; background: #e3f3e9; }
+.deleteButton { display: grid; width: 2rem; height: 2rem; place-items: center; color: #9c2e2e; background: transparent; border: 0; cursor: pointer; }.deleteButton svg { width: 1rem; }
+.empty { display: grid; justify-items: center; gap: .35rem; padding: 3rem 1rem; color: var(--color-text-muted); text-align: center; background: #fff; border: 1px solid var(--color-border); }.empty svg { width: 2rem; }
+.pagination { display: flex; gap: 1rem; justify-content: flex-end; align-items: center; font-size: .78rem; }.pagination button { display: inline-flex; gap: .3rem; align-items: center; padding: .5rem .7rem; background: #fff; border: 1px solid var(--color-border); border-radius: .4rem; }.pagination svg { width: 1rem; }.pagination button:disabled { opacity: .45; }
+.modalBackdrop { position: fixed; z-index: 100; inset: 0; display: grid; place-items: center; padding: 1rem; background: rgb(5 24 18 / 62%); }
+.detail { overflow: auto; width: min(100%, 58rem); max-height: calc(100vh - 2rem); background: #fff; border-radius: .7rem; box-shadow: 0 2rem 5rem rgb(0 0 0 / 28%); }
+.detail > header { display: flex; gap: 1rem; justify-content: space-between; padding: 1.25rem; color: #fff; background: var(--color-brand-900); }.detail header h2 { margin: .2rem 0; }.detail header p { margin: 0; opacity: .78; }.detail header button { align-self: start; color: #fff; background: transparent; border: 0; font-size: 1.7rem; cursor: pointer; }
+.detailGrid { display: grid; gap: 1rem; padding: 1.25rem; }.detail h3 { margin: 0 0 .7rem; font-size: 1rem; }.detail dl { display: grid; grid-template-columns: minmax(7rem, .45fr) 1fr; gap: .45rem 1rem; margin: 0; font-size: .8rem; }.detail dt { color: var(--color-text-muted); }.detail dd { margin: 0; overflow-wrap: anywhere; }
+.dependents { padding: 0 1.25rem 1.25rem; }.dependents ul { display: grid; gap: .4rem; margin: 0; padding: 0; list-style: none; }.dependents li { display: flex; gap: 1rem; justify-content: space-between; padding: .65rem; background: var(--color-surface); font-size: .78rem; }.dependents span { color: var(--color-text-muted); }
+.detail footer { display: grid; gap: .75rem; padding: 1.25rem; background: #f7f9f8; border-top: 1px solid var(--color-border); }.detail footer label { display: grid; gap: .35rem; font-size: .75rem; font-weight: 800; }.detail footer button { justify-self: end; min-height: 2.65rem; padding: .65rem 1rem; color: #fff; background: var(--color-brand-800); border: 0; border-radius: .4rem; font-weight: 800; cursor: pointer; }
+@media (min-width: 48rem) { .detailGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 40rem) { .toolbar { align-items: stretch; flex-direction: column; }.toolbar label { min-width: 0; }.pagination { justify-content: space-between; }.detail dl { grid-template-columns: 1fr; gap: .15rem; }.detail dd { margin-bottom: .5rem; }.dependents li { flex-direction: column; gap: .15rem; } }

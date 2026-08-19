@@ -60,9 +60,6 @@ export function ManagerLayout() {
     () => window.matchMedia("(min-width: 64rem)").matches,
   );
   const [currentHour, setCurrentHour] = useState(() => new Date().getHours());
-  const [dashboardSection, setDashboardSection] = useState(
-    () => location.hash.slice(1) || "overview",
-  );
   const [managerIdentity, setManagerIdentity] = useState<ManagerIdentity>({
     fullName: auth?.currentUser?.displayName ?? managerEmail.split("@")[0],
     position: "Administrator",
@@ -93,7 +90,9 @@ export function ManagerLayout() {
       ? "profile"
       : location.pathname === "/manager/posts"
         ? "posts"
-        : dashboardSection;
+        : location.pathname === "/manager/applications"
+          ? "applications"
+          : "overview";
   const isSidebarCollapsed = desktopSidebar && collapsed;
 
   useEffect(() => {
@@ -150,40 +149,6 @@ export function ManagerLayout() {
     };
   }, [managerEmail]);
 
-  useEffect(() => {
-    if (location.pathname !== "/manager/preview") return;
-    const sectionIds = ["overview", "applications"];
-    let frame = 0;
-    const updateActiveSection = () => {
-      const marker = Math.min(window.innerHeight * 0.28, 210);
-      const sections = sectionIds
-        .map((id) => ({ id, element: document.getElementById(id) }))
-        .filter((section): section is { id: string; element: HTMLElement } =>
-          Boolean(section.element),
-        );
-      const current = sections.reduce<(typeof sections)[number] | undefined>(
-        (selected, section) =>
-          section.element.getBoundingClientRect().top <= marker
-            ? section
-            : selected,
-        sections[0],
-      );
-      setDashboardSection(current?.id ?? "overview");
-    };
-    const requestUpdate = () => {
-      window.cancelAnimationFrame(frame);
-      frame = window.requestAnimationFrame(updateActiveSection);
-    };
-    requestUpdate();
-    window.addEventListener("scroll", requestUpdate, { passive: true });
-    window.addEventListener("resize", requestUpdate);
-    return () => {
-      window.cancelAnimationFrame(frame);
-      window.removeEventListener("scroll", requestUpdate);
-      window.removeEventListener("resize", requestUpdate);
-    };
-  }, [location.pathname]);
-
   const signOutManager = async () => {
     if (auth) await signOut(auth);
     navigate("/manager-login", { replace: true });
@@ -211,7 +176,7 @@ export function ManagerLayout() {
       id: "applications",
       label: "Applications",
       icon: FileText,
-      to: "/manager/preview#applications",
+      to: "/manager/applications",
     },
     {
       id: "posts",
@@ -281,10 +246,7 @@ export function ManagerLayout() {
               aria-current={activeSection === id ? "page" : undefined}
               aria-label={isSidebarCollapsed ? label : undefined}
               title={isSidebarCollapsed ? label : undefined}
-              onClick={() => {
-                if (id !== "profile") setDashboardSection(id);
-                setOpen(false);
-              }}
+              onClick={() => setOpen(false)}
             >
               <Icon />
               <span className={styles.sidebarLabel}>{label}</span>

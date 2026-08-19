@@ -23,7 +23,7 @@ describe("TIMGAS website", () => {
       screen.getByRole("link", { name: /become a member/i }),
     ).toHaveAttribute("href", "/#membership");
     expect(document.querySelector("#about")).toBeInTheDocument();
-    expect(document.querySelector("#services")).toBeInTheDocument();
+    expect(document.querySelector("#services")).not.toBeInTheDocument();
     expect(document.querySelector("#contact")).toBeInTheDocument();
   });
 
@@ -55,7 +55,8 @@ describe("TIMGAS website", () => {
     expect(screen.queryByLabelText(/^password$/i)).not.toBeInTheDocument();
   });
 
-  it("directs membership inquiries to verified cooperative information", () => {
+  it("provides official online and downloadable membership options", async () => {
+    const user = userEvent.setup();
     renderApp("/membership");
     expect(
       screen.getByRole("heading", { name: /start with verified information/i }),
@@ -66,15 +67,16 @@ describe("TIMGAS website", () => {
     expect(
       screen.getAllByRole("link", { name: /contact the office/i })[0],
     ).toHaveAttribute("href", "/#contact");
+    expect(screen.getByRole("link", { name: /download official form/i }))
+      .toHaveAttribute(
+        "href",
+        "/downloads/Membership-Application-Form-Revised-2023.docx",
+      );
+    await user.click(screen.getByRole("button", { name: /apply online/i }));
     expect(
-      screen.getByRole("button", { name: /official format pending/i }),
-    ).toBeDisabled();
-    expect(
-      screen.getByRole("button", { name: /download pending/i }),
-    ).toBeDisabled();
-    expect(
-      document.querySelector('a[href="/application-form.pdf"]'),
-    ).not.toBeInTheDocument();
+      screen.getByRole("heading", { name: /membership profile and agreement/i }),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText(/family name/i)).toBeVisible();
   });
 
   it("uses homepage anchors for the public navigation", () => {
@@ -86,9 +88,7 @@ describe("TIMGAS website", () => {
     expect(
       navigation?.querySelector('a[href="#membership"]'),
     ).toHaveTextContent("Membership");
-    expect(navigation?.querySelector('a[href="#services"]')).toHaveTextContent(
-      "Services",
-    );
+    expect(navigation?.querySelector('a[href="#services"]')).toBeNull();
     expect(navigation?.querySelector('a[href="#news"]')).toHaveTextContent(
       "News",
     );

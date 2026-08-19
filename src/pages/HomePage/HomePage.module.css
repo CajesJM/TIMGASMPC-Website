@@ -84,7 +84,7 @@
   bottom: -1px;
   left: 0;
   height: clamp(4.75rem, 8vw, 7.5rem);
-  color: var(--color-background);
+  color: var(--color-surface);
   filter: drop-shadow(0 -0.45rem 0.9rem rgb(4 32 23 / 0.08));
   line-height: 0;
   pointer-events: none;
@@ -97,95 +97,17 @@
 .heroCurve path {
   fill: currentcolor;
 }
-.servicesSection {
-  overflow: hidden;
-}
-.intro,
 .valuesHeader {
   display: grid;
   gap: 1.5rem;
   align-items: end;
 }
-.intro h2,
 .valuesHeader h2 {
   max-width: 38rem;
   margin: 0;
 }
-.intro > div:last-child > p,
 .valuesHeader > p {
   max-width: 34rem;
-}
-.textLink {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  color: var(--color-brand-800);
-  font-weight: 700;
-  text-decoration: none;
-}
-.textLink:hover {
-  color: var(--color-gold-600);
-}
-.serviceGrid {
-  display: grid;
-  gap: 1rem;
-  margin-top: 2.5rem;
-}
-.service {
-  position: relative;
-  display: flex;
-  min-width: 0;
-  flex-direction: column;
-  padding: 1.35rem;
-  background: var(--color-background);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-sm);
-}
-.service > svg:first-child {
-  box-sizing: content-box;
-  width: 1.5rem;
-  height: 1.5rem;
-  margin-bottom: 1.25rem;
-  padding: 0.65rem;
-  color: var(--color-brand-700);
-  background: var(--color-brand-50);
-  border-radius: 50%;
-}
-.service > span {
-  position: absolute;
-  top: 1.35rem;
-  right: 1.35rem;
-  color: #7f9189;
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-}
-.service h3 {
-  margin-bottom: 0.6rem;
-  font-family: var(--font-display);
-  font-size: clamp(1.2rem, 2vw, 1.4rem);
-}
-.service p {
-  flex: 1;
-  margin-bottom: 0;
-  font-size: 0.88rem;
-  line-height: 1.55;
-}
-.service > a {
-  display: grid;
-  width: 2.25rem;
-  height: 2.25rem;
-  margin-top: 1.2rem;
-  place-items: center;
-  color: var(--color-brand-800);
-  border: 1px solid var(--color-border);
-  border-radius: 50%;
-}
-.service > a:hover {
-  color: white;
-  background: var(--color-brand-800);
-  border-color: var(--color-brand-800);
 }
 .impact {
   padding: var(--space-16) 0;
@@ -366,13 +288,7 @@
   font-weight: 700;
   text-decoration: none;
 }
-@media (min-width: 36rem) {
-  .serviceGrid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
 @media (min-width: 48rem) {
-  .intro,
   .valuesHeader {
     grid-template-columns: 1.1fr 0.9fr;
   }
@@ -406,11 +322,6 @@
   }
   .downloadInner {
     grid-template-columns: 1fr auto;
-  }
-}
-@media (min-width: 64rem) {
-  .serviceGrid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
 @media (max-width: 40rem) {

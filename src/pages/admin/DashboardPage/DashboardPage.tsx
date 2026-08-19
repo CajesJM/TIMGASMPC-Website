@@ -10,6 +10,7 @@ import {
 } from "firebase/firestore";
 import { CircleCheckBig, Clock3, FileText, Inbox } from "lucide-react";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { db } from "../../../lib/firestore";
 import pageStyles from "../../../styles/admin/AdminPage.module.css";
 import styles from "./DashboardPage.module.css";
@@ -233,6 +234,7 @@ export function DashboardPage() {
             <h2>Recent applications</h2>
             <p>The six latest membership inquiries submitted online.</p>
           </div>
+          <Link to="/manager/applications">View all applications</Link>
         </div>
         {loading ? (
           <p className={styles.empty}>Loading applications…</p>
@@ -241,8 +243,7 @@ export function DashboardPage() {
             <FileText aria-hidden="true" />
             <strong>No applications yet</strong>
             <span>
-              New submissions will appear here when the official application
-              workflow is connected.
+              New online membership submissions will appear here.
             </span>
           </div>
         ) : (

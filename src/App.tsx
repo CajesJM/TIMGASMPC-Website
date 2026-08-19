@@ -25,6 +25,11 @@ const ManagerPostsPage = lazy(() =>
     default: module.ManagerPostsPage,
   })),
 );
+const ManagerApplicationsPage = lazy(() =>
+  import("./pages/admin/ManagerApplicationsPage/ManagerApplicationsPage").then(
+    (module) => ({ default: module.ManagerApplicationsPage }),
+  ),
+);
 const ManagerLayout = lazy(() =>
   import("./layouts/admin/ManagerLayout/ManagerLayout").then((module) => ({
     default: module.ManagerLayout,
@@ -59,7 +64,7 @@ export function App() {
             />
             <Route
               path="services"
-              element={<Navigate to="/#services" replace />}
+              element={<Navigate to="/#contact" replace />}
             />
             <Route path="news" element={<Navigate to="/#news" replace />} />
             <Route
@@ -86,6 +91,7 @@ export function App() {
           >
             <Route index element={<Navigate to="preview" replace />} />
             <Route path="preview" element={<DashboardPage />} />
+            <Route path="applications" element={<ManagerApplicationsPage />} />
             <Route path="posts" element={<ManagerPostsPage />} />
             <Route path="profile" element={<ManagerProfilePage />} />
           </Route>

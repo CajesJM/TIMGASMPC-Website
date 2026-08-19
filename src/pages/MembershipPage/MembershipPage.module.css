@@ -108,19 +108,30 @@
   font-size: 0.86rem;
 }
 
-.applicationGrid button {
+.applicationGrid button,
+.applicationGrid a {
+  display: inline-flex;
+  gap: 0.45rem;
+  justify-content: center;
+  align-items: center;
   min-height: 2.65rem;
   padding: 0.65rem 0.9rem;
-  color: #66736d;
-  background: #e7ece9;
-  border: 1px solid #ced7d2;
+  color: white;
+  background: var(--color-brand-800);
+  border: 1px solid var(--color-brand-800);
   border-radius: var(--radius-sm);
   font-size: 0.8rem;
   font-weight: 700;
-  cursor: not-allowed;
+  text-decoration: none;
+  cursor: pointer;
 }
 
-.pendingNotice {
+.applicationGrid a svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.officialNotice {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
   gap: 0.7rem;
@@ -130,14 +141,14 @@
   border-left: 3px solid var(--color-gold-500);
 }
 
-.pendingNotice svg {
+.officialNotice svg {
   width: 1.1rem;
   height: 1.1rem;
   margin-top: 0.15rem;
   color: var(--color-brand-800);
 }
 
-.pendingNotice p {
+.officialNotice p {
   margin: 0;
   font-size: 0.8rem;
 }

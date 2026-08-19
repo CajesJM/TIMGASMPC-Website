@@ -67,84 +67,6 @@
   font-weight: 700;
 }
 
-.serviceGrid {
-  display: grid;
-  gap: 1rem;
-}
-
-.serviceItem {
-  display: grid;
-  min-width: 0;
-  gap: 1.1rem;
-  padding: clamp(1.25rem, 3vw, 1.75rem);
-  background: white;
-  border: 1px solid var(--color-border);
-  border-top: 3px solid var(--color-gold-500);
-  box-shadow: var(--shadow-sm);
-}
-
-.serviceIcon {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.serviceIcon svg {
-  box-sizing: content-box;
-  width: 1.35rem;
-  height: 1.35rem;
-  padding: 0.65rem;
-  color: var(--color-brand-800);
-  background: var(--color-brand-50);
-  border-radius: 50%;
-}
-
-.serviceIcon span {
-  color: var(--color-gold-600);
-  font-size: 0.72rem;
-  font-weight: 700;
-}
-
-.serviceItem h2 {
-  margin-bottom: 0.55rem;
-  font-size: clamp(1.25rem, 2.5vw, 1.55rem);
-}
-
-.serviceItem p {
-  margin: 0;
-  font-size: 0.88rem;
-}
-
-.serviceDetails {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.45rem;
-  margin: 0.9rem 0 0;
-  padding: 0;
-  list-style: none;
-}
-
-.serviceDetails li {
-  padding: 0.3rem 0.65rem;
-  color: var(--color-brand-900);
-  background: var(--color-brand-50);
-  border: 1px solid #cbded3;
-  border-radius: 999px;
-  font-size: 0.74rem;
-  font-weight: 700;
-  line-height: 1.35;
-}
-
-.serviceNotice {
-  margin-top: 1rem;
-  padding: 0.9rem 1rem;
-  color: var(--color-text-muted);
-  background: var(--color-surface);
-  border-left: 3px solid var(--color-gold-500);
-  font-size: 0.82rem;
-  line-height: 1.55;
-}
-
 .infoGrid {
   display: grid;
   gap: 0.85rem;
@@ -695,7 +617,6 @@
     grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
   }
 
-  .serviceGrid,
   .contactGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }

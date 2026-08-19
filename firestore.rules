@@ -33,6 +33,77 @@ service cloud.firestore {
         && data.updatedAt is timestamp;
     }
 
+    function validApplication(data) {
+      return data.keys().hasOnly([
+          'schemaVersion', 'source', 'reference', 'applicantName',
+          'applicationType', 'profile', 'spouse', 'dependents', 'income',
+          'sector', 'educationalAttainment', 'affiliation', 'crimeDisclosure',
+          'recommenderName', 'agreement', 'privacyConsent', 'status',
+          'statusNote', 'submittedAt', 'updatedAt'
+        ])
+        && data.keys().hasAll([
+          'schemaVersion', 'source', 'reference', 'applicantName',
+          'applicationType', 'profile', 'spouse', 'dependents', 'income',
+          'sector', 'educationalAttainment', 'affiliation', 'crimeDisclosure',
+          'recommenderName', 'agreement', 'privacyConsent', 'status',
+          'statusNote', 'submittedAt', 'updatedAt'
+        ])
+        && data.schemaVersion == 1
+        && data.source == 'online'
+        && data.reference is string
+        && data.reference.matches('^TIMGAS-[0-9]{8}-[A-Z0-9]{6}$')
+        && data.applicantName is string
+        && data.applicantName.size() >= 3
+        && data.applicantName.size() <= 300
+        && data.applicationType in ['associate', 'regular']
+        && data.profile is map
+        && data.profile.keys().hasOnly([
+          'departmentName', 'tinNumber', 'pmesDate', 'familyName', 'givenName',
+          'middleName', 'nickname', 'sex', 'civilStatus', 'occupation',
+          'dateOfBirth', 'placeOfBirth', 'address', 'cellphone', 'validIdType',
+          'validIdNumber', 'motherMaidenName', 'fatherFullName'
+        ])
+        && data.profile.familyName is string
+        && data.profile.familyName.size() >= 1
+        && data.profile.familyName.size() <= 120
+        && data.profile.givenName is string
+        && data.profile.givenName.size() >= 1
+        && data.profile.givenName.size() <= 120
+        && data.profile.address is string
+        && data.profile.address.size() >= 1
+        && data.profile.address.size() <= 300
+        && data.profile.cellphone is string
+        && data.profile.cellphone.size() >= 1
+        && data.profile.cellphone.size() <= 30
+        && data.profile.validIdType is string
+        && data.profile.validIdNumber is string
+        && data.spouse is map
+        && data.dependents is list
+        && data.dependents.size() <= 8
+        && data.income is map
+        && data.sector in ['arb', 'arb_household', 'non_arb', 'rural_women']
+        && data.educationalAttainment is string
+        && data.educationalAttainment.size() <= 150
+        && data.affiliation is map
+        && data.crimeDisclosure is map
+        && data.crimeDisclosure.accusedOrConvicted is bool
+        && data.crimeDisclosure.details is string
+        && data.crimeDisclosure.details.size() <= 1000
+        && data.recommenderName is string
+        && data.recommenderName.size() <= 150
+        && data.agreement is map
+        && data.agreement.version == 'Membership-Application-Form-Revised-2023'
+        && data.agreement.accepted == true
+        && data.agreement.typedName is string
+        && data.agreement.typedName.size() >= 3
+        && data.agreement.typedName.size() <= 180
+        && data.privacyConsent == true
+        && data.status == 'new'
+        && data.statusNote == ''
+        && data.submittedAt == request.time
+        && data.updatedAt == request.time;
+    }
+
     match /posts/{postId} {
       allow read: if isAdmin() || resource.data.status == 'published';
       allow create: if isAdmin()
@@ -44,6 +115,20 @@ service cloud.firestore {
         && request.resource.data.createdAt == resource.data.createdAt
         && request.resource.data.updatedAt == request.time;
       allow delete: if isAdmin();
+    }
+
+    match /applications/{applicationId} {
+      allow create: if request.auth == null && validApplication(request.resource.data);
+      allow read, delete: if isAdmin();
+      allow update: if isAdmin()
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['status', 'statusNote', 'updatedAt'])
+        && request.resource.data.status in [
+          'new', 'in_review', 'for_verification', 'approved'
+        ]
+        && request.resource.data.statusNote is string
+        && request.resource.data.statusNote.size() <= 1000
+        && request.resource.data.updatedAt == request.time;
     }
 
     match /{document=**} {

@@ -20,7 +20,6 @@ export function Footer() {
           <h2>Explore</h2>
           <a href="#about">Our cooperative</a>
           <a href="#membership">Membership</a>
-          <a href="#services">Member services</a>
           <a href="#news">News & updates</a>
           <a href="#contact">Contact details</a>
           <a href="#application">Application options</a>

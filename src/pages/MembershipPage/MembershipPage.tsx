@@ -5,6 +5,8 @@ import {
   FileDown,
   FilePenLine,
 } from "lucide-react";
+import { useState } from "react";
+import { MembershipApplicationForm } from "../../components/application/MembershipApplicationForm/MembershipApplicationForm";
 import { Button } from "../../components/Button/Button";
 import { PageHeader } from "../../components/PageHeader/PageHeader";
 import { objectives } from "../../data/content";
@@ -19,6 +21,18 @@ const verificationSteps = [
 ];
 
 export function MembershipPage() {
+  const [showOnlineForm, setShowOnlineForm] = useState(false);
+
+  const openOnlineForm = () => {
+    setShowOnlineForm(true);
+    window.requestAnimationFrame(() => {
+      const form = document.getElementById("online-application");
+      if (typeof form?.scrollIntoView === "function") {
+        form.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    });
+  };
+
   return (
     <div id="membership">
       <PageHeader
@@ -88,12 +102,14 @@ export function MembershipPage() {
                 <span>Online option</span>
                 <h3>Fill out the application online</h3>
                 <p>
-                  Complete the official application through the website once the
-                  manager confirms all required fields.
+                  Enter the information from the revised 2023 form and send it
+                  securely to the manager for review.
                 </p>
               </div>
-              <button type="button" disabled>
-                Official format pending
+              <button type="button" onClick={openOnlineForm}>
+                {showOnlineForm
+                  ? "Continue online application"
+                  : "Apply online"}
               </button>
             </article>
             <article>
@@ -106,29 +122,26 @@ export function MembershipPage() {
                   it according to the cooperative office’s instructions.
                 </p>
               </div>
-              <button type="button" disabled>
-                Download pending
-              </button>
+              <a
+                href="/downloads/Membership-Application-Form-Revised-2023.docx"
+                download
+              >
+                Download official form <FileDown aria-hidden="true" />
+              </a>
             </article>
           </div>
-          <aside className={pageStyles.pendingNotice}>
-            <Building2 aria-hidden="true" />
-            <p>
-              The manager has confirmed both application methods, but the
-              official form format has not yet been provided. No unofficial
-              online form or downloadable document is being published.
-            </p>
-          </aside>
+
+          {showOnlineForm && <MembershipApplicationForm />}
         </div>
       </section>
 
       <section className={styles.cta}>
         <div className="container">
           <div>
-            <h2>Ready to ask about membership?</h2>
+            <h2>Need help with your application?</h2>
             <p>
-              Contact the office while the official application format is being
-              prepared.
+              Contact the TIMGAS MPC office to confirm requirements or request
+              assistance before submitting.
             </p>
           </div>
           <div className={pageStyles.ctaActions}>
