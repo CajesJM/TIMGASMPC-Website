@@ -1,7 +1,7 @@
 # Dependencies and build output
+.freebuff/
 node_modules/
 dist/
-.freebuff/
 coverage/
 playwright-report/
 test-results/
