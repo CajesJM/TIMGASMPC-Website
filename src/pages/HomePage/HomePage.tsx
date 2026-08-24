@@ -121,14 +121,14 @@ export function HomePage() {
             <h2>Built on trust. Driven by purpose.</h2>
           </div>
           <p>
-            These cooperative principles support member participation,
-            community-rooted service, and responsible long-term development.
+            These cooperative principles guide TIMGAS MPC in delivering
+            member savings, responsible loan support, and community-rooted
+            services that help families and local livelihoods grow.
           </p>
         </div>
         <div className={`container ${styles.principles}`}>
-          {principles.map(([title, description], index) => (
+          {principles.map(([title, description]) => (
             <article key={title}>
-              <span>0{index + 1}</span>
               <h3>{title}</h3>
               <p>{description}</p>
             </article>

@@ -1,56 +1,3 @@
-.objectiveGrid {
-  display: grid;
-  gap: 0.85rem;
-  margin-top: clamp(1.75rem, 4vw, 2.5rem);
-}
-
-.objectiveGrid article {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: 0.7rem;
-  align-items: start;
-  padding: 1rem;
-  background: white;
-  border: 1px solid var(--color-border);
-}
-
-.objectiveGrid svg {
-  width: 1.1rem;
-  height: 1.1rem;
-  margin-top: 0.15rem;
-  color: var(--color-success);
-}
-
-.objectiveGrid p {
-  margin: 0;
-  font-size: clamp(0.84rem, 1.3vw, 0.92rem);
-  line-height: 1.5;
-}
-
-.note {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: 0.7rem;
-  max-width: 52rem;
-  margin: 1rem 0 0;
-  padding: 0.85rem 1rem;
-  color: var(--color-text-muted);
-  background: var(--color-gold-100);
-  border-left: 3px solid var(--color-gold-500);
-}
-
-.note svg {
-  width: 1.1rem;
-  height: 1.1rem;
-  margin-top: 0.15rem;
-  color: var(--color-brand-800);
-}
-
-.note p {
-  margin: 0;
-  font-size: 0.8rem;
-}
-
 .ctaActions {
   display: flex;
   flex-wrap: wrap;
@@ -59,41 +6,46 @@
 }
 
 .applicationSection {
-  padding-block: clamp(3rem, 6vw, 5rem);
+  padding-block: clamp(2.5rem, 5vw, 4rem);
   background: white;
 }
 
 .applicationGrid {
   display: grid;
-  gap: 1rem;
-  margin-top: clamp(1.75rem, 4vw, 2.5rem);
+  gap: 0.8rem;
+  margin-top: clamp(1.1rem, 2.5vw, 1.65rem);
 }
 
 .applicationGrid article {
   display: grid;
   min-width: 0;
-  gap: 1rem;
+  gap: 0.85rem;
   align-content: start;
-  padding: clamp(1.25rem, 3vw, 1.75rem);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-top: 3px solid var(--color-gold-500);
+  padding: clamp(1.1rem, 2.5vw, 1.5rem);
+  background: #eef6f1;
+  border: 1px solid #d6e6dc;
+}
+
+.applicationGrid article:nth-child(2) {
+  background: #fbf6e9;
+  border-color: #eadfbe;
 }
 
 .applicationTitle {
   display: flex;
-  gap: 0.85rem;
+  gap: 0.7rem;
   align-items: center;
 }
 
 .applicationTitle > svg {
   box-sizing: content-box;
-  width: 1.4rem;
-  height: 1.4rem;
-  padding: 0.7rem;
+  width: 1.2rem;
+  height: 1.2rem;
+  padding: 0.55rem;
   color: var(--color-brand-800);
-  background: white;
-  border-radius: 50%;
+  background: rgb(255 255 255 / 0.56);
+  border: 1px solid rgb(7 32 24 / 0.1);
+  border-radius: 0.55rem;
 }
 
 .applicationTitle h3 {
@@ -101,7 +53,7 @@
 }
 
 .applicationCopy {
-  min-height: 3.8rem;
+  min-height: 0;
 }
 
 .applicationGrid span {
@@ -113,8 +65,8 @@
 }
 
 .applicationGrid h3 {
-  margin: 0.35rem 0 0.5rem;
-  font-size: clamp(1.15rem, 2vw, 1.4rem);
+  margin: 0.25rem 0 0.35rem;
+  font-size: clamp(1.1rem, 1.8vw, 1.3rem);
 }
 
 .applicationGrid p {
@@ -124,7 +76,7 @@
 
 .applicationActions {
   display: grid;
-  gap: 0.65rem;
+  gap: 0.55rem;
   margin-top: auto;
 }
 
@@ -134,8 +86,8 @@
   gap: 0.45rem;
   justify-content: center;
   align-items: center;
-  min-height: 2.65rem;
-  padding: 0.65rem 0.9rem;
+  min-height: 2.5rem;
+  padding: 0.6rem 0.8rem;
   color: white;
   background: var(--color-brand-800);
   border: 1px solid var(--color-brand-800);
@@ -180,10 +132,6 @@
 }
 
 @media (min-width: 48rem) {
-  .objectiveGrid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
   .applicationGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }

@@ -1,7 +1,5 @@
 import {
   ArrowRight,
-  Building2,
-  CheckCircle2,
   FileDown,
   FilePenLine,
   HandCoins,
@@ -11,10 +9,10 @@ import { useState } from "react";
 import { LoanApplicationForm } from "../../components/application/LoanApplicationForm/LoanApplicationForm";
 import { MembershipApplicationForm } from "../../components/application/MembershipApplicationForm/MembershipApplicationForm";
 import { ApplicationModal } from "../../components/application/MembershipApplicationModal/MembershipApplicationModal";
+import { ApplicationProcess } from "../../components/ApplicationProcess/ApplicationProcess";
 import { RecaptchaGate } from "../../components/security/RecaptchaGate/RecaptchaGate";
 import { Button } from "../../components/Button/Button";
 import { PageHeader } from "../../components/PageHeader/PageHeader";
-import { objectives } from "../../data/content";
 import styles from "../shared/ContentPage.module.css";
 import pageStyles from "./MembershipPage.module.css";
 
@@ -61,48 +59,12 @@ export function MembershipPage() {
         description="Membership policies, requirements, share capital, fees, and approval procedures may change. Confirm the current process directly with the TIMGAS MPC office before submitting."
       />
 
-      <section className={styles.section}>
-        <div className={`container ${styles.split}`}>
-          <header className={styles.sectionHeading}>
-            <p className="eyebrow">Before applying</p>
-            <h2>Start with verified information.</h2>
-            <p>
-              The cooperative office is the authoritative source for current
-              membership rules and application requirements.
-            </p>
-          </header>
-          <ol className={styles.steps}>
-            {verificationSteps.map((step) => (
-              <li key={step}>{step}</li>
-            ))}
-          </ol>
-        </div>
-      </section>
-
-      <section className={`${styles.section} ${styles.muted}`}>
-        <div className="container">
-          <header className={styles.sectionHeading}>
-            <p className="eyebrow">Published objectives</p>
-            <h2>What TIMGAS MPC works toward for members.</h2>
-          </header>
-          <div className={pageStyles.objectiveGrid}>
-            {objectives.slice(0, 4).map((objective) => (
-              <article key={objective}>
-                <CheckCircle2 aria-hidden="true" />
-                <p>{objective}</p>
-              </article>
-            ))}
-          </div>
-          <aside className={pageStyles.note}>
-            <Building2 aria-hidden="true" />
-            <p>
-              These are cooperative objectives, not guaranteed individual
-              benefits. Program eligibility and availability must be confirmed
-              with TIMGAS MPC.
-            </p>
-          </aside>
-        </div>
-      </section>
+      <ApplicationProcess
+        eyebrow="Before applying"
+        title="Start with verified information."
+        description="The cooperative office is the authoritative source for current membership rules and application requirements."
+        steps={verificationSteps}
+      />
 
       <section id="application" className={pageStyles.applicationSection}>
         <div className="container">

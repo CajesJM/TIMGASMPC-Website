@@ -159,11 +159,6 @@
   padding: 2rem 0;
   border-bottom: 1px solid var(--color-border);
 }
-.principles span {
-  color: var(--color-gold-600);
-  font-size: 0.75rem;
-  font-weight: 700;
-}
 .principles h3 {
   margin: 1.5rem 0 0.7rem;
   font-family: var(--font-display);
@@ -339,6 +334,19 @@
   .heroContent {
     padding-top: 4rem;
     padding-bottom: 8.5rem;
+  }
+  .valuesHeader {
+    gap: 0.8rem;
+  }
+  .principles {
+    margin-top: 1.8rem;
+  }
+  .principles article {
+    padding: 1.25rem 0;
+  }
+  .principles h3 {
+    margin: 0 0 0.4rem;
+    font-size: 1.3rem;
   }
 }
 @media (max-width: 30rem) {

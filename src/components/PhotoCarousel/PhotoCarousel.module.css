@@ -1,16 +1,18 @@
 .carousel {
   min-width: 0;
   overflow: hidden;
-  background: var(--color-background);
-  border: 1px solid #cbd8d1;
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-md);
+  background: transparent;
+  border: 0;
+  border-radius: 1.35rem;
+  box-shadow: none;
 }
 .viewport {
   position: relative;
   aspect-ratio: 4 / 3;
   overflow: hidden;
   background: var(--color-brand-100);
+  border-radius: 1.35rem;
+  box-shadow: 0 1.25rem 3rem rgb(7 32 24 / 0.1);
 }
 .imageButton {
   width: 100%;
@@ -25,7 +27,7 @@
   display: flex;
   width: 100%;
   height: 100%;
-  transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform 0.72s cubic-bezier(0.22, 1, 0.36, 1);
   will-change: transform;
 }
 .track img {
@@ -35,25 +37,41 @@
   object-fit: cover;
   object-position: center;
 }
+.viewport::after {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 35%;
+  pointer-events: none;
+  content: "";
+  background: linear-gradient(0deg, rgb(7 32 24 / 0.38), transparent);
+}
 .arrow {
   position: absolute;
   top: 50%;
   display: grid;
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 2.75rem;
+  height: 2.75rem;
   padding: 0;
   place-items: center;
   color: white;
-  background: rgb(7 32 24 / 0.78);
-  border: 1px solid rgb(255 255 255 / 0.25);
+  background: transparent;
+  border: 1px solid transparent;
   border-radius: 50%;
   box-shadow: var(--shadow-sm);
   cursor: pointer;
   transform: translateY(-50%);
-  backdrop-filter: blur(8px);
+  transition: background 0.2s ease, transform 0.2s ease;
 }
 .arrow:hover {
-  background: var(--color-brand-900);
+  background: rgb(7 32 24 / 0.42);
+  border-color: rgb(255 255 255 / 0.2);
+  transform: translateY(-50%) scale(1.06);
+}
+.arrow:focus-visible {
+  background: rgb(7 32 24 / 0.5);
+  border-color: rgb(255 255 255 / 0.8);
 }
 .arrow svg {
   width: 1.2rem;
@@ -67,29 +85,12 @@
 }
 .footer {
   display: flex;
-  min-height: 4rem;
+  min-height: 3.25rem;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   gap: 1rem;
-  padding: 0.75rem 1rem;
-}
-.footer p {
-  display: grid;
-  gap: 0.1rem;
-  min-width: 0;
-  margin: 0;
-}
-.footer strong {
-  overflow: hidden;
-  color: var(--color-brand-950);
-  font-size: 0.85rem;
-  line-height: 1.25;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.footer p span {
-  color: var(--color-text-muted);
-  font-size: 0.68rem;
+  padding: 0.45rem 0.75rem 0.55rem;
+  background: transparent;
 }
 .dots {
   display: flex;
@@ -125,16 +126,17 @@
   background: var(--color-brand-700);
   border-radius: var(--radius-pill);
 }
+.dots button:hover::after {
+  background: var(--color-brand-500);
+}
 @media (max-width: 30rem) {
   .arrow {
     width: 2.25rem;
     height: 2.25rem;
   }
   .footer {
-    padding-inline: 0.8rem;
-  }
-  .footer strong {
-    max-width: 13rem;
+    min-height: 3rem;
+    padding-inline: 0.6rem;
   }
 }
 @media (prefers-reduced-motion: reduce) {

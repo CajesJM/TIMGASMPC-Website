@@ -1,5 +1,5 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useState, type KeyboardEvent } from "react";
+import { useEffect, useState, type KeyboardEvent } from "react";
 import styles from "./PhotoCarousel.module.css";
 
 export type CarouselPhoto = {
@@ -15,7 +15,23 @@ type PhotoCarouselProps = {
 
 export function PhotoCarousel({ ariaLabel, photos }: PhotoCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
   const currentPhoto = photos[currentIndex];
+
+  useEffect(() => {
+    if (photos.length < 2 || isPaused) return;
+
+    const reduceMotion =
+      typeof window.matchMedia === "function" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduceMotion) return;
+
+    const timer = window.setInterval(() => {
+      setCurrentIndex((index) => (index + 1) % photos.length);
+    }, 5600);
+
+    return () => window.clearInterval(timer);
+  }, [isPaused, photos.length]);
 
   const showPrevious = () => {
     setCurrentIndex((index) => (index - 1 + photos.length) % photos.length);
@@ -44,6 +60,10 @@ export function PhotoCarousel({ ariaLabel, photos }: PhotoCarouselProps) {
       className={styles.carousel}
       aria-label={ariaLabel}
       aria-roledescription="carousel"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+      onFocusCapture={() => setIsPaused(true)}
+      onBlurCapture={() => setIsPaused(false)}
     >
       <div className={styles.viewport}>
         <button
@@ -85,12 +105,6 @@ export function PhotoCarousel({ ariaLabel, photos }: PhotoCarouselProps) {
         </button>
       </div>
       <div className={styles.footer}>
-        <p aria-live="polite">
-          <strong>{currentPhoto.caption}</strong>
-          <span>
-            {currentIndex + 1} of {photos.length}
-          </span>
-        </p>
         <div className={styles.dots} aria-label="Choose a gallery photo">
           {photos.map((photo, index) => (
             <button

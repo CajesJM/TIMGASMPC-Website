@@ -42,6 +42,49 @@
     </script>
   </head>
   <body>
+    <!-- Loading screen - displays instantly before React loads -->
+    <div id="loading-screen" style="
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 9999;
+      display: grid;
+      place-items: center;
+      background: #ffffff;
+      opacity: 1;
+    ">
+      <div id="loading-logo" style="
+        position: relative;
+        width: 9rem;
+        height: 9rem;
+        animation: logoSpin 1s ease-in-out;
+      ">
+        <img 
+          src="/timgas-logo.png" 
+          alt="TIMGAS MPC" 
+          style="width: 100%; height: 100%; object-fit: contain; display: block;"
+        />
+      </div>
+    </div>
+    
+    <style>
+      @keyframes logoSpin {
+        0% {
+          transform: rotate(0deg);
+          opacity: 0;
+        }
+        50% {
+          opacity: 1;
+        }
+        100% {
+          transform: rotate(360deg);
+          opacity: 1;
+        }
+      }
+    </style>
+    
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

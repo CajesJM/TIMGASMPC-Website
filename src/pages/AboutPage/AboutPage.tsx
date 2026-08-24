@@ -10,6 +10,7 @@ export function AboutPage() {
   return (
     <div id="about">
       <PageHeader
+        compact
         headingLevel={2}
         eyebrow="About TIMGAS MPC"
         title="A strong and trusted cooperative."
@@ -48,7 +49,7 @@ export function AboutPage() {
         </div>
       </section>
 
-      <section className={`section ${styles.muted}`}>
+      <section className={`section ${styles.muted} ${styles.purposeSection}`}>
         <div className={`container ${styles.purposeGrid}`}>
           <article>
             <p className="eyebrow">Our mission</p>
@@ -69,7 +70,7 @@ export function AboutPage() {
         </div>
       </section>
 
-      <section className="section">
+      <section className={`section ${styles.coreValuesSection}`}>
         <div className="container">
           <header className={styles.sectionHeading}>
             <p className="eyebrow">Our core values</p>
@@ -86,7 +87,7 @@ export function AboutPage() {
         </div>
       </section>
 
-      <section className={`section ${styles.muted}`}>
+      <section className={`section ${styles.muted} ${styles.objectivesSection}`}>
         <div className="container">
           <header className={styles.sectionHeading}>
             <p className="eyebrow">Our objectives</p>
@@ -100,16 +101,15 @@ export function AboutPage() {
         </div>
       </section>
 
-      <section className="section">
+      <section className={`section ${styles.socialGoalsSection}`}>
         <div className="container">
           <header className={styles.sectionHeading}>
             <p className="eyebrow">Our social goals</p>
             <h2>Working toward sustainable rural development.</h2>
           </header>
           <div className={styles.socialGrid}>
-            {socialGoals.map((goal, index) => (
+            {socialGoals.map((goal) => (
               <article key={goal}>
-                <span aria-hidden="true">0{index + 1}</span>
                 <p>{goal}</p>
               </article>
             ))}

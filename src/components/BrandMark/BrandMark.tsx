@@ -16,7 +16,7 @@ export function BrandMark({
     <div
       className={`${styles.brand} ${compact ? styles.compact : ""} ${iconOnly ? styles.iconOnly : ""} ${inverse ? styles.inverse : ""}`}
     >
-      <span className={styles.mark} aria-hidden="true">
+      <span className={styles.mark} aria-hidden="true" data-logo-mark>
         <img src={logo} alt="" />
       </span>
       <span className={styles.copy}>

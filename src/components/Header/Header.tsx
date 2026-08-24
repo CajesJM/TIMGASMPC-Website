@@ -99,6 +99,7 @@ export function Header() {
           className={styles.logo}
           onClick={closeMenu}
           aria-label="TIMGAS home"
+          data-logo-target
         >
           <BrandMark />
         </Link>
