@@ -76,7 +76,17 @@ describe("TIMGAS website", () => {
     expect(
       screen.getByRole("heading", { name: /membership profile and agreement/i }),
     ).toBeInTheDocument();
+    expect(
+      screen.getByRole("dialog", { name: /apply online to timgas mpc/i }),
+    ).toBeVisible();
     expect(screen.getByLabelText(/family name/i)).toBeVisible();
+    await user.keyboard("{Escape}");
+    expect(
+      screen.queryByRole("dialog", { name: /apply online to timgas mpc/i }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /continue online application/i }),
+    ).toBeVisible();
   });
 
   it("uses homepage anchors for the public navigation", () => {

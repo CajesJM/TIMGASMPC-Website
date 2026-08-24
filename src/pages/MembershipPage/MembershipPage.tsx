@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { MembershipApplicationForm } from "../../components/application/MembershipApplicationForm/MembershipApplicationForm";
+import { MembershipApplicationModal } from "../../components/application/MembershipApplicationModal/MembershipApplicationModal";
 import { Button } from "../../components/Button/Button";
 import { PageHeader } from "../../components/PageHeader/PageHeader";
 import { objectives } from "../../data/content";
@@ -22,15 +23,11 @@ const verificationSteps = [
 
 export function MembershipPage() {
   const [showOnlineForm, setShowOnlineForm] = useState(false);
+  const [onlineFormLoaded, setOnlineFormLoaded] = useState(false);
 
   const openOnlineForm = () => {
+    setOnlineFormLoaded(true);
     setShowOnlineForm(true);
-    window.requestAnimationFrame(() => {
-      const form = document.getElementById("online-application");
-      if (typeof form?.scrollIntoView === "function") {
-        form.scrollIntoView({ behavior: "smooth", block: "start" });
-      }
-    });
   };
 
   return (
@@ -107,9 +104,7 @@ export function MembershipPage() {
                 </p>
               </div>
               <button type="button" onClick={openOnlineForm}>
-                {showOnlineForm
-                  ? "Continue online application"
-                  : "Apply online"}
+                {onlineFormLoaded ? "Continue online application" : "Apply online"}
               </button>
             </article>
             <article>
@@ -131,9 +126,17 @@ export function MembershipPage() {
             </article>
           </div>
 
-          {showOnlineForm && <MembershipApplicationForm />}
         </div>
       </section>
+
+      {onlineFormLoaded && (
+        <MembershipApplicationModal
+          open={showOnlineForm}
+          onClose={() => setShowOnlineForm(false)}
+        >
+          <MembershipApplicationForm />
+        </MembershipApplicationModal>
+      )}
 
       <section className={styles.cta}>
         <div className="container">

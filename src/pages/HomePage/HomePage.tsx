@@ -4,7 +4,7 @@ import {
   PhotoCarousel,
   type CarouselPhoto,
 } from "../../components/PhotoCarousel/PhotoCarousel";
-import heroImage from "../../assets/images/timgas-office-hero-v2.jpg";
+import heroImage from "../../assets/images/Timgas2.png";
 import officeImage from "../../assets/images/timgas-office.jpg";
 import officeFacadeImage from "../../assets/images/timgas-office-facade.jpg";
 import roadsideSignImage from "../../assets/images/timgas-roadside-sign.jpg";

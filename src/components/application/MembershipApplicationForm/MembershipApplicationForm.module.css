@@ -1,13 +1,13 @@
 .formShell,
 .success {
+  width: 100%;
   max-width: 68rem;
-  margin: clamp(2rem, 5vw, 3.5rem) auto 0;
+  margin: 0 auto;
   padding: clamp(1.1rem, 3vw, 2rem);
   background: #fff;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
-  box-shadow: 0 1.25rem 3rem rgb(14 53 39 / 8%);
-  scroll-margin-top: 6rem;
+  box-shadow: 0 0.8rem 2.4rem rgb(14 53 39 / 7%);
 }
 
 .formIntro {
@@ -38,7 +38,7 @@
 .formShell legend { margin-bottom: .3rem; color: var(--color-brand-900); font-family: var(--font-display); font-size: clamp(1.2rem, 2vw, 1.55rem); font-weight: 700; }
 .sectionHelp { margin: 0 0 1.35rem; color: var(--color-text-muted); font-size: .88rem; }
 .gridTwo,
-.gridThree { display: grid; gap: 1rem; margin-bottom: 1rem; }
+.gridThree { display: grid; gap: .9rem 1rem; margin-bottom: 1rem; align-items: start; }
 .formShell label { display: grid; gap: .4rem; color: var(--color-text); font-size: .8rem; font-weight: 700; }
 .formShell label > span { color: var(--color-text-muted); font-size: .69rem; font-weight: 500; }
 .formShell input,
@@ -88,7 +88,7 @@
 .reviewGrid article { display: grid; gap: .2rem; padding: 1rem; background: var(--color-surface); border: 1px solid var(--color-border); }
 .reviewGrid span { color: var(--color-text-muted); font-size: .7rem; text-transform: uppercase; letter-spacing: .06em; }
 .reviewGrid small { color: var(--color-text-muted); }
-.formActions { display: flex; gap: .75rem; justify-content: flex-end; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--color-border); }
+.formActions { position: sticky; bottom: -1px; z-index: 2; display: flex; gap: .75rem; justify-content: flex-end; margin: 1.5rem calc(clamp(1.1rem, 3vw, 2rem) * -1) calc(clamp(1.1rem, 3vw, 2rem) * -1); padding: .85rem clamp(1.1rem, 3vw, 2rem); background: rgb(255 255 255 / 96%); border-top: 1px solid var(--color-border); box-shadow: 0 -.6rem 1.5rem rgb(14 53 39 / 5%); backdrop-filter: blur(8px); }
 .formActions button:first-child:not(:last-child) { color: var(--color-brand-900); background: #fff; border: 1px solid var(--color-border); }
 .submitError { margin: 1rem 0 0; padding: .8rem; color: #842323; background: #fff0f0; border-left: 3px solid #b73131; font-size: .82rem; }
 .honeypot { position: absolute; left: -10000px; }
@@ -108,7 +108,9 @@
   .progress li::before,
   .progress small { display: none; }
   .subsectionHeading { align-items: stretch; flex-direction: column; }
-  .formActions { align-items: stretch; flex-direction: column-reverse; }
+  .formShell,
+  .success { padding: 1rem; border-radius: var(--radius-sm); }
+  .formActions { align-items: stretch; flex-direction: column-reverse; margin-right: -1rem; margin-bottom: -1rem; margin-left: -1rem; padding: .75rem 1rem; }
   .formActions button { width: 100%; }
 }
 
