@@ -1,5 +1,4 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import {
   ArrowLeft,
   ArrowRight,
@@ -23,6 +22,7 @@ import {
   loanTypeOptions,
 } from "../../../features/applications/loanApplicationTypes";
 import { db } from "../../../lib/firestore";
+import { submitApplicationWithCaptcha } from "../../../lib/applicationSubmission";
 import { OfficialLoanReview } from "../OfficialLoanReview/OfficialLoanReview";
 import styles from "./LoanApplicationForm.module.css";
 
@@ -202,7 +202,7 @@ function ErrorMessage({ message }: { message?: string }) {
   ) : null;
 }
 
-export function LoanApplicationForm() {
+export function LoanApplicationForm({ recaptchaToken }: { recaptchaToken: string }) {
   const [step, setStep] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
@@ -274,7 +274,7 @@ export function LoanApplicationForm() {
           remarks: debt.remarks,
         }));
 
-      await addDoc(collection(db, "loanApplications"), {
+      await submitApplicationWithCaptcha("loanApplications", {
         schemaVersion: 1,
         source: "online",
         reference,
@@ -315,9 +315,7 @@ export function LoanApplicationForm() {
           approvedBy: "",
           chairperson: "",
         },
-        submittedAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
-      });
+      }, recaptchaToken);
 
       setSubmittedReference(reference);
       reset(defaultValues);

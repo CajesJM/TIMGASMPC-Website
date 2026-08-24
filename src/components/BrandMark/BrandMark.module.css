@@ -22,7 +22,7 @@
 }
 .copy strong {
   font-family: var(--font-display);
-  font-size: 1.45rem;
+  font-size: 1rem;
   letter-spacing: 0.02em;
 }
 .copy small {
@@ -52,9 +52,4 @@
 }
 .inverse {
   color: white;
-}
-@media (max-width: 25rem) {
-  .copy small {
-    display: none;
-  }
 }

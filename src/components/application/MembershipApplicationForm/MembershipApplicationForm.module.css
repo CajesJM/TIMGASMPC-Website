@@ -48,7 +48,12 @@
 .formShell input:focus-visible,
 .formShell select:focus-visible,
 .formShell textarea:focus-visible { border-color: var(--color-brand-700); outline: 3px solid rgb(30 119 83 / 16%); }
+.phoneInput { display: grid; grid-template-columns: auto minmax(0, 1fr); overflow: hidden; background: #fff; border: 1px solid #cbd5d0; border-radius: var(--radius-sm); }
+.phoneInput > span { display: grid; min-height: 2.75rem; place-items: center; padding: .7rem .75rem; color: var(--color-brand-900) !important; background: var(--color-surface); border-right: 1px solid #cbd5d0; font-size: .9rem !important; font-weight: 800 !important; }
+.phoneInput input { border: 0 !important; border-radius: 0 !important; outline: 0 !important; }
+.phoneInput:focus-within { border-color: var(--color-brand-700); outline: 3px solid rgb(30 119 83 / 16%); }
 .fieldError { color: #a52929; font-size: .72rem; font-weight: 600; }
+.characterCount { justify-self: end; color: var(--color-text-muted) !important; font-size: .7rem !important; font-weight: 600 !important; }
 .radioGroup { display: flex; flex-wrap: wrap; gap: .75rem 1.25rem; margin-bottom: 1rem; }
 .radioGroup > span { width: 100%; font-size: .8rem; font-weight: 800; }
 .radioGroup label,

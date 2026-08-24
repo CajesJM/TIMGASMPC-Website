@@ -21,6 +21,7 @@ import {
 } from "../../../features/applications/applicationTypes";
 import type { ShowToast } from "../../../features/notifications/toastTypes";
 import { db } from "../../../lib/firestore";
+import { OfficialMembershipReview } from "../../application/OfficialMembershipReview/OfficialMembershipReview";
 import styles from "./AdminApplicationsManager.module.css";
 
 const pageSize = 10;
@@ -56,7 +57,7 @@ export function AdminApplicationsManager({ showToast }: { showToast: ShowToast }
       (item) =>
         (filter === "all" || item.status === filter) &&
         (!term ||
-          item.applicantName.toLowerCase().includes(term) ||
+          item.applicantName.toLowerCase().includes(term) || item.applicantEmail.toLowerCase().includes(term) ||
           item.reference.toLowerCase().includes(term)),
     );
   }, [filter, items, search]);
@@ -114,16 +115,14 @@ export function AdminApplicationsManager({ showToast }: { showToast: ShowToast }
         <div className={styles.empty}><FileText /><strong>No matching applications</strong><span>Online submissions will appear here.</span></div>
       ) : (
         <div className={styles.tableWrap}><table><thead><tr><th>Reference</th><th>Applicant</th><th>Type</th><th>Submitted</th><th>Status</th><th><span className="srOnly">Actions</span></th></tr></thead><tbody>
-          {visible.map((item) => <tr key={item.id}><td><button className={styles.reference} onClick={() => openApplication(item)}>{item.reference}</button></td><td>{item.applicantName}<small>{item.profile.cellphone}</small></td><td>{membershipTypeLabels[item.applicationType]}</td><td>{formatApplicationDate(item.submittedAt)}</td><td><span className={`${styles.status} ${styles[item.status]}`}>{applicationStatusLabels[item.status]}</span></td><td><button className={styles.deleteButton} onClick={() => void removeApplication(item)} aria-label={`Delete ${item.reference}`}><Trash2 /></button></td></tr>)}
+          {visible.map((item) => <tr key={item.id}><td><button className={styles.reference} onClick={() => openApplication(item)}>{item.reference}</button></td><td>{item.applicantName}<small>{item.applicantEmail || item.profile.cellphone}</small></td><td>{membershipTypeLabels[item.applicationType]}</td><td>{formatApplicationDate(item.submittedAt)}</td><td><span className={`${styles.status} ${styles[item.status]}`}>{applicationStatusLabels[item.status]}</span></td><td><button className={styles.deleteButton} onClick={() => void removeApplication(item)} aria-label={`Delete ${item.reference}`}><Trash2 /></button></td></tr>)}
         </tbody></table></div>
       )}
 
       {filtered.length > pageSize && <nav className={styles.pagination} aria-label="Application pages"><button disabled={currentPage === 1} onClick={() => setPage((value) => Math.max(1, value - 1))}><ChevronLeft /> Previous</button><span>Page {currentPage} of {pages}</span><button disabled={currentPage === pages} onClick={() => setPage((value) => Math.min(pages, value + 1))}>Next <ChevronRight /></button></nav>}
 
       {selected && <div className={styles.modalBackdrop} onMouseDown={(event) => { if (event.target === event.currentTarget) setSelected(null); }}><article className={styles.detail} role="dialog" aria-modal="true" aria-labelledby="application-title"><header><div><small>{selected.reference}</small><h2 id="application-title">{selected.applicantName}</h2><p>{membershipTypeLabels[selected.applicationType]} membership · {formatApplicationDate(selected.submittedAt)}</p></div><button onClick={() => setSelected(null)} aria-label="Close application">×</button></header>
-        <div className={styles.detailGrid}><section><h3>Personal information</h3><dl><dt>Address</dt><dd>{selected.profile.address}</dd><dt>Cellphone</dt><dd>{selected.profile.cellphone}</dd><dt>Birth</dt><dd>{selected.profile.dateOfBirth} · {selected.profile.placeOfBirth}</dd><dt>Valid ID</dt><dd>{selected.profile.validIdType} — {selected.profile.validIdNumber}</dd><dt>TIN</dt><dd>{selected.profile.tinNumber || "Not provided"}</dd><dt>Occupation</dt><dd>{selected.profile.occupation || "Not provided"}</dd></dl></section>
-        <section><h3>Household and background</h3><dl><dt>Spouse</dt><dd>{selected.spouse.name || "Not provided"}</dd><dt>Sector</dt><dd>{selected.sector.replaceAll("_", " ").toUpperCase()}</dd><dt>Education</dt><dd>{selected.educationalAttainment || "Not provided"}</dd><dt>Recommender</dt><dd>{selected.recommenderName || "Not provided"}</dd><dt>Crime disclosure</dt><dd>{selected.crimeDisclosure.accusedOrConvicted ? `Yes — ${selected.crimeDisclosure.details}` : "No"}</dd></dl></section></div>
-        {selected.dependents.length > 0 && <section className={styles.dependents}><h3>Dependents</h3><ul>{selected.dependents.map((dependent, index) => <li key={`${dependent.name}-${index}`}><strong>{dependent.name}</strong><span>{[dependent.relationship, dependent.dateOfBirth, dependent.age && `Age ${dependent.age}`].filter(Boolean).join(" · ")}</span></li>)}</ul></section>}
+        <div className={styles.documentWrap}><OfficialMembershipReview data={{ reference: selected.reference, dateApplied: formatApplicationDate(selected.submittedAt), applicantEmail: selected.applicantEmail, membershipType: selected.applicationType, profile: selected.profile, spouse: selected.spouse, dependents: selected.dependents, income: selected.income, sector: selected.sector, educationalAttainment: selected.educationalAttainment, affiliation: selected.affiliation, crimeDisclosure: selected.crimeDisclosure, recommenderName: selected.recommenderName, typedName: selected.agreement.typedName }} /></div>
         <footer><label>Status<select value={selected.status} onChange={(event) => setSelected({ ...selected, status: event.target.value as ApplicationStatus })}>{applicationStatuses.map((status) => <option key={status} value={status}>{applicationStatusLabels[status]}</option>)}</select></label><label>Manager note<textarea rows={3} maxLength={1000} value={statusNote} onChange={(event) => setStatusNote(event.target.value)} /></label><button onClick={() => void updateStatus(selected.status)}>Save review update</button></footer>
       </article></div>}
     </section>

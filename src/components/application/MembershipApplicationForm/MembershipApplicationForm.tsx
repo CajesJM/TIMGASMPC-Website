@@ -1,5 +1,4 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import {
   ArrowLeft,
   ArrowRight,
@@ -9,7 +8,7 @@ import {
   ShieldCheck,
   Trash2,
 } from "lucide-react";
-import { useRef, useState } from "react";
+import { useRef, useState, type FormEvent } from "react";
 import {
   useFieldArray,
   useForm,
@@ -18,10 +17,40 @@ import {
 } from "react-hook-form";
 import { z } from "zod";
 import { db } from "../../../lib/firestore";
+import { submitApplicationWithCaptcha } from "../../../lib/applicationSubmission";
+import { OfficialMembershipReview } from "../OfficialMembershipReview/OfficialMembershipReview";
 import styles from "./MembershipApplicationForm.module.css";
 
 const agreementVersion = "Membership-Application-Form-Revised-2023";
 const maximumDependents = 8;
+const philippineValidIdTypes = [
+  "Philippine Identification (PhilID / ePhilID / Digital National ID)",
+  "Philippine Passport",
+  "LTO Driver's License",
+  "LTO Student Permit",
+  "Professional Regulation Commission (PRC) ID",
+  "Unified Multi-Purpose ID (UMID)",
+  "Social Security System (SSS) ID",
+  "Government Service Insurance System (GSIS) eCard",
+  "Postal ID",
+  "COMELEC Voter's ID / Certification",
+  "Senior Citizen ID",
+  "Persons with Disability (PWD) ID",
+  "PhilHealth ID",
+  "Pag-IBIG Loyalty Card",
+  "BIR TIN ID",
+  "NBI Clearance",
+  "PNP Police Clearance",
+  "Barangay ID",
+  "AFP ID",
+  "PNP ID",
+  "OWWA ID",
+  "Seafarer's Identification and Record Book",
+  "Integrated Bar of the Philippines (IBP) ID",
+  "License to Own and Possess Firearms",
+  "Alien Certificate of Registration (ACR I-Card)",
+  "Other government-issued photo ID",
+] as const;
 
 const optionalText = (maximum = 120) => z.string().trim().max(maximum);
 const requiredText = (label: string, maximum = 120) =>
@@ -33,8 +62,13 @@ const applicationSchema = z
       message: "Choose a membership type.",
     }),
     departmentName: optionalText(),
-    tinNumber: optionalText(30),
+    tinNumber: z
+      .string()
+      .trim()
+      .max(30)
+      .regex(/^\d*$/, "TIN number can contain numbers only."),
     pmesDate: optionalText(10),
+    applicantEmail: z.string().trim().min(1, "Gmail address is required.").max(254).email("Enter a valid Gmail address.").refine((value) => value.toLowerCase().endsWith("@gmail.com"), { message: "Use a Gmail address ending in @gmail.com." }),
     familyName: requiredText("Family name"),
     givenName: requiredText("Given name"),
     middleName: optionalText(),
@@ -45,9 +79,25 @@ const applicationSchema = z
     dateOfBirth: requiredText("Date of birth", 10),
     placeOfBirth: requiredText("Place of birth", 180),
     address: requiredText("Address", 300),
-    cellphone: requiredText("Cellphone number", 30),
-    validIdType: requiredText("Valid ID type", 80),
-    validIdNumber: requiredText("Valid ID number", 80),
+    cellphone: z
+      .string()
+      .regex(
+        /^[1-9]\d{9}$/,
+        "Enter 10 digits after +63. The number cannot start with 0.",
+      ),
+    validIdType: z.string().refine(
+      (value) =>
+        philippineValidIdTypes.includes(
+          value as (typeof philippineValidIdTypes)[number],
+        ),
+      "Choose a valid ID type.",
+    ),
+    validIdNumber: z
+      .string()
+      .trim()
+      .min(1, "Valid ID number is required.")
+      .max(80)
+      .regex(/^\d+$/, "Valid ID number can contain numbers only."),
     motherMaidenName: optionalText(150),
     fatherFullName: optionalText(150),
     spouseName: optionalText(150),
@@ -75,7 +125,7 @@ const applicationSchema = z
     accusedOrConvicted: z.enum(["no", "yes"], {
       message: "Answer the crime-disclosure question.",
     }),
-    crimeDetails: optionalText(1000),
+    crimeDetails: optionalText(5000),
     recommenderName: optionalText(150),
     typedName: requiredText("Typed applicant name", 180),
     agreementAccepted: z.boolean().refine((value) => value, {
@@ -114,6 +164,7 @@ const defaultValues: ApplicationFormValues = {
   departmentName: "",
   tinNumber: "",
   pmesDate: "",
+  applicantEmail: "",
   familyName: "",
   givenName: "",
   middleName: "",
@@ -160,6 +211,7 @@ const steps = [
 const stepFields: FieldPath<ApplicationFormValues>[][] = [
   [
     "membershipType",
+    "applicantEmail",
     "familyName",
     "givenName",
     "sex",
@@ -213,11 +265,12 @@ function ErrorMessage({ message }: { message?: string }) {
   ) : null;
 }
 
-export function MembershipApplicationForm() {
+export function MembershipApplicationForm({ recaptchaToken }: { recaptchaToken: string }) {
   const [step, setStep] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const [submittedReference, setSubmittedReference] = useState("");
+  const [reviewConfirmed, setReviewConfirmed] = useState(false);
   const formRef = useRef<HTMLDivElement>(null);
   const {
     register,
@@ -236,8 +289,12 @@ export function MembershipApplicationForm() {
     name: "dependents",
   });
   const values = useWatch({ control });
+  const stepFourConsentsAccepted = Boolean(
+    values.agreementAccepted && values.privacyConsent,
+  );
 
   const moveToStep = (nextStep: number) => {
+    setReviewConfirmed(false);
     setStep(nextStep);
     window.requestAnimationFrame(() =>
       formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }),
@@ -265,13 +322,14 @@ export function MembershipApplicationForm() {
         Object.values(dependent).some(Boolean),
       );
 
-      await addDoc(collection(db, "applications"), {
+      await submitApplicationWithCaptcha("applications", {
         schemaVersion: 1,
         source: "online",
         reference,
         applicantName: [data.givenName, data.middleName, data.familyName]
           .filter(Boolean)
           .join(" "),
+        applicantEmail: data.applicantEmail.toLowerCase(),
         applicationType: data.membershipType,
         profile: {
           departmentName: data.departmentName,
@@ -287,7 +345,7 @@ export function MembershipApplicationForm() {
           dateOfBirth: data.dateOfBirth,
           placeOfBirth: data.placeOfBirth,
           address: data.address,
-          cellphone: data.cellphone,
+          cellphone: `+63${data.cellphone}`,
           validIdType: data.validIdType,
           validIdNumber: data.validIdNumber,
           motherMaidenName: data.motherMaidenName,
@@ -323,12 +381,11 @@ export function MembershipApplicationForm() {
         privacyConsent: data.privacyConsent,
         status: "new",
         statusNote: "",
-        submittedAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
-      });
+      }, recaptchaToken);
 
       setSubmittedReference(reference);
       reset(defaultValues);
+      setReviewConfirmed(false);
       setStep(0);
     } catch (error) {
       console.error("Unable to submit the membership application.", error);
@@ -338,6 +395,13 @@ export function MembershipApplicationForm() {
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const submitFromReview = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (step < steps.length - 1) { void continueForm(); return; }
+    if (!reviewConfirmed || submitting) return;
+    void handleSubmit(submitApplication)(event);
   };
 
   if (submittedReference) {
@@ -396,7 +460,7 @@ export function MembershipApplicationForm() {
         ))}
       </ol>
 
-      <form onSubmit={handleSubmit(submitApplication)} noValidate>
+      <form onSubmit={submitFromReview} noValidate>
         <div className={styles.honeypot} aria-hidden="true">
           <label>
             Website
@@ -438,11 +502,28 @@ export function MembershipApplicationForm() {
               </label>
               <label>
                 TIN number <span>Optional</span>
-                <input {...register("tinNumber")} maxLength={30} />
+                <input
+                  inputMode="numeric"
+                  autoComplete="off"
+                  pattern="[0-9]*"
+                  maxLength={30}
+                  {...register("tinNumber", {
+                    onChange: (event) => {
+                      event.target.value = event.target.value.replace(/\D/g, "");
+                    },
+                  })}
+                />
+                <ErrorMessage message={errors.tinNumber?.message} />
               </label>
               <label>
                 Date PMES attended <span>Optional</span>
                 <input type="date" {...register("pmesDate")} />
+              </label>
+              <label>
+                Gmail address *
+                <input type="email" inputMode="email" autoComplete="email" placeholder="applicant@gmail.com" {...register("applicantEmail")} />
+                <span>TIMGAS MPC may use this address for application updates.</span>
+                <ErrorMessage message={errors.applicantEmail?.message} />
               </label>
             </div>
             <div className={styles.gridThree}>
@@ -472,7 +553,6 @@ export function MembershipApplicationForm() {
                   <option value="">Select</option>
                   <option value="Female">Female</option>
                   <option value="Male">Male</option>
-                  <option value="Prefer not to say">Prefer not to say</option>
                 </select>
                 <ErrorMessage message={errors.sex?.message} />
               </label>
@@ -505,12 +585,26 @@ export function MembershipApplicationForm() {
               </label>
               <label>
                 Cellphone number *
-                <input
-                  type="tel"
-                  inputMode="tel"
-                  autoComplete="tel"
-                  {...register("cellphone")}
-                />
+                <div className={styles.phoneInput}>
+                  <span aria-hidden="true">+63</span>
+                  <input
+                    type="tel"
+                    inputMode="numeric"
+                    autoComplete="tel-national"
+                    placeholder="9123456789"
+                    maxLength={10}
+                    aria-label="Cellphone number after +63"
+                    {...register("cellphone", {
+                      onChange: (event) => {
+                        event.target.value = event.target.value
+                          .replace(/\D/g, "")
+                          .replace(/^0+/, "")
+                          .slice(0, 10);
+                      },
+                    })}
+                  />
+                </div>
+                <span>Enter 10 digits after +63. Do not start with 0.</span>
                 <ErrorMessage message={errors.cellphone?.message} />
               </label>
             </div>
@@ -526,12 +620,29 @@ export function MembershipApplicationForm() {
             <div className={styles.gridTwo}>
               <label>
                 Valid ID type *
-                <input placeholder="Example: National ID" {...register("validIdType")} />
+                <select {...register("validIdType")}>
+                  <option value="">Select a valid ID</option>
+                  {philippineValidIdTypes.map((idType) => (
+                    <option key={idType} value={idType}>
+                      {idType}
+                    </option>
+                  ))}
+                </select>
                 <ErrorMessage message={errors.validIdType?.message} />
               </label>
               <label>
                 Valid ID number *
-                <input {...register("validIdNumber")} />
+                <input
+                  inputMode="numeric"
+                  autoComplete="off"
+                  pattern="[0-9]*"
+                  maxLength={80}
+                  {...register("validIdNumber", {
+                    onChange: (event) => {
+                      event.target.value = event.target.value.replace(/\D/g, "");
+                    },
+                  })}
+                />
                 <ErrorMessage message={errors.validIdNumber?.message} />
               </label>
             </div>
@@ -709,7 +820,15 @@ export function MembershipApplicationForm() {
               {values.accusedOrConvicted === "yes" && (
                 <label>
                   Please provide details *
-                  <textarea rows={4} {...register("crimeDetails")} />
+                  <textarea
+                    rows={4}
+                    maxLength={5000}
+                    {...register("crimeDetails")}
+                  />
+                  <span className={styles.characterCount} aria-live="polite">
+                    {(values.crimeDetails ?? "").length.toLocaleString()} / 5,000
+                    characters
+                  </span>
                   <ErrorMessage message={errors.crimeDetails?.message} />
                 </label>
               )}
@@ -787,34 +906,10 @@ export function MembershipApplicationForm() {
               Check the summary below. Use Previous to correct any information
               before sending it to the TIMGAS manager.
             </p>
-            <div className={styles.reviewGrid}>
-              <article>
-                <span>Applicant</span>
-                <strong>
-                  {[values.givenName, values.middleName, values.familyName]
-                    .filter(Boolean)
-                    .join(" ")}
-                </strong>
-                <small>{values.address}</small>
-              </article>
-              <article>
-                <span>Membership type</span>
-                <strong>
-                  {values.membershipType === "regular" ? "Regular" : "Associate"}
-                </strong>
-                <small>{sectorLabels[values.sector ?? "arb"]}</small>
-              </article>
-              <article>
-                <span>Contact</span>
-                <strong>{values.cellphone}</strong>
-                <small>{values.validIdType}</small>
-              </article>
-              <article>
-                <span>Agreement</span>
-                <strong>{values.typedName}</strong>
-                <small>Revised 2023 form acknowledged</small>
-              </article>
-            </div>
+            <OfficialMembershipReview data={{
+              reference: "Assigned upon submission", dateApplied: "Recorded upon submission", applicantEmail: values.applicantEmail ?? "", membershipType: values.membershipType ?? "associate",
+              profile: { departmentName: values.departmentName ?? "", tinNumber: values.tinNumber ?? "", pmesDate: values.pmesDate ?? "", familyName: values.familyName ?? "", givenName: values.givenName ?? "", middleName: values.middleName ?? "", nickname: values.nickname ?? "", sex: values.sex ?? "", civilStatus: values.civilStatus ?? "", occupation: values.occupation ?? "", dateOfBirth: values.dateOfBirth ?? "", placeOfBirth: values.placeOfBirth ?? "", address: values.address ?? "", cellphone: values.cellphone ? `+63${values.cellphone}` : "", validIdType: values.validIdType ?? "", validIdNumber: values.validIdNumber ?? "", motherMaidenName: values.motherMaidenName ?? "", fatherFullName: values.fatherFullName ?? "" },
+              spouse: { name: values.spouseName ?? "", dateOfBirth: values.spouseDateOfBirth ?? "" }, dependents: (values.dependents ?? []).map((dependent) => ({ name: dependent.name ?? "", dateOfBirth: dependent.dateOfBirth ?? "", age: dependent.age ?? "", relationship: dependent.relationship ?? "" })), income: { husbandSource: values.husbandIncomeSource ?? "", husbandEmployer: values.husbandEmployer ?? "", wifeSource: values.wifeIncomeSource ?? "", wifeEmployer: values.wifeEmployer ?? "" }, sector: values.sector ?? "arb", educationalAttainment: values.educationalAttainment ?? "", affiliation: { organization: values.affiliationOrganization ?? "", position: values.affiliationPosition ?? "" }, crimeDisclosure: { accusedOrConvicted: values.accusedOrConvicted === "yes", details: values.crimeDetails ?? "" }, recommenderName: values.recommenderName ?? "", typedName: values.typedName ?? "" }} />
             <div className={styles.finalNotice}>
               <ShieldCheck aria-hidden="true" />
               <p>
@@ -823,6 +918,7 @@ export function MembershipApplicationForm() {
                 protected dashboard.
               </p>
             </div>
+            <label className={`${styles.checkRow} ${styles.reviewConfirmation}`}><input type="checkbox" checked={reviewConfirmed} onChange={(event) => setReviewConfirmed(event.target.checked)} /><span>I have reviewed the Membership Profile and Membership Agreement above and I am ready to submit. *</span></label>
           </fieldset>
         )}
 
@@ -839,11 +935,15 @@ export function MembershipApplicationForm() {
             </button>
           )}
           {step < steps.length - 1 ? (
-            <button type="button" onClick={() => void continueForm()}>
+            <button
+              type="button"
+              disabled={step === 3 && !stepFourConsentsAccepted}
+              onClick={() => void continueForm()}
+            >
               Continue <ArrowRight />
             </button>
           ) : (
-            <button type="submit" disabled={submitting}>
+            <button type="submit" disabled={submitting || !reviewConfirmed}>
               <Send /> {submitting ? "Submitting…" : "Submit application"}
             </button>
           )}

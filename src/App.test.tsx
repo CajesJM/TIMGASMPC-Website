@@ -77,6 +77,12 @@ describe("TIMGAS website", () => {
       "/downloads/Loan-Application-Form.xls",
     );
     await user.click(screen.getByRole("button", { name: /apply online/i }));
+    const membershipCaptcha = screen.getByRole("dialog", {
+      name: /verify before continuing/i,
+    });
+    await user.click(
+      within(membershipCaptcha).getByRole("checkbox", { name: /i’m not a robot/i }),
+    );
     expect(
       screen.getByRole("heading", { name: /membership profile and agreement/i }),
     ).toBeInTheDocument();
@@ -93,6 +99,12 @@ describe("TIMGAS website", () => {
     ).toBeVisible();
 
     await user.click(screen.getByRole("button", { name: /apply for a loan/i }));
+    const loanCaptcha = screen.getByRole("dialog", {
+      name: /verify before continuing/i,
+    });
+    await user.click(
+      within(loanCaptcha).getByRole("checkbox", { name: /i’m not a robot/i }),
+    );
     expect(
       screen.getByRole("dialog", { name: /apply for a timgas mpc loan/i }),
     ).toBeVisible();

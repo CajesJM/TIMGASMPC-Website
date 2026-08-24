@@ -11,6 +11,7 @@ import { useState } from "react";
 import { LoanApplicationForm } from "../../components/application/LoanApplicationForm/LoanApplicationForm";
 import { MembershipApplicationForm } from "../../components/application/MembershipApplicationForm/MembershipApplicationForm";
 import { ApplicationModal } from "../../components/application/MembershipApplicationModal/MembershipApplicationModal";
+import { RecaptchaGate } from "../../components/security/RecaptchaGate/RecaptchaGate";
 import { Button } from "../../components/Button/Button";
 import { PageHeader } from "../../components/PageHeader/PageHeader";
 import { objectives } from "../../data/content";
@@ -29,6 +30,8 @@ export function MembershipPage() {
   const [onlineFormLoaded, setOnlineFormLoaded] = useState(false);
   const [showLoanForm, setShowLoanForm] = useState(false);
   const [loanFormLoaded, setLoanFormLoaded] = useState(false);
+  const [captchaTarget, setCaptchaTarget] = useState<"membership" | "loan" | null>(null);
+  const [recaptchaToken, setRecaptchaToken] = useState("");
 
   const openOnlineForm = () => {
     setOnlineFormLoaded(true);
@@ -38,6 +41,15 @@ export function MembershipPage() {
   const openLoanForm = () => {
     setLoanFormLoaded(true);
     setShowLoanForm(true);
+  };
+
+  const completeCaptcha = (token: string) => {
+    if (!captchaTarget || !token) return;
+    const target = captchaTarget;
+    setRecaptchaToken(token);
+    setCaptchaTarget(null);
+    if (target === "membership") openOnlineForm();
+    else openLoanForm();
   };
 
   return (
@@ -118,7 +130,7 @@ export function MembershipPage() {
                 </p>
               </div>
               <div className={pageStyles.applicationActions}>
-                <button type="button" onClick={openOnlineForm}>
+                <button type="button" onClick={() => setCaptchaTarget("membership")}>
                   <FilePenLine /> {onlineFormLoaded ? "Continue online" : "Apply online"}
                 </button>
                 <a href="/downloads/Membership-Application-Form-Revised-2023.docx" download>
@@ -141,7 +153,7 @@ export function MembershipPage() {
                 </p>
               </div>
               <div className={pageStyles.applicationActions}>
-                <button type="button" onClick={openLoanForm}>
+                <button type="button" onClick={() => setCaptchaTarget("loan")}>
                   <FilePenLine /> {loanFormLoaded ? "Continue loan form" : "Apply for a loan"}
                 </button>
                 <a href="/downloads/Loan-Application-Form.xls" download>
@@ -164,7 +176,7 @@ export function MembershipPage() {
           closeLabel="Close membership application"
           idPrefix="membership"
         >
-          <MembershipApplicationForm />
+          <MembershipApplicationForm recaptchaToken={recaptchaToken} />
         </ApplicationModal>
       )}
 
@@ -178,8 +190,17 @@ export function MembershipPage() {
           closeLabel="Close loan application"
           idPrefix="loan"
         >
-          <LoanApplicationForm />
+          <LoanApplicationForm recaptchaToken={recaptchaToken} />
         </ApplicationModal>
+      )}
+
+      {captchaTarget && (
+        <RecaptchaGate
+          applicationName={captchaTarget === "loan" ? "loan application" : "membership application"}
+          open
+          onClose={() => setCaptchaTarget(null)}
+          onVerified={completeCaptcha}
+        />
       )}
 
       <section className={styles.cta}>

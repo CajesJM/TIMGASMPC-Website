@@ -37,6 +37,7 @@ export type MembershipApplication = {
   id: string;
   reference: string;
   applicantName: string;
+  applicantEmail: string;
   applicationType: MembershipType;
   profile: {
     departmentName: string;
@@ -92,7 +93,9 @@ export type MembershipApplication = {
   updatedAt: Timestamp | null;
 };
 
-export function isApplicationStatus(value: unknown): value is ApplicationStatus {
+export function isApplicationStatus(
+  value: unknown,
+): value is ApplicationStatus {
   return applicationStatuses.includes(value as ApplicationStatus);
 }
 
@@ -123,6 +126,7 @@ export function parseMembershipApplication(
     id: snapshot.id,
     reference: text(data.reference) || snapshot.id,
     applicantName: text(data.applicantName) || "Name unavailable",
+    applicantEmail: text(data.applicantEmail),
     applicationType,
     profile: {
       departmentName: text(profile.departmentName),

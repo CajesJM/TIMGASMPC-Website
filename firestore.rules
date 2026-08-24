@@ -35,14 +35,14 @@ service cloud.firestore {
 
     function validApplication(data) {
       return data.keys().hasOnly([
-          'schemaVersion', 'source', 'reference', 'applicantName',
+          'schemaVersion', 'source', 'reference', 'applicantName', 'applicantEmail',
           'applicationType', 'profile', 'spouse', 'dependents', 'income',
           'sector', 'educationalAttainment', 'affiliation', 'crimeDisclosure',
           'recommenderName', 'agreement', 'privacyConsent', 'status',
           'statusNote', 'submittedAt', 'updatedAt'
         ])
         && data.keys().hasAll([
-          'schemaVersion', 'source', 'reference', 'applicantName',
+          'schemaVersion', 'source', 'reference', 'applicantName', 'applicantEmail',
           'applicationType', 'profile', 'spouse', 'dependents', 'income',
           'sector', 'educationalAttainment', 'affiliation', 'crimeDisclosure',
           'recommenderName', 'agreement', 'privacyConsent', 'status',
@@ -55,6 +55,10 @@ service cloud.firestore {
         && data.applicantName is string
         && data.applicantName.size() >= 3
         && data.applicantName.size() <= 300
+        && data.applicantEmail is string
+        && data.applicantEmail.size() >= 11
+        && data.applicantEmail.size() <= 254
+        && data.applicantEmail.matches('^[^@]+@gmail[.]com$')
         && data.applicationType in ['associate', 'regular']
         && data.profile is map
         && data.profile.keys().hasOnly([
@@ -73,10 +77,10 @@ service cloud.firestore {
         && data.profile.address.size() >= 1
         && data.profile.address.size() <= 300
         && data.profile.cellphone is string
-        && data.profile.cellphone.size() >= 1
-        && data.profile.cellphone.size() <= 30
+        && data.profile.cellphone.matches('^[+]63[1-9][0-9]{9}$')
         && data.profile.validIdType is string
         && data.profile.validIdNumber is string
+        && data.profile.validIdNumber.matches('^[0-9]+$')
         && data.spouse is map
         && data.dependents is list
         && data.dependents.size() <= 8
@@ -316,7 +320,7 @@ service cloud.firestore {
     }
 
     match /applications/{applicationId} {
-      allow create: if request.auth == null && validApplication(request.resource.data);
+      allow create: if false;
       allow read, delete: if isAdmin();
       allow update: if isAdmin()
         && request.resource.data.diff(resource.data).affectedKeys()
@@ -330,8 +334,7 @@ service cloud.firestore {
     }
 
     match /loanApplications/{applicationId} {
-      allow create: if request.auth == null
-        && validLoanApplication(request.resource.data);
+      allow create: if false;
       allow read, delete: if isAdmin();
       allow update: if isAdmin()
         && request.resource.data.diff(resource.data).affectedKeys()

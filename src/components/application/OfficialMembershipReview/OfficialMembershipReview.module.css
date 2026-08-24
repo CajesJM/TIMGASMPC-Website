@@ -1,0 +1,28 @@
+.viewport { display: grid; gap: 1.25rem; overflow-x: auto; margin-top: 1rem; padding: 1rem; background: #e8ece9; border: 1px solid var(--color-border); }
+.page { box-sizing: border-box; width: 48rem; min-width: 48rem; margin: 0 auto; padding: 1.55rem 1.65rem; color: #050505; background: #fff; box-shadow: 0 .4rem 1.4rem rgb(0 0 0 / 10%); font-family: "Times New Roman", Times, serif; font-size: .67rem; line-height: 1.16; }
+.page p { margin: .35rem 0; }
+.documentHeader { margin-bottom: .9rem; text-align: center; }
+.documentHeader p { margin: 0; font-size: .73rem; font-weight: 700; }
+.documentHeader small { display: block; font-size: .64rem; }
+.documentHeader h3 { margin: .75rem 0 0; font-size: .76rem; }
+.line { display: inline-block; min-width: 1.8rem; min-height: .95rem; padding: 0 .1rem; border-bottom: 1px solid #111; vertical-align: bottom; overflow-wrap: anywhere; }
+.formField { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: end; gap: .2rem; min-width: 0; }
+.formField > b { white-space: nowrap; }
+.formField .line { width: auto; }
+.idRow { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin: .28rem 0; }
+.department { display: flex; align-items: end; gap: .3rem; }.department .line { flex: 1; }
+.membershipType { display: flex; gap: 1.35rem; align-items: center; }.membershipType b { margin-right: .25rem; }
+.nameLine { display: grid; grid-template-columns: auto 1.15fr 1.15fr 1.1fr; gap: .5rem; align-items: end; }.nameLine > span { display: grid; text-align: center; }.nameLine small { padding-top: .1rem; font-size: .56rem; }
+.shortFields { display: grid; grid-template-columns: 1fr .65fr 1fr; gap: .6rem; margin-top: .3rem; }
+.identityFields { display: grid; grid-template-columns: 1fr .9fr 1.25fr; gap: .6rem; margin-top: .28rem; }
+.fullField { display: flex; gap: .35rem; align-items: end; }.fullField .line { flex: 1; }
+.contactRow { display: grid; grid-template-columns: .85fr 1.35fr; gap: .7rem; }.idDetails { display: grid; grid-template-columns: 1.25fr 1fr; gap: .7rem; }
+.spouseRow { display: grid; grid-template-columns: 1.45fr .8fr; gap: .7rem; }
+.page h4 { margin: .65rem 0 .25rem; font-size: .68rem; }
+.page table { width: 100%; border-collapse: collapse; table-layout: fixed; }.page th,.page td { padding: .13rem .2rem; border: 1px solid #111; overflow-wrap: anywhere; }.page th { font-size: .58rem; text-align: center; }.page td { height: .72rem; }.dependentsTable th:nth-child(1) { width: 39%; }.dependentsTable th:nth-child(2) { width: 24%; }.dependentsTable th:nth-child(3) { width: 10%; }.dependentsTable th:nth-child(4) { width: 27%; }.incomeTable th { font-size: .52rem; }.incomeTable td { height: 1.35rem; }
+.sector { display: flex; flex-wrap: wrap; gap: .45rem .85rem; }.sector b { margin-right: .2rem; }
+.affiliationRow { display: grid; grid-template-columns: 1.65fr .7fr; gap: .7rem; }.crimeRow { display: grid; grid-template-columns: auto .35fr auto 1fr; gap: .3rem; align-items: end; }.crimeRow b { font-size: .61rem; }
+.recommendation { display: grid; grid-template-columns: 1fr 1fr; gap: 1.3rem; align-items: end; margin-top: .75rem; }.recommendation > span { display: grid; text-align: center; }.recommendation > span:first-child { grid-template-columns: auto 1fr; align-items: end; text-align: left; }.recommendation small { grid-column: 2; padding-top: .1rem; text-align: center; font-size: .55rem; }.recommendation > span:last-child b { margin-top: .12rem; font-size: .57rem; }
+.bodApproval { margin-top: .75rem; }.bodApproval > b { display: block; margin-bottom: .35rem; }.bodApproval small { font-size: .55rem; }.bodApproval > div { display: grid; grid-template-columns: 1fr 1fr; gap: 1.15rem; }.secretary { display: grid; width: 10rem; margin: .75rem 1.5rem 0 auto; text-align: center; }.secretary b { margin-top: .1rem; font-size: .57rem; }
+.agreementPage { font-size: .64rem; line-height: 1.13; }.agreementPage .documentHeader { margin-bottom: .6rem; }.agreementDate { display: flex; justify-content: flex-end; gap: .25rem; }.agreementDate .line { width: 6rem; }.agreementLead { text-align: justify; }.agreementLead .line { min-width: 8rem; }.agreementPage h4 { margin: .5rem 0 .25rem; }.terms { margin: 0; padding-left: 1rem; text-align: justify; }.terms > li { padding-left: .15rem; margin: .25rem 0; }.terms ol { margin: .15rem 0 .1rem; padding-left: 1rem; }.terms ol li { margin: .1rem 0; }.agreementPage > p:last-of-type .line { min-width: 3rem; }.signature { display: grid; justify-items: center; width: 13rem; margin: 1.2rem .75rem 0 auto; }.signature .line { width: 100%; }.signature b { margin-top: .12rem; font-size: .56rem; font-weight: 400; }
+@media (max-width: 39.99rem) { .viewport { margin-right: -1rem; margin-left: -1rem; padding: .6rem; border-right: 0; border-left: 0; }.page { min-width: 44rem; padding: 1.35rem 1.5rem; } }

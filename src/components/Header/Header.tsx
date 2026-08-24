@@ -15,11 +15,25 @@ const navItems = [
 
 export function Header() {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState(
     () => window.location.hash.slice(1) || "home",
   );
   const navigationTarget = useRef<string | null>(null);
   const closeMenu = () => setOpen(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
 
   useEffect(() => {
     const sectionIds = navItems.map(([href]) => href.slice(1));
@@ -78,7 +92,7 @@ export function Header() {
     };
   }, []);
   return (
-    <header className={styles.header}>
+    <header className={`${styles.header} ${scrolled ? styles.scrolled : ""}`}>
       <div className={`container ${styles.inner}`}>
         <Link
           to="/"
