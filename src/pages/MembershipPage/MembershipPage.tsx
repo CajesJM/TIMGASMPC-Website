@@ -4,10 +4,13 @@ import {
   CheckCircle2,
   FileDown,
   FilePenLine,
+  HandCoins,
+  UsersRound,
 } from "lucide-react";
 import { useState } from "react";
+import { LoanApplicationForm } from "../../components/application/LoanApplicationForm/LoanApplicationForm";
 import { MembershipApplicationForm } from "../../components/application/MembershipApplicationForm/MembershipApplicationForm";
-import { MembershipApplicationModal } from "../../components/application/MembershipApplicationModal/MembershipApplicationModal";
+import { ApplicationModal } from "../../components/application/MembershipApplicationModal/MembershipApplicationModal";
 import { Button } from "../../components/Button/Button";
 import { PageHeader } from "../../components/PageHeader/PageHeader";
 import { objectives } from "../../data/content";
@@ -24,10 +27,17 @@ const verificationSteps = [
 export function MembershipPage() {
   const [showOnlineForm, setShowOnlineForm] = useState(false);
   const [onlineFormLoaded, setOnlineFormLoaded] = useState(false);
+  const [showLoanForm, setShowLoanForm] = useState(false);
+  const [loanFormLoaded, setLoanFormLoaded] = useState(false);
 
   const openOnlineForm = () => {
     setOnlineFormLoaded(true);
     setShowOnlineForm(true);
+  };
+
+  const openLoanForm = () => {
+    setLoanFormLoaded(true);
+    setShowLoanForm(true);
   };
 
   return (
@@ -85,44 +95,59 @@ export function MembershipPage() {
       <section id="application" className={pageStyles.applicationSection}>
         <div className="container">
           <header className={styles.sectionHeading}>
-            <p className="eyebrow">Application options</p>
-            <h2>Choose how you want to complete the official form.</h2>
+            <p className="eyebrow">Application center</p>
+            <h2>Choose the official application you need.</h2>
             <p>
-              TIMGAS MPC will support online completion and a downloadable form
-              for applicants who prefer to fill it out manually.
+              Complete a form online for manager review or download the
+              original file and submit it according to office instructions.
             </p>
           </header>
           <div className={pageStyles.applicationGrid}>
             <article>
-              <FilePenLine aria-hidden="true" />
-              <div>
-                <span>Online option</span>
-                <h3>Fill out the application online</h3>
+              <div className={pageStyles.applicationTitle}>
+                <UsersRound aria-hidden="true" />
+                <div>
+                  <span>Membership</span>
+                  <h3>Membership application</h3>
+                </div>
+              </div>
+              <div className={pageStyles.applicationCopy}>
                 <p>
-                  Enter the information from the revised 2023 form and send it
-                  securely to the manager for review.
+                  Apply to become a TIMGAS MPC member using the official revised
+                  2023 membership profile and agreement.
                 </p>
               </div>
-              <button type="button" onClick={openOnlineForm}>
-                {onlineFormLoaded ? "Continue online application" : "Apply online"}
-              </button>
+              <div className={pageStyles.applicationActions}>
+                <button type="button" onClick={openOnlineForm}>
+                  <FilePenLine /> {onlineFormLoaded ? "Continue online" : "Apply online"}
+                </button>
+                <a href="/downloads/Membership-Application-Form-Revised-2023.docx" download>
+                  <FileDown /> Download form
+                </a>
+              </div>
             </article>
             <article>
-              <FileDown aria-hidden="true" />
-              <div>
-                <span>Manual option</span>
-                <h3>Download and fill out the form</h3>
+              <div className={pageStyles.applicationTitle}>
+                <HandCoins aria-hidden="true" />
+                <div>
+                  <span>Credit application</span>
+                  <h3>Loan application</h3>
+                </div>
+              </div>
+              <div className={pageStyles.applicationCopy}>
                 <p>
-                  Download the official file, complete it manually, and submit
-                  it according to the cooperative office’s instructions.
+                  Existing members can submit the official loan application for
+                  manager assessment and cooperative approval.
                 </p>
               </div>
-              <a
-                href="/downloads/Membership-Application-Form-Revised-2023.docx"
-                download
-              >
-                Download official form <FileDown aria-hidden="true" />
-              </a>
+              <div className={pageStyles.applicationActions}>
+                <button type="button" onClick={openLoanForm}>
+                  <FilePenLine /> {loanFormLoaded ? "Continue loan form" : "Apply for a loan"}
+                </button>
+                <a href="/downloads/Loan-Application-Form.xls" download>
+                  <FileDown /> Download XLS
+                </a>
+              </div>
             </article>
           </div>
 
@@ -130,12 +155,31 @@ export function MembershipPage() {
       </section>
 
       {onlineFormLoaded && (
-        <MembershipApplicationModal
+        <ApplicationModal
           open={showOnlineForm}
           onClose={() => setShowOnlineForm(false)}
+          eyebrow="Membership application"
+          title="Apply online to TIMGAS MPC"
+          description="Complete each section, review your information, then submit it privately to the cooperative manager."
+          closeLabel="Close membership application"
+          idPrefix="membership"
         >
           <MembershipApplicationForm />
-        </MembershipApplicationModal>
+        </ApplicationModal>
+      )}
+
+      {loanFormLoaded && (
+        <ApplicationModal
+          open={showLoanForm}
+          onClose={() => setShowLoanForm(false)}
+          eyebrow="Official loan application"
+          title="Apply for a TIMGAS MPC loan"
+          description="Complete the fields from the official Excel form. Internal assessment and approval sections are completed by authorized TIMGAS personnel."
+          closeLabel="Close loan application"
+          idPrefix="loan"
+        >
+          <LoanApplicationForm />
+        </ApplicationModal>
       )}
 
       <section className={styles.cta}>

@@ -80,7 +80,13 @@
   border-top: 3px solid var(--color-gold-500);
 }
 
-.applicationGrid article > svg {
+.applicationTitle {
+  display: flex;
+  gap: 0.85rem;
+  align-items: center;
+}
+
+.applicationTitle > svg {
   box-sizing: content-box;
   width: 1.4rem;
   height: 1.4rem;
@@ -88,6 +94,14 @@
   color: var(--color-brand-800);
   background: white;
   border-radius: 50%;
+}
+
+.applicationTitle h3 {
+  margin-bottom: 0;
+}
+
+.applicationCopy {
+  min-height: 3.8rem;
 }
 
 .applicationGrid span {
@@ -108,8 +122,14 @@
   font-size: 0.86rem;
 }
 
-.applicationGrid button,
-.applicationGrid a {
+.applicationActions {
+  display: grid;
+  gap: 0.65rem;
+  margin-top: auto;
+}
+
+.applicationActions button,
+.applicationActions a {
   display: inline-flex;
   gap: 0.45rem;
   justify-content: center;
@@ -126,7 +146,13 @@
   cursor: pointer;
 }
 
-.applicationGrid a svg {
+.applicationActions a {
+  color: var(--color-brand-900);
+  background: white;
+  border-color: var(--color-border);
+}
+
+.applicationActions svg {
   width: 1rem;
   height: 1rem;
 }
@@ -159,6 +185,10 @@
   }
 
   .applicationGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .applicationActions {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }

@@ -104,6 +104,189 @@ service cloud.firestore {
         && data.updatedAt == request.time;
     }
 
+    function validLoanReview(review) {
+      return review is map
+        && review.keys().hasOnly([
+          'cbuAmount', 'savingsAmount', 'dateReleased', 'amountApproved',
+          'previousLoans', 'assessingCoopEmployee', 'crecomAction',
+          'recommendingLoanAnalyst', 'lendingDepartmentManager',
+          'generalManager', 'bodAction', 'approvedBy', 'chairperson'
+        ])
+        && (review.cbuAmount == null || review.cbuAmount is number)
+        && (review.savingsAmount == null || review.savingsAmount is number)
+        && review.dateReleased is string
+        && review.dateReleased.size() <= 10
+        && (review.amountApproved == null || review.amountApproved is number)
+        && validPreviousLoans(review.previousLoans)
+        && review.assessingCoopEmployee is string
+        && review.assessingCoopEmployee.size() <= 220
+        && review.crecomAction is string
+        && review.crecomAction.size() <= 2000
+        && review.recommendingLoanAnalyst is string
+        && review.recommendingLoanAnalyst.size() <= 220
+        && review.lendingDepartmentManager is string
+        && review.lendingDepartmentManager.size() <= 220
+        && review.generalManager is string
+        && review.generalManager.size() <= 220
+        && review.bodAction is string
+        && review.bodAction.size() <= 2000
+        && review.approvedBy is string
+        && review.approvedBy.size() <= 220
+        && review.chairperson is string
+        && review.chairperson.size() <= 220;
+    }
+
+    function validLoanAsset(asset) {
+      return asset is map
+        && asset.keys().hasOnly(['propertyDescription', 'value'])
+        && asset.propertyDescription is string
+        && asset.propertyDescription.size() <= 200
+        && asset.value is number
+        && asset.value >= 0;
+    }
+
+    function validLoanAssets(assets) {
+      return assets is list
+        && assets.size() <= 6
+        && (assets.size() < 1 || validLoanAsset(assets[0]))
+        && (assets.size() < 2 || validLoanAsset(assets[1]))
+        && (assets.size() < 3 || validLoanAsset(assets[2]))
+        && (assets.size() < 4 || validLoanAsset(assets[3]))
+        && (assets.size() < 5 || validLoanAsset(assets[4]))
+        && (assets.size() < 6 || validLoanAsset(assets[5]));
+    }
+
+    function validLoanDebt(debt) {
+      return debt is map
+        && debt.keys().hasOnly([
+          'sourceOfCredit', 'amountGranted', 'outstandingBalance', 'remarks'
+        ])
+        && debt.sourceOfCredit is string
+        && debt.sourceOfCredit.size() <= 180
+        && debt.amountGranted is number
+        && debt.amountGranted >= 0
+        && debt.outstandingBalance is number
+        && debt.outstandingBalance >= 0
+        && debt.remarks is string
+        && debt.remarks.size() <= 250;
+    }
+
+    function validLoanDebts(debts) {
+      return debts is list
+        && debts.size() <= 4
+        && (debts.size() < 1 || validLoanDebt(debts[0]))
+        && (debts.size() < 2 || validLoanDebt(debts[1]))
+        && (debts.size() < 3 || validLoanDebt(debts[2]))
+        && (debts.size() < 4 || validLoanDebt(debts[3]));
+    }
+
+    function validPreviousLoan(loan) {
+      return loan is map
+        && loan.keys().hasOnly([
+          'typeOfLoan', 'amountGranted', 'outstandingBalance', 'remarks'
+        ])
+        && loan.typeOfLoan is string
+        && loan.typeOfLoan.size() <= 120
+        && loan.amountGranted is number
+        && loan.amountGranted >= 0
+        && loan.outstandingBalance is number
+        && loan.outstandingBalance >= 0
+        && loan.remarks is string
+        && loan.remarks.size() <= 250;
+    }
+
+    function validPreviousLoans(loans) {
+      return loans is list
+        && loans.size() <= 4
+        && (loans.size() < 1 || validPreviousLoan(loans[0]))
+        && (loans.size() < 2 || validPreviousLoan(loans[1]))
+        && (loans.size() < 3 || validPreviousLoan(loans[2]))
+        && (loans.size() < 4 || validPreviousLoan(loans[3]));
+    }
+
+    function validLoanApplication(data) {
+      return data.keys().hasOnly([
+          'schemaVersion', 'source', 'reference', 'applicantName', 'address',
+          'typeOfLoan', 'purposeOfLoan', 'paymentMode', 'numberOfMonths',
+          'amountApplied', 'assets', 'debts', 'spouseName', 'coMakers',
+          'agreement', 'privacyConsent', 'status', 'statusNote', 'review',
+          'submittedAt', 'updatedAt'
+        ])
+        && data.keys().hasAll([
+          'schemaVersion', 'source', 'reference', 'applicantName', 'address',
+          'typeOfLoan', 'purposeOfLoan', 'paymentMode', 'numberOfMonths',
+          'amountApplied', 'assets', 'debts', 'spouseName', 'coMakers',
+          'agreement', 'privacyConsent', 'status', 'statusNote', 'review',
+          'submittedAt', 'updatedAt'
+        ])
+        && data.schemaVersion == 1
+        && data.source == 'online'
+        && data.reference is string
+        && data.reference.matches('^TIMGAS-LOAN-[0-9]{8}-[A-Z0-9]{6}$')
+        && data.applicantName is string
+        && data.applicantName.size() >= 3
+        && data.applicantName.size() <= 220
+        && data.address is string
+        && data.address.size() >= 3
+        && data.address.size() <= 300
+        && data.typeOfLoan in [
+          'prodn', 'hon', 'salary', 'express', 'sbl', 'mf_first', 'mf_second'
+        ]
+        && data.purposeOfLoan is string
+        && data.purposeOfLoan.size() >= 3
+        && data.purposeOfLoan.size() <= 500
+        && data.paymentMode in [
+          'daily', 'weekly', 'semi_monthly', 'monthly'
+        ]
+        && data.numberOfMonths is int
+        && data.numberOfMonths >= 1
+        && data.numberOfMonths <= 120
+        && data.amountApplied is number
+        && data.amountApplied > 0
+        && validLoanAssets(data.assets)
+        && validLoanDebts(data.debts)
+        && data.spouseName is string
+        && data.spouseName.size() <= 220
+        && data.coMakers is list
+        && data.coMakers.size() <= 2
+        && (data.coMakers.size() < 1 || (
+          data.coMakers[0] is string && data.coMakers[0].size() <= 220
+        ))
+        && (data.coMakers.size() < 2 || (
+          data.coMakers[1] is string && data.coMakers[1].size() <= 220
+        ))
+        && data.agreement is map
+        && data.agreement.keys().hasOnly([
+          'version', 'accepted', 'applicantTypedName',
+          'coMakerAuthorizationAcknowledged'
+        ])
+        && data.agreement.version == 'Loan-Application-Form'
+        && data.agreement.accepted == true
+        && data.agreement.applicantTypedName is string
+        && data.agreement.applicantTypedName.size() >= 3
+        && data.agreement.applicantTypedName.size() <= 220
+        && data.agreement.coMakerAuthorizationAcknowledged == true
+        && data.privacyConsent == true
+        && data.status == 'new'
+        && data.statusNote == ''
+        && validLoanReview(data.review)
+        && data.review.cbuAmount == null
+        && data.review.savingsAmount == null
+        && data.review.dateReleased == ''
+        && data.review.amountApproved == null
+        && data.review.previousLoans.size() == 0
+        && data.review.assessingCoopEmployee == ''
+        && data.review.crecomAction == ''
+        && data.review.recommendingLoanAnalyst == ''
+        && data.review.lendingDepartmentManager == ''
+        && data.review.generalManager == ''
+        && data.review.bodAction == ''
+        && data.review.approvedBy == ''
+        && data.review.chairperson == ''
+        && data.submittedAt == request.time
+        && data.updatedAt == request.time;
+    }
+
     match /posts/{postId} {
       allow read: if isAdmin() || resource.data.status == 'published';
       allow create: if isAdmin()
@@ -128,6 +311,23 @@ service cloud.firestore {
         ]
         && request.resource.data.statusNote is string
         && request.resource.data.statusNote.size() <= 1000
+        && request.resource.data.updatedAt == request.time;
+    }
+
+    match /loanApplications/{applicationId} {
+      allow create: if request.auth == null
+        && validLoanApplication(request.resource.data);
+      allow read, delete: if isAdmin();
+      allow update: if isAdmin()
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['status', 'statusNote', 'review', 'updatedAt'])
+        && request.resource.data.status in [
+          'new', 'in_review', 'for_verification', 'approved',
+          'disapproved', 'released'
+        ]
+        && request.resource.data.statusNote is string
+        && request.resource.data.statusNote.size() <= 1000
+        && validLoanReview(request.resource.data.review)
         && request.resource.data.updatedAt == request.time;
     }
 

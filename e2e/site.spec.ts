@@ -74,9 +74,29 @@ test('official information is presented without unconfirmed prices', async ({ pa
   await expect(page.getByRole('link', { name: 'Services' })).toHaveCount(0);
   await expect(page.getByText(/₱|P\s*\d{3}/)).toHaveCount(0);
   await expect(page.getByText(/general assembly set for september/i)).toHaveCount(0);
-  const download = page.getByRole('link', { name: /download official form/i });
+  const download = page.getByRole('link', { name: /download form/i });
   await expect(download).toHaveAttribute('href', '/downloads/Membership-Application-Form-Revised-2023.docx');
+  await expect(page.getByRole('link', { name: /download xls/i })).toHaveAttribute('href', '/downloads/Loan-Application-Form.xls');
   await expect(page.getByRole('button', { name: /apply online/i })).toBeEnabled();
+  await expect(page.getByRole('button', { name: /apply for a loan/i })).toBeEnabled();
+});
+
+test('official loan application opens as a responsive modal', async ({ page }) => {
+  await page.goto('/#application', { waitUntil: 'domcontentloaded' });
+  await page.getByRole('button', { name: /apply for a loan/i }).click();
+
+  const dialog = page.getByRole('dialog', { name: /apply for a TIMGAS MPC loan/i });
+  await expect(dialog).toBeVisible();
+  await expect(dialog.getByRole('heading', { name: /loan application form/i })).toBeVisible();
+  await expect(dialog.getByLabel(/applicant\/member borrower/i)).toBeVisible();
+  await expect(dialog.getByLabel(/MF \(first field\)/i)).toBeVisible();
+  await expect(dialog.getByLabel(/MF \(second field\)/i)).toBeVisible();
+
+  const hasOverflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);
+  expect(hasOverflow).toBe(false);
+
+  await page.keyboard.press('Escape');
+  await expect(dialog).toHaveCount(0);
 });
 
 test('contact section includes the office photo, map, and confirmed details', async ({ page }) => {

@@ -8,10 +8,15 @@ import {
 import { createPortal } from "react-dom";
 import styles from "./MembershipApplicationModal.module.css";
 
-type MembershipApplicationModalProps = {
+type ApplicationModalProps = {
   children: ReactNode;
   open: boolean;
   onClose: () => void;
+  eyebrow: string;
+  title: string;
+  description: string;
+  closeLabel: string;
+  idPrefix: string;
 };
 
 const focusableSelector = [
@@ -23,11 +28,16 @@ const focusableSelector = [
   "[tabindex]:not([tabindex='-1'])",
 ].join(",");
 
-export function MembershipApplicationModal({
+export function ApplicationModal({
   children,
   open,
   onClose,
-}: MembershipApplicationModalProps) {
+  eyebrow,
+  title,
+  description,
+  closeLabel,
+  idPrefix,
+}: ApplicationModalProps) {
   const dialogRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -82,24 +92,21 @@ export function MembershipApplicationModal({
         className={styles.dialog}
         role="dialog"
         aria-modal="true"
-        aria-labelledby="membership-modal-title"
-        aria-describedby="membership-modal-description"
+        aria-labelledby={`${idPrefix}-modal-title`}
+        aria-describedby={`${idPrefix}-modal-description`}
         onKeyDown={keepFocusInside}
       >
         <header className={styles.header}>
           <div>
-            <p>Membership application</p>
-            <h2 id="membership-modal-title">Apply online to TIMGAS MPC</h2>
-            <span id="membership-modal-description">
-              Complete each section, review your information, then submit it
-              privately to the cooperative manager.
-            </span>
+            <p>{eyebrow}</p>
+            <h2 id={`${idPrefix}-modal-title`}>{title}</h2>
+            <span id={`${idPrefix}-modal-description`}>{description}</span>
           </div>
           <button
             ref={closeButtonRef}
             type="button"
             onClick={onClose}
-            aria-label="Close online application"
+            aria-label={closeLabel}
           >
             <X aria-hidden="true" />
           </button>

@@ -67,11 +67,15 @@ describe("TIMGAS website", () => {
     expect(
       screen.getAllByRole("link", { name: /contact the office/i })[0],
     ).toHaveAttribute("href", "/#contact");
-    expect(screen.getByRole("link", { name: /download official form/i }))
+    expect(screen.getByRole("link", { name: /download form/i }))
       .toHaveAttribute(
         "href",
         "/downloads/Membership-Application-Form-Revised-2023.docx",
       );
+    expect(screen.getByRole("link", { name: /download xls/i })).toHaveAttribute(
+      "href",
+      "/downloads/Loan-Application-Form.xls",
+    );
     await user.click(screen.getByRole("button", { name: /apply online/i }));
     expect(
       screen.getByRole("heading", { name: /membership profile and agreement/i }),
@@ -85,7 +89,25 @@ describe("TIMGAS website", () => {
       screen.queryByRole("dialog", { name: /apply online to timgas mpc/i }),
     ).not.toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: /continue online application/i }),
+      screen.getByRole("button", { name: /continue online/i }),
+    ).toBeVisible();
+
+    await user.click(screen.getByRole("button", { name: /apply for a loan/i }));
+    expect(
+      screen.getByRole("dialog", { name: /apply for a timgas mpc loan/i }),
+    ).toBeVisible();
+    expect(
+      screen.getByRole("heading", { name: /loan application form/i }),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText(/applicant\/member borrower/i)).toBeVisible();
+    expect(screen.getByLabelText(/mf \(first field\)/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/mf \(second field\)/i)).toBeInTheDocument();
+    await user.keyboard("{Escape}");
+    expect(
+      screen.queryByRole("dialog", { name: /apply for a timgas mpc loan/i }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /continue loan form/i }),
     ).toBeVisible();
   });
 
