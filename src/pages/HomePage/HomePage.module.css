@@ -1,8 +1,9 @@
 .hero {
   position: relative;
-  min-height: 46rem;
   display: flex;
+  min-height: 46rem;
   align-items: stretch;
+  overflow: hidden;
   color: white;
   background: var(--color-brand-950);
 }
@@ -14,30 +15,36 @@
   height: 100%;
 }
 .heroImage {
+  left: 25%;
+  width: 75%;
   object-fit: cover;
-  object-position: 62% center;
+  object-position: 58% 72%;
 }
 .heroOverlay {
   background:
     linear-gradient(
       90deg,
-      rgb(7 32 24 / 0.92) 0%,
-      rgb(7 32 24 / 0.72) 46%,
-      rgb(7 32 24 / 0.1) 80%
+      #e5f3ea 0%,
+      #e5f3ea 35%,
+      rgba(229, 243, 234, 0.83) 41%,
+      rgba(229, 243, 234, 0.544) 49%,
+      rgba(229, 243, 234, 0.345) 58%,
+      transparent 67%
     ),
-    linear-gradient(0deg, rgb(7 32 24 / 0.6) 0%, transparent 40%);
+    linear-gradient(0deg, rgb(229 243 234 / 0.22) 50%, transparent 100%);
 }
 .heroContent {
   position: relative;
   z-index: 1;
-  padding-top: 6rem;
-  padding-bottom: 10rem;
+  width: min(100%, 48rem);
+  padding-top: clamp(5rem, 10vw, 8.5rem);
+  padding-bottom: clamp(8rem, 12vw, 10.5rem);
 }
 .kicker {
   display: flex;
   align-items: center;
   gap: 0.7rem;
-  color: #f2d89c;
+  color: #b77a08;
   font-size: 0.78rem;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -47,21 +54,26 @@
   width: 2.2rem;
   height: 1px;
   content: "";
-  background: var(--color-gold-500);
+  background: #b77a08;
 }
 .hero h1 {
-  max-width: 49rem;
-  margin: 1.4rem 0;
-  color: white;
+  max-width: 47rem;
+  margin: 1.25rem 0;
+  color: #000;
+  font-size: clamp(2.9rem, 5.25vw, 5.35rem);
+  line-height: 0.98;
+  text-wrap: balance;
 }
 .hero h1 em {
-  color: #efd38e;
+  color: #b77a08;
   font-weight: 600;
 }
 .heroContent > p:not(.kicker) {
-  max-width: 37rem;
-  color: #e1ece7;
-  font-size: 1.1rem;
+  max-width: 38rem;
+  margin: 0;
+  color: #44524b;
+  font-size: clamp(1rem, 1.55vw, 1.12rem);
+  line-height: 1.6;
 }
 .heroActions {
   display: flex;
@@ -69,13 +81,18 @@
   gap: 0.8rem;
   margin-top: 2rem;
 }
+.heroActions a {
+  min-height: 2.7rem;
+  padding: 0.65rem 1rem;
+  font-size: 0.88rem;
+}
 .heroSecondary {
-  color: white;
-  border-color: rgb(255 255 255 / 0.65);
+  color: #0d5a40;
+  border-color: #0d5a40;
 }
 .heroSecondary:hover {
-  color: var(--color-brand-950);
-  background: white;
+  color: white;
+  background: #063b2b;
 }
 .heroCurve {
   position: absolute;
@@ -83,7 +100,7 @@
   right: 0;
   bottom: -1px;
   left: 0;
-  height: clamp(4.75rem, 8vw, 7.5rem);
+  height: clamp(4rem, 7vw, 6.5rem);
   color: var(--color-surface);
   filter: drop-shadow(0 -0.45rem 0.9rem rgb(4 32 23 / 0.08));
   line-height: 0;
@@ -320,20 +337,28 @@
   }
 }
 @media (max-width: 40rem) {
+  .kicker::before {
+    display: none;
+  }
   .hero {
-    min-height: 43rem;
+    min-height: 42rem;
   }
   .heroOverlay {
     background:
-      linear-gradient(90deg, rgb(7 32 24 / 0.84), rgb(7 32 24 / 0.45)),
-      linear-gradient(0deg, rgb(7 32 24 / 0.78), transparent 60%);
+      linear-gradient(90deg, rgb(229 243 234 / 0.97), rgb(229 243 234 / 0.86)),
+      linear-gradient(0deg, rgb(229 243 234 / 0.5) 0%, transparent 66%);
+  }
+  .heroImage {
+    left: 0;
+    width: 100%;
+    object-position: 60% 65%;
   }
   .hero h1 {
-    font-size: 3.2rem;
+    font-size: clamp(2.85rem, 11.5vw, 3.8rem);
   }
   .heroContent {
-    padding-top: 4rem;
-    padding-bottom: 8.5rem;
+    padding-top: 4.25rem;
+    padding-bottom: 7.5rem;
   }
   .valuesHeader {
     gap: 0.8rem;

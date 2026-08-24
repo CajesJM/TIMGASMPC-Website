@@ -5,6 +5,7 @@ type PageHeaderProps = {
   description: string;
   headingLevel?: 1 | 2;
   compact?: boolean;
+  centered?: boolean;
 };
 export function PageHeader({
   eyebrow,
@@ -12,10 +13,11 @@ export function PageHeader({
   description,
   headingLevel = 1,
   compact = false,
+  centered = false,
 }: PageHeaderProps) {
   const Heading = headingLevel === 1 ? "h1" : "h2";
   return (
-    <section className={`${styles.header} ${compact ? styles.compact : ""}`}>
+    <section className={`${styles.header} ${compact ? styles.compact : ""} ${centered ? styles.centered : ""}`}>
       <div className={`container ${styles.inner}`}>
         <p className="eyebrow">{eyebrow}</p>
         <Heading>{title}</Heading>

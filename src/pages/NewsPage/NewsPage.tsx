@@ -72,10 +72,23 @@ export function NewsPage() {
   const [overflowingCarousels, setOverflowingCarousels] = useState<
     Record<NewsCategory, boolean>
   >({ announcement: false, news: false, achievement: false });
+  const [crossfadingCarousels, setCrossfadingCarousels] = useState<
+    Set<NewsCategory>
+  >(() => new Set());
   const carouselRefs = useRef<
     Partial<Record<NewsCategory, HTMLDivElement | null>>
   >({});
   const dragState = useRef({ active: false, startX: 0, startScroll: 0 });
+  const crossfadeTimers = useRef<Partial<Record<NewsCategory, number>>>({});
+
+  useEffect(
+    () => () => {
+      Object.values(crossfadeTimers.current).forEach((timer) => {
+        if (timer) window.clearTimeout(timer);
+      });
+    },
+    [],
+  );
 
   useEffect(() => {
     let active = true;
@@ -150,6 +163,19 @@ export function NewsPage() {
     });
   };
 
+  const playCarouselCrossfade = (category: NewsCategory) => {
+    const previousTimer = crossfadeTimers.current[category];
+    if (previousTimer) window.clearTimeout(previousTimer);
+    setCrossfadingCarousels((current) => new Set(current).add(category));
+    crossfadeTimers.current[category] = window.setTimeout(() => {
+      setCrossfadingCarousels((current) => {
+        const next = new Set(current);
+        next.delete(category);
+        return next;
+      });
+    }, 360);
+  };
+
   const goToSlide = (category: NewsCategory, index: number) => {
     const carousel = carouselRefs.current[category];
     const card = carousel?.children.item(index) as HTMLElement | null;
@@ -176,11 +202,11 @@ export function NewsPage() {
       );
       return currentDistance < nearestDistance ? index : nearest;
     }, 0);
-    setActiveSlides((current) =>
-      current[category] === nearestIndex
-        ? current
-        : { ...current, [category]: nearestIndex },
-    );
+    setActiveSlides((current) => {
+      if (current[category] === nearestIndex) return current;
+      playCarouselCrossfade(category);
+      return { ...current, [category]: nearestIndex };
+    });
   };
 
   const startMouseDrag = (event: ReactPointerEvent<HTMLDivElement>) => {
@@ -221,6 +247,7 @@ export function NewsPage() {
         eyebrow="News and notices"
         title="Verified updates from TIMGAS MPC."
         description="Official announcements, cooperative news, and achievements published by the TIMGAS MPC manager."
+        compact
       />
 
       <section className={styles.section} aria-busy={loading}>
@@ -284,6 +311,9 @@ export function NewsPage() {
                         )}
                         <div
                           className={styles.postGrid}
+                          data-crossfading={
+                            crossfadingCarousels.has(category) || undefined
+                          }
                           ref={(element) => {
                             carouselRefs.current[category] = element;
                           }}
@@ -331,11 +361,13 @@ export function NewsPage() {
                                   <h4>{post.title}</h4>
                                   <p
                                     id={descriptionId}
-                                    className={
+                                    className={`${styles.postDescription} ${
                                       !isExpanded && hasLongDescription
                                         ? styles.postDescriptionCollapsed
-                                        : undefined
-                                    }
+                                        : hasLongDescription
+                                          ? styles.postDescriptionExpanded
+                                          : ""
+                                    }`}
                                   >
                                     {post.description}
                                   </p>

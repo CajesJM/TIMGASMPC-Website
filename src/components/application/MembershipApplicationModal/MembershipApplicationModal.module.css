@@ -5,8 +5,8 @@
   display: grid;
   place-items: center;
   padding: clamp(0rem, 2vw, 1.25rem);
-  background: rgb(5 27 20 / 72%);
-  backdrop-filter: blur(5px);
+  background: rgb(5 27 20 / 68%);
+  backdrop-filter: blur(8px);
   animation: fadeIn 180ms ease-out;
 }
 
@@ -18,12 +18,12 @@
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
   overflow: hidden;
-  width: min(100%, 72rem);
-  max-height: min(94vh, 58rem);
-  background: #fff;
-  border: 1px solid rgb(255 255 255 / 20%);
-  border-radius: clamp(0rem, 1.5vw, var(--radius-lg));
-  box-shadow: 0 2rem 6rem rgb(0 0 0 / 34%);
+  width: min(100%, 74rem);
+  max-height: min(94vh, 60rem);
+  background: #f7faf8;
+  border: 1px solid rgb(255 255 255 / 32%);
+  border-radius: clamp(0rem, 1.5vw, 1rem);
+  box-shadow: 0 1.5rem 5rem rgb(0 0 0 / 38%);
   animation: riseIn 220ms ease-out;
 }
 
@@ -33,12 +33,12 @@
   gap: 1.25rem;
   justify-content: space-between;
   align-items: start;
-  padding: clamp(1rem, 2vw, 1.4rem) clamp(1rem, 3vw, 2rem);
+  padding: clamp(1rem, 2vw, 1.25rem) clamp(1rem, 3vw, 1.75rem);
   color: #fff;
   background:
     radial-gradient(circle at 80% -20%, rgb(193 140 39 / 30%), transparent 35%),
     var(--color-brand-950);
-  border-bottom: 3px solid var(--color-gold-500);
+  border-bottom: 1px solid rgb(228 190 79 / 48%);
 }
 
 .header p {
@@ -97,8 +97,8 @@
 .content {
   overflow-y: auto;
   overscroll-behavior: contain;
-  padding: clamp(0.8rem, 2.5vw, 1.6rem);
-  background: #f3f6f4;
+  padding: clamp(0.75rem, 2.2vw, 1.35rem);
+  background: #f7faf8;
   scrollbar-gutter: stable;
 }
 

@@ -1,5 +1,5 @@
 .section {
-  padding-block: clamp(3rem, 6vw, 5rem);
+  padding-block: clamp(2.25rem, 4.5vw, 3.75rem);
 }
 
 .sectionHeading {
@@ -164,7 +164,7 @@
 
 .postShowcase {
   display: grid;
-  gap: clamp(2.75rem, 7vw, 5rem);
+  gap: clamp(2rem, 4.5vw, 3.25rem);
 }
 
 .postGroup {
@@ -178,8 +178,8 @@
   align-items: end;
   justify-content: space-between;
   gap: 1rem 2rem;
-  margin-bottom: clamp(1.1rem, 3vw, 1.6rem);
-  padding-bottom: 1rem;
+  margin-bottom: clamp(0.8rem, 2vw, 1.15rem);
+  padding-bottom: 0.75rem;
   border-bottom: 1px solid var(--color-border);
 }
 
@@ -196,9 +196,10 @@
   width: 2.6rem;
   height: 2.6rem;
   place-items: center;
-  color: white;
-  background: var(--color-brand-800);
-  border-radius: 50%;
+  color: var(--color-brand-800);
+  background: var(--color-brand-50);
+  border: 1px solid #cbded3;
+  border-radius: 0.65rem;
 }
 
 .postGroupTitle svg {
@@ -287,6 +288,19 @@
   user-select: none;
 }
 
+.postGrid[data-crossfading] {
+  animation: showcaseCrossfade 360ms ease-out;
+}
+
+@keyframes showcaseCrossfade {
+  0% {
+    opacity: 0.38;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
 .postGrid:active {
   cursor: grabbing;
 }
@@ -300,7 +314,6 @@
   overflow: hidden;
   background: white;
   border: 1px solid var(--color-border);
-  border-top: 3px solid var(--color-gold-500);
   box-shadow: var(--shadow-sm);
   scroll-snap-align: start;
 }
@@ -340,7 +353,7 @@
   display: flex;
   flex: 1;
   flex-direction: column;
-  padding: clamp(1.1rem, 3vw, 1.5rem);
+  padding: clamp(0.95rem, 2.2vw, 1.2rem);
 }
 
 .postMeta {
@@ -371,7 +384,7 @@
   text-wrap: balance;
 }
 
-.postContent p {
+.postDescription {
   margin: 0;
   color: var(--color-text-muted);
   font-size: clamp(0.82rem, 1.2vw, 0.9rem);
@@ -384,6 +397,31 @@
   overflow: hidden;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 4;
+  animation: descriptionFadeOut 180ms ease-out;
+}
+
+.postDescriptionExpanded {
+  animation: descriptionFadeIn 260ms ease-out;
+}
+
+@keyframes descriptionFadeIn {
+  from {
+    opacity: 0.2;
+    transform: translateY(-0.25rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes descriptionFadeOut {
+  from {
+    opacity: 0.35;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .readMore {
@@ -647,6 +685,12 @@
 @media (prefers-reduced-motion: reduce) {
   .postPhoto img {
     transition: none;
+  }
+
+  .postGrid[data-crossfading],
+  .postDescriptionCollapsed,
+  .postDescriptionExpanded {
+    animation: none;
   }
 
   .postGrid {

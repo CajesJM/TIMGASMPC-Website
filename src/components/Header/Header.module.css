@@ -38,26 +38,26 @@
   text-decoration: none;
 }
 
-/* Mobile: much smaller logo and text */
+/* Mobile: compact but still readable brand treatment */
 @media (max-width: 64rem) {
   .logo :global(.brand) {
     gap: 0.3rem;
   }
   
   .logo :global(.mark) {
-    width: 1.65rem;
-    height: 1.65rem;
+    width: 2.15rem;
+    height: 2.15rem;
   }
   
   .logo :global(.copy strong) {
-    font-size: 0.375rem;
+    font-size: 0.82rem;
     font-weight: 700;
   }
   
   .logo :global(.copy small) {
-    font-size: 0.175rem;
-    margin-top: 0.03rem;
-    letter-spacing: 0.04em;
+    font-size: 0.42rem;
+    margin-top: 0.08rem;
+    letter-spacing: 0.1em;
   }
 }
 
@@ -151,7 +151,7 @@
 
 .nav > a.active:not(.apply) {
   color: var(--color-brand-900);
-  background: var(--color-brand-100);
+  background: rgb(255 255 255 / 0.6);
 }
 
 .nav > a.active:not(.apply)::before {
@@ -168,8 +168,9 @@
 
 .apply {
   margin-top: 0.4rem;
-  font-size: 0.8125rem;
-  padding: 0.5rem 0.875rem;
+  min-height: 2.55rem;
+  font-size: 0.78rem;
+  padding: 0.55rem 0.8rem;
 }
 @media (min-width: 64rem) {
   .menuButton {
@@ -189,7 +190,7 @@
   }
 
   .nav > a:not(.apply) {
-    padding: 0.625rem 1rem;
+    padding: 0.75rem 0.9rem;
     font-size: 0.9375rem;
     font-weight: 600;
     letter-spacing: -0.01em;

@@ -4,8 +4,7 @@ import {
   PhotoCarousel,
   type CarouselPhoto,
 } from "../../components/PhotoCarousel/PhotoCarousel";
-import heroImage from "../../assets/images/Timgas2.png";
-import officeImage from "../../assets/images/timgas-office.jpg";
+import officeImage from "../../assets/images/Timgas2.png";
 import officeFacadeImage from "../../assets/images/timgas-office-facade.jpg";
 import roadsideSignImage from "../../assets/images/timgas-roadside-sign.jpg";
 import { principles } from "../../data/content";
@@ -40,12 +39,12 @@ export function HomePage() {
       <section id="home" className={styles.hero}>
         <img
           className={styles.heroImage}
-          src={heroImage}
-          alt="TIMGAS Multi-Purpose Cooperative office in Trinidad, Bohol"
+          src={officeImage}
+          alt="Front entrance of the TIMGAS Multi-Purpose Cooperative office in Trinidad, Bohol"
         />
-        <div className={styles.heroOverlay} />
+        <div className={styles.heroOverlay} aria-hidden="true" />
         <div className={`container ${styles.heroContent}`}>
-          <p className={styles.kicker}>TIMGAS Multi-Purpose Cooperative</p>
+          <p className={styles.kicker}>TIMGAS Multi Purpose Cooperative</p>
           <h1 aria-label="Your partner in financial growth.">
             Your partner in
             <br />
@@ -56,7 +55,7 @@ export function HomePage() {
             financial services, farm support, and the power of cooperation.
           </p>
           <div className={styles.heroActions}>
-            <Button to="/#membership" variant="light">
+            <Button to="/#membership">
               Become a member <ArrowRight size={18} />
             </Button>
             <Button
@@ -121,9 +120,9 @@ export function HomePage() {
             <h2>Built on trust. Driven by purpose.</h2>
           </div>
           <p>
-            These cooperative principles guide TIMGAS MPC in delivering
-            member savings, responsible loan support, and community-rooted
-            services that help families and local livelihoods grow.
+            These cooperative principles guide TIMGAS MPC in delivering member
+            savings, responsible loan support, and community-rooted services
+            that help families and local livelihoods grow.
           </p>
         </div>
         <div className={`container ${styles.principles}`}>

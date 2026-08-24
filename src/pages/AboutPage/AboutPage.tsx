@@ -6,6 +6,17 @@ import styles from "./AboutPage.module.css";
 const cooperativeName =
   "Tinabangay sa Igsoong Mag-uuma Gasa ni San Isidro Multi-Purpose Cooperative";
 
+const objectiveLabels = [
+  "Financial opportunity",
+  "Self-help capacity",
+  "Fairer choices",
+  "Accessible banking",
+  "Community participation",
+  "Institutional self-reliance",
+];
+
+const romanNumerals = ["I", "II", "III", "IV", "V", "VI"];
+
 export function AboutPage() {
   return (
     <div id="about">
@@ -89,13 +100,21 @@ export function AboutPage() {
 
       <section className={`section ${styles.muted} ${styles.objectivesSection}`}>
         <div className="container">
-          <header className={styles.sectionHeading}>
+          <header className={styles.objectivesHeading}>
             <p className="eyebrow">Our objectives</p>
             <h2>Building member and community self-reliance.</h2>
           </header>
-          <ol className={styles.numberedList}>
-            {objectives.map((objective) => (
-              <li key={objective}>{objective}</li>
+          <ol className={styles.objectiveBoard}>
+            {objectives.map((objective, index) => (
+              <li key={objective}>
+                <span className={styles.objectiveNumber} aria-hidden="true">
+                  {romanNumerals[index]}
+                </span>
+                <article>
+                  <h3>{objectiveLabels[index]}</h3>
+                  <p>{objective}</p>
+                </article>
+              </li>
             ))}
           </ol>
         </div>

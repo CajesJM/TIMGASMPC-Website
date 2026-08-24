@@ -10,6 +10,141 @@
   box-shadow: 0 0.8rem 2.4rem rgb(14 53 39 / 7%);
 }
 
+/* Shared application-form treatment: clear sections, calm surfaces, and durable field states. */
+.formShell,
+.success {
+  max-width: 66rem;
+  padding: clamp(1rem, 2.4vw, 1.6rem);
+  border-color: #d9e5de;
+  border-radius: 0.75rem;
+  box-shadow: 0 1rem 2.75rem rgb(14 53 39 / 8%);
+}
+
+.formIntro {
+  gap: 1.25rem;
+  padding: clamp(0.9rem, 2vw, 1.15rem);
+  background: linear-gradient(135deg, #f5fbf7, #edf6f0);
+  border: 1px solid #d7e7de;
+  border-radius: 0.6rem;
+}
+
+.formIntro h3,
+.success h3 {
+  color: var(--color-brand-950);
+}
+
+.formIntro > span {
+  align-self: start;
+  padding: 0.4rem 0.65rem;
+  color: var(--color-brand-800);
+  background: #fff;
+  border: 1px solid #d2e1d8;
+}
+
+.progress {
+  margin: 1.25rem 0 1.5rem;
+}
+
+.progress li > span {
+  width: 2rem;
+  height: 2rem;
+  background: #f9fcfa;
+  border-color: #ceddd4;
+}
+
+.formShell legend {
+  margin-bottom: 0.4rem;
+  color: var(--color-brand-950);
+}
+
+.sectionHelp {
+  max-width: 48rem;
+  margin-bottom: 1.15rem;
+  line-height: 1.55;
+}
+
+.gridTwo,
+.gridThree {
+  gap: 1rem 1.1rem;
+  margin-bottom: 1.1rem;
+}
+
+.formShell label {
+  gap: 0.45rem;
+  color: #263a31;
+  font-size: 0.78rem;
+  letter-spacing: 0.005em;
+}
+
+.formShell input,
+.formShell select,
+.formShell textarea {
+  min-height: 2.85rem;
+  padding: 0.72rem 0.85rem;
+  background: #fbfdfb;
+  border-color: #cbd9d0;
+  border-radius: 0.45rem;
+  box-shadow: inset 0 1px 0 rgb(11 65 42 / 3%);
+  transition: border-color 160ms ease, box-shadow 160ms ease, background-color 160ms ease;
+}
+
+.formShell input:hover,
+.formShell select:hover,
+.formShell textarea:hover {
+  border-color: #a9c4b5;
+}
+
+.formShell input:focus-visible,
+.formShell select:focus-visible,
+.formShell textarea:focus-visible {
+  background: #fff;
+  border-color: var(--color-brand-700);
+  box-shadow: 0 0 0 3px rgb(30 119 83 / 14%);
+  outline: 0;
+}
+
+.phoneInput {
+  border-color: #cbd9d0;
+  border-radius: 0.45rem;
+  background: #fbfdfb;
+}
+
+.phoneInput > span {
+  background: #eef6f1;
+  border-right-color: #cbd9d0;
+}
+
+.radioGroup,
+.checkRow {
+  gap: 0.7rem;
+}
+
+.radioGroup label,
+.checkRow {
+  padding: 0.15rem 0;
+}
+
+.agreementNotice,
+.finalNotice {
+  padding: 0.9rem 1rem;
+  background: #fff9e8;
+  border: 1px solid #ead9a9;
+  border-left: 0;
+  border-radius: 0.45rem;
+}
+
+.terms,
+.reviewGrid article,
+.dependent {
+  border-color: #d8e4dc;
+  border-radius: 0.45rem;
+}
+
+.formActions {
+  margin-top: 1.25rem;
+  background: rgb(255 255 255 / 97%);
+}
+
 .formIntro {
   display: flex;
   gap: 1rem;
@@ -108,17 +243,115 @@
 
 @media (max-width: 39.99rem) {
   .formIntro { display: grid; }
+  .formIntro > span { display: none; }
   .progress { display: flex; overflow-x: auto; justify-content: space-between; padding-bottom: .5rem; }
-  .progress li { min-width: 2.1rem; }
-  .progress li::before,
+  .progress li { min-width: 2.1rem; flex: 1 0 2.1rem; }
+  .progress li::before { z-index: 0; display: block; top: 1rem; background: #c7d9cf; }
   .progress small { display: none; }
   .subsectionHeading { align-items: stretch; flex-direction: column; }
   .formShell,
   .success { padding: 1rem; border-radius: var(--radius-sm); }
   .formActions { align-items: stretch; flex-direction: column-reverse; margin-right: -1rem; margin-bottom: -1rem; margin-left: -1rem; padding: .75rem 1rem; }
   .formActions button { width: 100%; }
+
+  .mobileActionsHidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(0.75rem);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .formShell { scroll-behavior: auto; }
+}
+
+/* Final visual overrides, kept after responsive rules to preserve the form's layout on every step. */
+.formIntro { gap: 1.25rem; padding: clamp(.9rem, 2vw, 1.15rem); background: linear-gradient(135deg, #f5fbf7, #edf6f0); border: 1px solid #d7e7de; border-radius: .6rem; }
+.formIntro h3, .success h3, .formShell legend { color: var(--color-brand-950); }
+.formIntro > span { align-self: start; padding: .4rem .65rem; color: var(--color-brand-800); background: #fff; border: 1px solid #d2e1d8; }
+.progress { margin: 1.25rem 0 1.5rem; }
+.progress li > span { width: 2rem; height: 2rem; background: #f9fcfa; border-color: #ceddd4; }
+.sectionHelp { max-width: 48rem; margin-bottom: 1.15rem; line-height: 1.55; }
+.gridTwo, .gridThree { gap: 1rem 1.1rem; margin-bottom: 1.1rem; }
+.formShell label { gap: .45rem; color: #263a31; font-size: .78rem; letter-spacing: .005em; }
+.formShell input, .formShell select, .formShell textarea { min-height: 2.85rem; padding: .72rem .85rem; background: #fbfdfb; border-color: #cbd9d0; border-radius: .45rem; box-shadow: inset 0 1px 0 rgb(11 65 42 / 3%); transition: border-color 160ms ease, box-shadow 160ms ease, background-color 160ms ease; }
+.formShell input:hover, .formShell select:hover, .formShell textarea:hover { border-color: #a9c4b5; }
+.formShell input:focus-visible, .formShell select:focus-visible, .formShell textarea:focus-visible { background: #fff; border-color: var(--color-brand-700); box-shadow: 0 0 0 3px rgb(30 119 83 / 14%); outline: 0; }
+.phoneInput { background: #fbfdfb; border-color: #cbd9d0; border-radius: .45rem; }
+.phoneInput > span { background: #eef6f1; border-right-color: #cbd9d0; }
+.agreementNotice, .finalNotice { padding: .9rem 1rem; background: #fff9e8; border: 1px solid #ead9a9; border-left: 0; border-radius: .45rem; }
+.terms, .reviewGrid article, .dependent { border-color: #d8e4dc; border-radius: .45rem; }
+.formActions { margin-top: 1.25rem; background: rgb(255 255 255 / 97%); }
+.formActions { transition: opacity 180ms ease, transform 180ms ease; }
+
+.dependents {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.dependentRow {
+  position: relative;
+  display: grid;
+  gap: 0.9rem 1rem;
+  padding: 1rem 3.65rem 1rem 1rem;
+  background: #fbfdfb;
+  border: 1px solid #d8e4dc;
+  border-radius: 0.45rem;
+}
+
+.dependentRow > button {
+  position: absolute;
+  top: 0.85rem;
+  right: 0.85rem;
+  display: grid;
+  width: 2.35rem;
+  height: 2.35rem;
+  place-items: center;
+  color: #bf3030;
+  background: #fff1f1;
+  border: 1px solid #efc2c2;
+  border-radius: 0.45rem;
+  cursor: pointer;
+  transition: color 160ms ease, background-color 160ms ease, border-color 160ms ease, transform 160ms ease;
+}
+
+.dependentRow > button svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  stroke-width: 2.35;
+}
+
+.dependentRow > button:hover {
+  color: #fff;
+  background: #bf3030;
+  border-color: #bf3030;
+}
+
+.dependentRow > button:focus-visible {
+  outline: 3px solid rgb(191 48 48 / 20%);
+  outline-offset: 2px;
+}
+
+@media (min-width: 40rem) {
+  .dependentRow {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 62rem) {
+  .dependentRow {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 39.99rem) {
+  .dependentRow {
+    padding: 1rem 1rem 4rem;
+  }
+
+  .dependentRow > button {
+    top: auto;
+    right: 1rem;
+    bottom: 0.85rem;
+  }
 }

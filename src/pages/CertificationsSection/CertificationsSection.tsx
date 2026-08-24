@@ -1,4 +1,11 @@
-import { CalendarDays, FileBadge2, Maximize2, X } from "lucide-react";
+import {
+  CalendarDays,
+  ChevronDown,
+  ChevronUp,
+  FileBadge2,
+  Maximize2,
+  X,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { fetchPublishedPosts } from "../../features/posts/publicPosts";
 import {
@@ -11,6 +18,18 @@ export function CertificationsSection() {
   const [certifications, setCertifications] = useState<PublishedPost[]>([]);
   const [selectedCertificate, setSelectedCertificate] =
     useState<PublishedPost | null>(null);
+  const [expandedCertificates, setExpandedCertificates] = useState<Set<string>>(
+    () => new Set(),
+  );
+
+  const toggleDescription = (certificateId: string) => {
+    setExpandedCertificates((current) => {
+      const next = new Set(current);
+      if (next.has(certificateId)) next.delete(certificateId);
+      else next.add(certificateId);
+      return next;
+    });
+  };
 
   useEffect(() => {
     let active = true;
@@ -61,7 +80,11 @@ export function CertificationsSection() {
         </header>
 
         <div className={styles.grid}>
-          {certifications.map((certificate) => (
+          {certifications.map((certificate) => {
+            const isExpanded = expandedCertificates.has(certificate.id);
+            const hasLongDescription = certificate.description.length > 240;
+            const descriptionId = `certificate-description-${certificate.id}`;
+            return (
             <article className={styles.card} key={certificate.id}>
               <div className={styles.preview}>
                 {certificate.photoUrl ? (
@@ -92,10 +115,41 @@ export function CertificationsSection() {
                   {formatPostDate(certificate.date)}
                 </time>
                 <h3>{certificate.title}</h3>
-                <p>{certificate.description}</p>
+                <p
+                  id={descriptionId}
+                  className={`${styles.description} ${
+                    !isExpanded && hasLongDescription
+                      ? styles.descriptionCollapsed
+                      : hasLongDescription
+                        ? styles.descriptionExpanded
+                        : ""
+                  }`}
+                >
+                  {certificate.description}
+                </p>
+                {hasLongDescription && (
+                  <button
+                    className={styles.readMore}
+                    type="button"
+                    aria-expanded={isExpanded}
+                    aria-controls={descriptionId}
+                    onClick={() => toggleDescription(certificate.id)}
+                  >
+                    {isExpanded ? (
+                      <>
+                        Show less <ChevronUp />
+                      </>
+                    ) : (
+                      <>
+                        Read more <ChevronDown />
+                      </>
+                    )}
+                  </button>
+                )}
               </div>
             </article>
-          ))}
+            );
+          })}
         </div>
       </div>
 

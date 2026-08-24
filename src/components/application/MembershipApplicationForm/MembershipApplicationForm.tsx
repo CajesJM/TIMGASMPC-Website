@@ -6,9 +6,9 @@ import {
   Plus,
   Send,
   ShieldCheck,
-  Trash2,
+  X,
 } from "lucide-react";
-import { useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import {
   useFieldArray,
   useForm,
@@ -271,6 +271,7 @@ export function MembershipApplicationForm({ recaptchaToken }: { recaptchaToken: 
   const [submitError, setSubmitError] = useState("");
   const [submittedReference, setSubmittedReference] = useState("");
   const [reviewConfirmed, setReviewConfirmed] = useState(false);
+  const [hasReachedStepEnd, setHasReachedStepEnd] = useState(false);
   const formRef = useRef<HTMLDivElement>(null);
   const {
     register,
@@ -292,6 +293,31 @@ export function MembershipApplicationForm({ recaptchaToken }: { recaptchaToken: 
   const stepFourConsentsAccepted = Boolean(
     values.agreementAccepted && values.privacyConsent,
   );
+
+  useEffect(() => {
+    const scrollContainer = formRef.current?.parentElement;
+    if (!scrollContainer) return undefined;
+
+    const updateActionVisibility = () => {
+      const remaining =
+        scrollContainer.scrollHeight -
+        scrollContainer.scrollTop -
+        scrollContainer.clientHeight;
+      setHasReachedStepEnd(remaining <= 8);
+    };
+
+    const frame = window.requestAnimationFrame(updateActionVisibility);
+    scrollContainer.addEventListener("scroll", updateActionVisibility, {
+      passive: true,
+    });
+    window.addEventListener("resize", updateActionVisibility);
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      scrollContainer.removeEventListener("scroll", updateActionVisibility);
+      window.removeEventListener("resize", updateActionVisibility);
+    };
+  }, [step]);
 
   const moveToStep = (nextStep: number) => {
     setReviewConfirmed(false);
@@ -497,11 +523,12 @@ export function MembershipApplicationForm({ recaptchaToken }: { recaptchaToken: 
             <ErrorMessage message={errors.membershipType?.message} />
             <div className={styles.gridTwo}>
               <label>
-                Department or group <span>Optional</span>
+                Department or group
                 <input {...register("departmentName")} maxLength={120} />
+                <span>Optional</span>
               </label>
               <label>
-                TIN number <span>Optional</span>
+                TIN number
                 <input
                   inputMode="numeric"
                   autoComplete="off"
@@ -513,6 +540,7 @@ export function MembershipApplicationForm({ recaptchaToken }: { recaptchaToken: 
                     },
                   })}
                 />
+                <span>Optional</span>
                 <ErrorMessage message={errors.tinNumber?.message} />
               </label>
               <label>
@@ -521,8 +549,8 @@ export function MembershipApplicationForm({ recaptchaToken }: { recaptchaToken: 
               </label>
               <label>
                 Gmail address *
-                <input type="email" inputMode="email" autoComplete="email" placeholder="applicant@gmail.com" {...register("applicantEmail")} />
                 <span>TIMGAS MPC may use this address for application updates.</span>
+                <input type="email" inputMode="email" autoComplete="email" placeholder="applicant@gmail.com" {...register("applicantEmail")} />
                 <ErrorMessage message={errors.applicantEmail?.message} />
               </label>
             </div>
@@ -538,14 +566,16 @@ export function MembershipApplicationForm({ recaptchaToken }: { recaptchaToken: 
                 <ErrorMessage message={errors.givenName?.message} />
               </label>
               <label>
-                Middle name <span>Optional</span>
+                Middle name
                 <input autoComplete="additional-name" {...register("middleName")} />
+                <span>Optional</span>
               </label>
             </div>
             <div className={styles.gridThree}>
               <label>
-                Nickname <span>Optional</span>
+                Nickname
                 <input {...register("nickname")} />
+                <span>Optional</span>
               </label>
               <label>
                 Sex *
@@ -570,8 +600,9 @@ export function MembershipApplicationForm({ recaptchaToken }: { recaptchaToken: 
             </div>
             <div className={styles.gridTwo}>
               <label>
-                Occupation <span>Optional</span>
+                Occupation
                 <input autoComplete="organization-title" {...register("occupation")} />
+                <span>Optional</span>
               </label>
               <label>
                 Date of birth *
@@ -658,20 +689,24 @@ export function MembershipApplicationForm({ recaptchaToken }: { recaptchaToken: 
             </p>
             <div className={styles.gridTwo}>
               <label>
-                Mother’s maiden name <span>Optional</span>
+                Mother’s maiden name
                 <input {...register("motherMaidenName")} />
+                <span>Optional</span>
               </label>
               <label>
-                Father’s full name <span>Optional</span>
+                Father’s full name
                 <input {...register("fatherFullName")} />
+                <span>Optional</span>
               </label>
               <label>
-                Name of spouse <span>Optional</span>
+                Name of spouse
                 <input {...register("spouseName")} />
+                <span>Optional</span>
               </label>
               <label>
-                Spouse’s date of birth <span>Optional</span>
+                Spouse’s date of birth
                 <input type="date" {...register("spouseDateOfBirth")} />
+                <span>Optional</span>
               </label>
             </div>
 
@@ -727,7 +762,7 @@ export function MembershipApplicationForm({ recaptchaToken }: { recaptchaToken: 
                       onClick={() => remove(index)}
                       aria-label={`Remove dependent ${index + 1}`}
                     >
-                      <Trash2 />
+                      <X />
                     </button>
                   </div>
                 ))
@@ -742,20 +777,24 @@ export function MembershipApplicationForm({ recaptchaToken }: { recaptchaToken: 
             </div>
             <div className={styles.gridTwo}>
               <label>
-                Husband — source of income <span>Optional</span>
+                Husband — source of income
                 <input {...register("husbandIncomeSource")} />
+                <span>Optional</span>
               </label>
               <label>
-                Husband — office or agency <span>Optional</span>
+                Husband — office or agency
                 <input {...register("husbandEmployer")} />
+                <span>Optional</span>
               </label>
               <label>
-                Wife — source of income <span>Optional</span>
+                Wife — source of income
                 <input {...register("wifeIncomeSource")} />
+                <span>Optional</span>
               </label>
               <label>
-                Wife — office or agency <span>Optional</span>
+                Wife — office or agency
                 <input {...register("wifeEmployer")} />
+                <span>Optional</span>
               </label>
             </div>
           </fieldset>
@@ -778,23 +817,27 @@ export function MembershipApplicationForm({ recaptchaToken }: { recaptchaToken: 
             <ErrorMessage message={errors.sector?.message} />
             <div className={styles.gridTwo}>
               <label>
-                Educational attainment <span>Optional</span>
+                Educational attainment
                 <input {...register("educationalAttainment")} />
+                <span>Optional</span>
               </label>
               <label>
-                Civic, social, or religious affiliation <span>Optional</span>
+                Civic, social, or religious affiliation
                 <input {...register("affiliationOrganization")} />
+                <span>Optional</span>
               </label>
               <label>
-                Position in the organization <span>Optional</span>
+                Position in the organization
                 <input {...register("affiliationPosition")} />
+                <span>Optional</span>
               </label>
               <label>
-                Membership recommended by <span>Optional</span>
+                Membership recommended by
                 <input
                   placeholder="Name of an existing member"
                   {...register("recommenderName")}
                 />
+                <span>Optional</span>
               </label>
             </div>
             <div className={styles.disclosure}>
@@ -928,7 +971,11 @@ export function MembershipApplicationForm({ recaptchaToken }: { recaptchaToken: 
           </p>
         )}
 
-        <div className={styles.formActions}>
+        <div
+          className={`${styles.formActions} ${
+            hasReachedStepEnd ? "" : styles.mobileActionsHidden
+          }`}
+        >
           {step > 0 && (
             <button type="button" onClick={() => moveToStep(step - 1)}>
               <ArrowLeft /> Previous

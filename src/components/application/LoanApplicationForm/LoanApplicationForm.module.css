@@ -10,6 +10,132 @@
   box-shadow: 0 0.8rem 2.4rem rgb(14 53 39 / 7%);
 }
 
+/* Shared application-form treatment: clear sections, calm surfaces, and durable field states. */
+.formShell,
+.success {
+  max-width: 66rem;
+  padding: clamp(1rem, 2.4vw, 1.6rem);
+  border-color: #d9e5de;
+  border-radius: 0.75rem;
+  box-shadow: 0 1rem 2.75rem rgb(14 53 39 / 8%);
+}
+
+.formIntro {
+  gap: 1.25rem;
+  padding: clamp(0.9rem, 2vw, 1.15rem);
+  background: linear-gradient(135deg, #f5fbf7, #edf6f0);
+  border: 1px solid #d7e7de;
+  border-radius: 0.6rem;
+}
+
+.formIntro h3,
+.success h3 {
+  color: var(--color-brand-950);
+}
+
+.formIntro > span {
+  align-self: start;
+  padding: 0.4rem 0.65rem;
+  color: var(--color-brand-800);
+  background: #fff;
+  border: 1px solid #d2e1d8;
+}
+
+.progress {
+  margin: 1.25rem 0 1.5rem;
+}
+
+.progress li > span {
+  width: 2rem;
+  height: 2rem;
+  background: #f9fcfa;
+  border-color: #ceddd4;
+}
+
+.formShell legend {
+  margin-bottom: 0.4rem;
+  color: var(--color-brand-950);
+}
+
+.sectionHelp {
+  max-width: 48rem;
+  margin-bottom: 1.15rem;
+  line-height: 1.55;
+}
+
+.gridTwo,
+.gridThree {
+  gap: 1rem 1.1rem;
+  margin-bottom: 1.1rem;
+}
+
+.formShell label {
+  gap: 0.45rem;
+  color: #263a31;
+  font-size: 0.78rem;
+  letter-spacing: 0.005em;
+}
+
+.formShell input,
+.formShell select,
+.formShell textarea {
+  min-height: 2.85rem;
+  padding: 0.72rem 0.85rem;
+  background: #fbfdfb;
+  border-color: #cbd9d0;
+  border-radius: 0.45rem;
+  box-shadow: inset 0 1px 0 rgb(11 65 42 / 3%);
+  transition: border-color 160ms ease, box-shadow 160ms ease, background-color 160ms ease;
+}
+
+.formShell input:hover,
+.formShell select:hover,
+.formShell textarea:hover {
+  border-color: #a9c4b5;
+}
+
+.formShell input:focus-visible,
+.formShell select:focus-visible,
+.formShell textarea:focus-visible {
+  background: #fff;
+  border-color: var(--color-brand-700);
+  box-shadow: 0 0 0 3px rgb(30 119 83 / 14%);
+  outline: 0;
+}
+
+.loanTypes,
+.cooperativeFields,
+.entryRow,
+.debtEntry,
+.reviewConfirmation {
+  border-color: #d8e4dc;
+  border-radius: 0.45rem;
+}
+
+.loanTypes,
+.cooperativeFields {
+  background: #f6fbf8;
+}
+
+.entryRow,
+.debtEntry {
+  background: #fbfdfb;
+}
+
+.agreementNotice,
+.finalNotice {
+  padding: 0.9rem 1rem;
+  background: #fff9e8;
+  border: 1px solid #ead9a9;
+  border-left: 0;
+  border-radius: 0.45rem;
+}
+
+.formActions {
+  margin-top: 1.25rem;
+  background: rgb(255 255 255 / 97%);
+}
+
 .formIntro { display: flex; gap: 1rem; justify-content: space-between; align-items: start; }
 .formIntro h3,
 .success h3 { margin: .25rem 0 .4rem; font-size: clamp(1.35rem, 3vw, 2rem); }
@@ -109,17 +235,80 @@
   .formShell,
   .success { padding: 1rem; border-radius: var(--radius-sm); }
   .formIntro { display: grid; }
+  .formIntro > span { display: none; }
+  .formIntro h3 { font-size: 1.35rem; }
   .progress { display: flex; overflow-x: auto; justify-content: space-between; padding-bottom: .5rem; }
-  .progress li { min-width: 2.1rem; }
-  .progress li::before,
+  .progress li { min-width: 2.1rem; flex: 1 0 2.1rem; }
+  .progress li::before { z-index: 0; display: block; top: 1rem; background: #c7d9cf; }
   .progress small { display: none; }
   .loanTypes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .loanTypes > span { grid-column: 1 / -1; }
   .listHeading { align-items: stretch; flex-direction: column; }
   .formActions { align-items: stretch; flex-direction: column-reverse; margin-right: -1rem; margin-bottom: -1rem; margin-left: -1rem; padding: .75rem 1rem; }
   .formActions button { width: 100%; }
+  
+  .formShell fieldset { margin-bottom: 1rem; }
+  .formShell legend { font-size: 1.1rem; margin-bottom: .6rem; }
+  .sectionHelp { font-size: .85rem; margin-bottom: 1rem; line-height: 1.6; }
+  
+  .finalNotice { 
+    margin: 1rem 0; 
+    padding: .75rem .85rem; 
+    font-size: .8rem; 
+  }
+  
+  .finalNotice svg { 
+    width: 1.4rem; 
+    height: 1.4rem; 
+  }
+  
+  .finalNotice p { 
+    line-height: 1.55; 
+  }
+  
+  .reviewConfirmation { 
+    padding: .85rem 1rem; 
+    margin-top: 1rem; 
+  }
+  
+  .reviewConfirmation span { 
+    font-size: .8rem; 
+    line-height: 1.5; 
+  }
+  
+  .checkRow input[type="checkbox"] { 
+    flex-shrink: 0; 
+    width: 1.1rem; 
+    height: 1.1rem; 
+    margin-top: .1rem; 
+  }
+
+  .mobileActionsHidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(0.75rem);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .formShell { scroll-behavior: auto; }
 }
+
+/* Final visual overrides, kept after responsive rules to preserve the form's layout on every step. */
+.formIntro { gap: 1.25rem; padding: clamp(.9rem, 2vw, 1.15rem); background: linear-gradient(135deg, #f5fbf7, #edf6f0); border: 1px solid #d7e7de; border-radius: .6rem; }
+.formIntro h3, .success h3, .formShell legend { color: var(--color-brand-950); }
+.formIntro > span { align-self: start; padding: .4rem .65rem; color: var(--color-brand-800); background: #fff; border: 1px solid #d2e1d8; }
+.progress { margin: 1.25rem 0 1.5rem; }
+.progress li > span { width: 2rem; height: 2rem; background: #f9fcfa; border-color: #ceddd4; }
+.sectionHelp { max-width: 48rem; margin-bottom: 1.15rem; line-height: 1.55; }
+.gridTwo, .gridThree { gap: 1rem 1.1rem; margin-bottom: 1.1rem; }
+.formShell label { gap: .45rem; color: #263a31; font-size: .78rem; letter-spacing: .005em; }
+.formShell input, .formShell select, .formShell textarea { min-height: 2.85rem; padding: .72rem .85rem; background: #fbfdfb; border-color: #cbd9d0; border-radius: .45rem; box-shadow: inset 0 1px 0 rgb(11 65 42 / 3%); transition: border-color 160ms ease, box-shadow 160ms ease, background-color 160ms ease; }
+.formShell input:hover, .formShell select:hover, .formShell textarea:hover { border-color: #a9c4b5; }
+.formShell input:focus-visible, .formShell select:focus-visible, .formShell textarea:focus-visible { background: #fff; border-color: var(--color-brand-700); box-shadow: 0 0 0 3px rgb(30 119 83 / 14%); outline: 0; }
+.loanTypes, .cooperativeFields, .entryRow, .debtEntry, .reviewConfirmation { border-color: #d8e4dc; border-radius: .45rem; }
+.loanTypes, .cooperativeFields { background: #f6fbf8; }
+.entryRow, .debtEntry { background: #fbfdfb; }
+.agreementNotice, .finalNotice { padding: .9rem 1rem; background: #fff9e8; border: 1px solid #ead9a9; border-left: 0; border-radius: .45rem; }
+.formActions { margin-top: 1.25rem; background: rgb(255 255 255 / 97%); }
+.formActions { transition: opacity 180ms ease, transform 180ms ease; }

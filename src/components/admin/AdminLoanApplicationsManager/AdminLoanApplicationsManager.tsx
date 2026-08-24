@@ -240,7 +240,7 @@ export function AdminLoanApplicationsManager({
                   <p><b>Amount of Savings:</b><span>{formatPeso(review.savingsAmount)}</span></p>
                 </section>
 
-                <p className={styles.statement}>I, <span>{selected.applicantName}</span> of <span>{selected.address}</span>, Bohol, Philippines hereby applies for:</p>
+                <p className={styles.statement}>I, <span>{selected.applicantName}</span> of <span>{selected.address}</span> hereby applies for:</p>
                 <p className={styles.line}>
                   <b>Applicant Gmail:</b>
                   <span>

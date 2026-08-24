@@ -18,7 +18,7 @@ import { useState, type CSSProperties } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { z } from "zod";
-import loginBackground from "../../assets/images/timgas-office-hero-v2.jpg";
+import loginBackground from "../../assets/images/timgas-office-facade.jpg";
 import timgasLogo from "../../assets/images/timgas-logo.png";
 import { Button } from "../../components/Button/Button";
 import { auth } from "../../lib/firebase";

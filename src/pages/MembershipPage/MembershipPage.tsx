@@ -57,6 +57,7 @@ export function MembershipPage() {
         eyebrow="Membership"
         title="Begin your TIMGAS membership inquiry."
         description="Membership policies, requirements, share capital, fees, and approval procedures may change. Confirm the current process directly with the TIMGAS MPC office before submitting."
+        centered
       />
 
       <ApplicationProcess

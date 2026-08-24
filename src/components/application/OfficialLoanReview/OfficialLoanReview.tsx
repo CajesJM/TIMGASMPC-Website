@@ -71,8 +71,7 @@ export function OfficialLoanReview({ data }: { data: OfficialLoanReviewData }) {
         </section>
 
         <p className={styles.statement}>
-          I, <span>{data.applicantName}</span> of <span>{data.address}</span>,
-          Bohol, Philippines hereby applies for:
+          I, <span>{data.applicantName}</span> of <span>{data.address}</span> hereby applies for:
         </p>
         <p className={styles.line}><b>Applicant Gmail:</b><span>{data.applicantEmail}</span></p>
         <div className={styles.optionLine}>

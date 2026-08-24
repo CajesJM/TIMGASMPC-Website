@@ -11,6 +11,7 @@ export function ContactPage() {
         eyebrow="Contact TIMGAS MPC"
         title="Connect with the cooperative office."
         description="Use the confirmed office address, phone number, or email addresses below for membership and service inquiries."
+        compact
       />
 
       <section className={styles.section}>
@@ -65,13 +66,13 @@ export function ContactPage() {
           <div className={styles.mapWrap}>
             <iframe
               title="Map of the TIMGAS Cooperative Office in Trinidad, Bohol"
-              src="https://www.google.com/maps?q=Purok%205%2C%20Poblacion%2C%20Trinidad%2C%20Bohol%2C%20Philippines&output=embed"
+              src="https://www.google.com/maps?q=10.077309159944223,124.33856494917684&output=embed"
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
               allowFullScreen
             />
             <a
-              href="https://www.google.com/maps/dir/?api=1&destination=Purok%205%2C%20Poblacion%2C%20Trinidad%2C%20Bohol%2C%20Philippines"
+              href="https://www.google.com/maps/dir/?api=1&destination=10.077309159944223,124.33856494917684"
               target="_blank"
               rel="noopener noreferrer"
             >

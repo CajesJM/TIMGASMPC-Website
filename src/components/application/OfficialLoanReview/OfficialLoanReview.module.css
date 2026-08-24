@@ -31,5 +31,127 @@
 .signatureGrid b { margin-top: .25rem; font-size: .65rem; font-weight: 500; }
 
 @media (max-width: 39.99rem) {
-  .viewport { margin-right: -1rem; margin-left: -1rem; border-right: 0; border-left: 0; border-radius: 0; }
+  .viewport { 
+    margin-right: -1rem; 
+    margin-left: -1rem; 
+    padding: .5rem; 
+    border-right: 0; 
+    border-left: 0; 
+    border-radius: 0; 
+  }
+  
+  .document { 
+    min-width: 100%; 
+    padding: 1rem .75rem; 
+    font-size: .72rem; 
+  }
+  
+  .header { 
+    grid-template-columns: 3.5rem 1fr 3.5rem; 
+    gap: .5rem; 
+  }
+  
+  .header img { 
+    width: 3.2rem; 
+    height: 3.2rem; 
+  }
+  
+  .header p { 
+    font-size: .7rem; 
+  }
+  
+  .header small { 
+    font-size: .6rem; 
+  }
+  
+  .header h3 { 
+    margin: 1rem 0 .75rem; 
+    font-size: .85rem; 
+  }
+  
+  .twoColumnLines { 
+    grid-template-columns: 1fr; 
+    gap: .5rem; 
+    margin: .5rem 0; 
+  }
+  
+  .twoColumnLines p { 
+    grid-template-columns: auto minmax(3rem, 1fr); 
+    gap: .3rem; 
+    font-size: .7rem; 
+  }
+  
+  .statement { 
+    margin: .75rem 0; 
+    font-size: .7rem; 
+    line-height: 1.6; 
+  }
+  
+  .line { 
+    gap: .3rem; 
+    margin: .5rem 0; 
+    font-size: .7rem; 
+  }
+  
+  .optionLine { 
+    gap: .3rem .6rem; 
+    margin: .5rem 0; 
+    font-size: .7rem; 
+  }
+  
+  .optionLine span { 
+    font-size: .7rem; 
+  }
+  
+  .document h4 { 
+    margin: .9rem 0 .3rem; 
+    font-size: .75rem; 
+  }
+  
+  .formTable { 
+    font-size: .65rem; 
+  }
+  
+  .formTable th,
+  .formTable td { 
+    height: auto; 
+    min-height: 1.5rem; 
+    padding: .3rem .25rem; 
+    font-size: .62rem; 
+  }
+  
+  .formTable th { 
+    font-size: .6rem; 
+  }
+  
+  .formTable .emptyRecord { 
+    padding: .5rem; 
+    font-size: .65rem; 
+  }
+  
+  .agreementText { 
+    margin: .75rem 0; 
+    text-indent: 1rem; 
+    font-size: .68rem; 
+    line-height: 1.6; 
+  }
+  
+  .agreementText p { 
+    margin: .5rem 0; 
+  }
+  
+  .signatureGrid { 
+    grid-template-columns: 1fr; 
+    gap: 1.2rem; 
+    margin: 1.2rem 0 0; 
+  }
+  
+  .signatureGrid span { 
+    min-height: 1.3rem; 
+    font-size: .7rem; 
+  }
+  
+  .signatureGrid b { 
+    font-size: .6rem; 
+  }
 }

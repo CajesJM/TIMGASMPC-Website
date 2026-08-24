@@ -8,7 +8,7 @@ import {
   ShieldCheck,
   Trash2,
 } from "lucide-react";
-import { useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import {
   useFieldArray,
   useForm,
@@ -42,10 +42,13 @@ const requiredAmount = (label: string) =>
     .refine((value) => Number.isFinite(Number(value)) && Number(value) > 0, {
       message: `${label} must be greater than zero.`,
     });
-const optionalAmount = z.string().trim().refine(
-  (value) => !value || (Number.isFinite(Number(value)) && Number(value) >= 0),
-  { message: "Enter a valid amount." },
-);
+const optionalAmount = z
+  .string()
+  .trim()
+  .refine(
+    (value) => !value || (Number.isFinite(Number(value)) && Number(value) >= 0),
+    { message: "Enter a valid amount." },
+  );
 const optionalDate = z
   .string()
   .trim()
@@ -117,7 +120,8 @@ const loanApplicationSchema = z.object({
     message: "You must acknowledge the co-maker authorization statement.",
   }),
   privacyConsent: z.boolean().refine(Boolean, {
-    message: "You must consent to the review and validation of your information.",
+    message:
+      "You must consent to the review and validation of your information.",
   }),
   website: z.string().max(0),
 });
@@ -185,9 +189,7 @@ function createReference() {
   const date = new Date().toISOString().slice(0, 10).replaceAll("-", "");
   const bytes = new Uint8Array(3);
   window.crypto.getRandomValues(bytes);
-  const suffix = Array.from(bytes, (byte) =>
-    byte.toString(36).padStart(2, "0"),
-  )
+  const suffix = Array.from(bytes, (byte) => byte.toString(36).padStart(2, "0"))
     .join("")
     .toUpperCase()
     .slice(0, 6);
@@ -202,12 +204,17 @@ function ErrorMessage({ message }: { message?: string }) {
   ) : null;
 }
 
-export function LoanApplicationForm({ recaptchaToken }: { recaptchaToken: string }) {
+export function LoanApplicationForm({
+  recaptchaToken,
+}: {
+  recaptchaToken: string;
+}) {
   const [step, setStep] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const [submittedReference, setSubmittedReference] = useState("");
   const [reviewConfirmed, setReviewConfirmed] = useState(false);
+  const [hasReachedStepEnd, setHasReachedStepEnd] = useState(false);
   const formRef = useRef<HTMLDivElement>(null);
   const {
     register,
@@ -227,9 +234,34 @@ export function LoanApplicationForm({ recaptchaToken }: { recaptchaToken: string
   const purposeCharacterCount = values.purposeOfLoan?.length ?? 0;
   const requiredConsentsAccepted = Boolean(
     values.agreementAccepted &&
-      values.coMakerAuthorizationAcknowledged &&
-      values.privacyConsent,
+    values.coMakerAuthorizationAcknowledged &&
+    values.privacyConsent,
   );
+
+  useEffect(() => {
+    const scrollContainer = formRef.current?.parentElement;
+    if (!scrollContainer) return undefined;
+
+    const updateActionVisibility = () => {
+      const remaining =
+        scrollContainer.scrollHeight -
+        scrollContainer.scrollTop -
+        scrollContainer.clientHeight;
+      setHasReachedStepEnd(remaining <= 8);
+    };
+
+    const frame = window.requestAnimationFrame(updateActionVisibility);
+    scrollContainer.addEventListener("scroll", updateActionVisibility, {
+      passive: true,
+    });
+    window.addEventListener("resize", updateActionVisibility);
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      scrollContainer.removeEventListener("scroll", updateActionVisibility);
+      window.removeEventListener("resize", updateActionVisibility);
+    };
+  }, [step]);
 
   const moveToStep = (nextStep: number) => {
     setReviewConfirmed(false);
@@ -274,48 +306,52 @@ export function LoanApplicationForm({ recaptchaToken }: { recaptchaToken: string
           remarks: debt.remarks,
         }));
 
-      await submitApplicationWithCaptcha("loanApplications", {
-        schemaVersion: 1,
-        source: "online",
-        reference,
-        applicantName: data.applicantName,
-        applicantEmail: data.applicantEmail.toLowerCase(),
-        address: data.address,
-        typeOfLoan: data.typeOfLoan,
-        purposeOfLoan: data.purposeOfLoan,
-        paymentMode: data.paymentMode,
-        numberOfMonths: Number(data.numberOfMonths),
-        amountApplied: Number(data.amountApplied),
-        assets: assetRecords,
-        debts: debtRecords,
-        spouseName: data.spouseName,
-        coMakers: [data.coMakerOne, data.coMakerTwo].filter(Boolean),
-        agreement: {
-          version: agreementVersion,
-          accepted: data.agreementAccepted,
-          applicantTypedName: data.applicantTypedName,
-          coMakerAuthorizationAcknowledged:
-            data.coMakerAuthorizationAcknowledged,
+      await submitApplicationWithCaptcha(
+        "loanApplications",
+        {
+          schemaVersion: 1,
+          source: "online",
+          reference,
+          applicantName: data.applicantName,
+          applicantEmail: data.applicantEmail.toLowerCase(),
+          address: data.address,
+          typeOfLoan: data.typeOfLoan,
+          purposeOfLoan: data.purposeOfLoan,
+          paymentMode: data.paymentMode,
+          numberOfMonths: Number(data.numberOfMonths),
+          amountApplied: Number(data.amountApplied),
+          assets: assetRecords,
+          debts: debtRecords,
+          spouseName: data.spouseName,
+          coMakers: [data.coMakerOne, data.coMakerTwo].filter(Boolean),
+          agreement: {
+            version: agreementVersion,
+            accepted: data.agreementAccepted,
+            applicantTypedName: data.applicantTypedName,
+            coMakerAuthorizationAcknowledged:
+              data.coMakerAuthorizationAcknowledged,
+          },
+          privacyConsent: data.privacyConsent,
+          status: "new",
+          statusNote: "",
+          review: {
+            cbuAmount: Number(data.cbuAmount),
+            savingsAmount: Number(data.savingsAmount),
+            dateReleased: data.dateReleased,
+            amountApproved: null,
+            previousLoans: [],
+            assessingCoopEmployee: "",
+            crecomAction: "",
+            recommendingLoanAnalyst: "",
+            lendingDepartmentManager: "",
+            generalManager: "",
+            bodAction: "",
+            approvedBy: "",
+            chairperson: "",
+          },
         },
-        privacyConsent: data.privacyConsent,
-        status: "new",
-        statusNote: "",
-        review: {
-          cbuAmount: Number(data.cbuAmount),
-          savingsAmount: Number(data.savingsAmount),
-          dateReleased: data.dateReleased,
-          amountApproved: null,
-          previousLoans: [],
-          assessingCoopEmployee: "",
-          crecomAction: "",
-          recommendingLoanAnalyst: "",
-          lendingDepartmentManager: "",
-          generalManager: "",
-          bodAction: "",
-          approvedBy: "",
-          chairperson: "",
-        },
-      }, recaptchaToken);
+        recaptchaToken,
+      );
 
       setSubmittedReference(reference);
       reset(defaultValues);
@@ -365,7 +401,11 @@ export function LoanApplicationForm({ recaptchaToken }: { recaptchaToken: string
   }
 
   return (
-    <div className={styles.formShell} ref={formRef} id="online-loan-application">
+    <div
+      className={styles.formShell}
+      ref={formRef}
+      id="online-loan-application"
+    >
       <div className={styles.formIntro}>
         <div>
           <p className="eyebrow">Official online loan application</p>
@@ -375,7 +415,9 @@ export function LoanApplicationForm({ recaptchaToken }: { recaptchaToken: string
             asterisk are required for online submission.
           </p>
         </div>
-        <span>Step {step + 1} of {steps.length}</span>
+        <span>
+          Step {step + 1} of {steps.length}
+        </span>
       </div>
 
       <ol className={styles.progress} aria-label="Loan application progress">
@@ -399,7 +441,10 @@ export function LoanApplicationForm({ recaptchaToken }: { recaptchaToken: string
 
       <form onSubmit={submitFromReview} noValidate>
         <div className={styles.honeypot} aria-hidden="true">
-          <label>Website<input {...register("website")} tabIndex={-1} /></label>
+          <label>
+            Website
+            <input {...register("website")} tabIndex={-1} />
+          </label>
         </div>
 
         {step === 0 && (
@@ -422,27 +467,42 @@ export function LoanApplicationForm({ recaptchaToken }: { recaptchaToken: string
               <div className={styles.applicantRecordFields}>
                 <label>
                   Amount of CBU (₱) *
-                  <input type="number" min="0.01" step="0.01" inputMode="decimal" {...register("cbuAmount")} />
+                  <input
+                    type="number"
+                    min="0.01"
+                    step="0.01"
+                    inputMode="decimal"
+                    {...register("cbuAmount")}
+                  />
                   <ErrorMessage message={errors.cbuAmount?.message} />
                 </label>
                 <label>
-                  Date released <span>Optional</span>
+                  Date released
                   <input type="date" {...register("dateReleased")} />
                   <ErrorMessage message={errors.dateReleased?.message} />
                 </label>
                 <label>
                   Amount of savings (₱) *
-                  <input type="number" min="0.01" step="0.01" inputMode="decimal" {...register("savingsAmount")} />
+                  <input
+                    type="number"
+                    min="0.01"
+                    step="0.01"
+                    inputMode="decimal"
+                    {...register("savingsAmount")}
+                  />
                   <ErrorMessage message={errors.savingsAmount?.message} />
                 </label>
               </div>
               <p className={styles.cooperativeNote}>
-                <strong>Date filed</strong> is recorded automatically. <strong>Amount approved</strong> is completed by authorized TIMGAS MPC personnel after assessment.
+                <strong>Date filed</strong> is recorded automatically.{" "}
+                <strong>Amount approved</strong> is completed by authorized
+                TIMGAS MPC personnel after assessment.
               </p>
             </section>
             <div className={styles.gridTwo}>
               <label>
                 Applicant/member borrower *
+                <span aria-hidden="true" />
                 <input autoComplete="name" {...register("applicantName")} />
                 <ErrorMessage message={errors.applicantName?.message} />
               </label>
@@ -455,7 +515,9 @@ export function LoanApplicationForm({ recaptchaToken }: { recaptchaToken: string
                   placeholder="applicant@gmail.com"
                   {...register("applicantEmail")}
                 />
-                <span>TIMGAS MPC may use this address for application updates.</span>
+                <span>
+                  TIMGAS MPC may use this address for application updates.
+                </span>
                 <ErrorMessage message={errors.applicantEmail?.message} />
               </label>
               <label>
@@ -468,7 +530,11 @@ export function LoanApplicationForm({ recaptchaToken }: { recaptchaToken: string
               <span>Type of loan *</span>
               {loanTypeOptions.map((option) => (
                 <label key={option.value}>
-                  <input type="radio" value={option.value} {...register("typeOfLoan")} />
+                  <input
+                    type="radio"
+                    value={option.value}
+                    {...register("typeOfLoan")}
+                  />
                   {option.label}
                 </label>
               ))}
@@ -486,7 +552,8 @@ export function LoanApplicationForm({ recaptchaToken }: { recaptchaToken: string
                 id="loan-purpose-character-count"
                 className={styles.characterCount}
               >
-                {purposeCharacterCount.toLocaleString()} / {maximumPurposeCharacters.toLocaleString()} characters
+                {purposeCharacterCount.toLocaleString()} /{" "}
+                {maximumPurposeCharacters.toLocaleString()} characters
               </span>
               <ErrorMessage message={errors.purposeOfLoan?.message} />
             </label>
@@ -495,19 +562,33 @@ export function LoanApplicationForm({ recaptchaToken }: { recaptchaToken: string
                 Mode of payment *
                 <select {...register("paymentMode")}>
                   {loanPaymentModes.map((mode) => (
-                    <option key={mode} value={mode}>{loanPaymentModeLabels[mode]}</option>
+                    <option key={mode} value={mode}>
+                      {loanPaymentModeLabels[mode]}
+                    </option>
                   ))}
                 </select>
                 <ErrorMessage message={errors.paymentMode?.message} />
               </label>
               <label>
                 Number of months *
-                <input type="number" min="1" max="120" inputMode="numeric" {...register("numberOfMonths")} />
+                <input
+                  type="number"
+                  min="1"
+                  max="120"
+                  inputMode="numeric"
+                  {...register("numberOfMonths")}
+                />
                 <ErrorMessage message={errors.numberOfMonths?.message} />
               </label>
               <label>
                 Amount applied (₱) *
-                <input type="number" min="0.01" step="0.01" inputMode="decimal" {...register("amountApplied")} />
+                <input
+                  type="number"
+                  min="0.01"
+                  step="0.01"
+                  inputMode="decimal"
+                  {...register("amountApplied")}
+                />
                 <ErrorMessage message={errors.amountApplied?.message} />
               </label>
             </div>
@@ -523,26 +604,52 @@ export function LoanApplicationForm({ recaptchaToken }: { recaptchaToken: string
             </p>
             <div className={styles.listHeading}>
               <strong>Properties</strong>
-              <button type="button" disabled={assets.fields.length >= maximumAssets} onClick={() => assets.append({ propertyDescription: "", value: "" })}>
+              <button
+                type="button"
+                disabled={assets.fields.length >= maximumAssets}
+                onClick={() =>
+                  assets.append({ propertyDescription: "", value: "" })
+                }
+              >
                 <Plus /> Add asset
               </button>
             </div>
             {assets.fields.length === 0 ? (
-              <p className={styles.emptyList}>No asset entered. Add one if applicable.</p>
-            ) : assets.fields.map((field, index) => (
-              <div className={styles.entryRow} key={field.id}>
-                <label>
-                  Property description
-                  <input {...register(`assets.${index}.propertyDescription`)} />
-                </label>
-                <label>
-                  Value (₱)
-                  <input type="number" min="0" step="0.01" inputMode="decimal" {...register(`assets.${index}.value`)} />
-                  <ErrorMessage message={errors.assets?.[index]?.value?.message} />
-                </label>
-                <button type="button" onClick={() => assets.remove(index)} aria-label={`Remove asset ${index + 1}`}><Trash2 /></button>
-              </div>
-            ))}
+              <p className={styles.emptyList}>
+                No asset entered. Add one if applicable.
+              </p>
+            ) : (
+              assets.fields.map((field, index) => (
+                <div className={styles.entryRow} key={field.id}>
+                  <label>
+                    Property description
+                    <input
+                      {...register(`assets.${index}.propertyDescription`)}
+                    />
+                  </label>
+                  <label>
+                    Value (₱)
+                    <input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      inputMode="decimal"
+                      {...register(`assets.${index}.value`)}
+                    />
+                    <ErrorMessage
+                      message={errors.assets?.[index]?.value?.message}
+                    />
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => assets.remove(index)}
+                    aria-label={`Remove asset ${index + 1}`}
+                  >
+                    <Trash2 />
+                  </button>
+                </div>
+              ))
+            )}
           </fieldset>
         )}
 
@@ -555,21 +662,70 @@ export function LoanApplicationForm({ recaptchaToken }: { recaptchaToken: string
             </p>
             <div className={styles.listHeading}>
               <strong>Sources of credit</strong>
-              <button type="button" disabled={debts.fields.length >= maximumDebts} onClick={() => debts.append({ sourceOfCredit: "", amountGranted: "", outstandingBalance: "", remarks: "" })}>
+              <button
+                type="button"
+                disabled={debts.fields.length >= maximumDebts}
+                onClick={() =>
+                  debts.append({
+                    sourceOfCredit: "",
+                    amountGranted: "",
+                    outstandingBalance: "",
+                    remarks: "",
+                  })
+                }
+              >
                 <Plus /> Add debt record
               </button>
             </div>
             {debts.fields.length === 0 ? (
               <p className={styles.emptyList}>No debt record entered.</p>
-            ) : debts.fields.map((field, index) => (
-              <div className={styles.debtEntry} key={field.id}>
-                <label>Source of credit<input {...register(`debts.${index}.sourceOfCredit`)} /></label>
-                <label>Amount granted (₱)<input type="number" min="0" step="0.01" {...register(`debts.${index}.amountGranted`)} /><ErrorMessage message={errors.debts?.[index]?.amountGranted?.message} /></label>
-                <label>Outstanding balance (₱)<input type="number" min="0" step="0.01" {...register(`debts.${index}.outstandingBalance`)} /><ErrorMessage message={errors.debts?.[index]?.outstandingBalance?.message} /></label>
-                <label>Remarks<input {...register(`debts.${index}.remarks`)} /></label>
-                <button type="button" onClick={() => debts.remove(index)} aria-label={`Remove debt record ${index + 1}`}><Trash2 /></button>
-              </div>
-            ))}
+            ) : (
+              debts.fields.map((field, index) => (
+                <div className={styles.debtEntry} key={field.id}>
+                  <label>
+                    Source of credit
+                    <input {...register(`debts.${index}.sourceOfCredit`)} />
+                  </label>
+                  <label>
+                    Amount granted (₱)
+                    <input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      {...register(`debts.${index}.amountGranted`)}
+                    />
+                    <ErrorMessage
+                      message={errors.debts?.[index]?.amountGranted?.message}
+                    />
+                  </label>
+                  <label>
+                    Outstanding balance (₱)
+                    <input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      {...register(`debts.${index}.outstandingBalance`)}
+                    />
+                    <ErrorMessage
+                      message={
+                        errors.debts?.[index]?.outstandingBalance?.message
+                      }
+                    />
+                  </label>
+                  <label>
+                    Remarks
+                    <input {...register(`debts.${index}.remarks`)} />
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => debts.remove(index)}
+                    aria-label={`Remove debt record ${index + 1}`}
+                  >
+                    <Trash2 />
+                  </button>
+                </div>
+              ))
+            )}
           </fieldset>
         )}
 
@@ -590,24 +746,56 @@ export function LoanApplicationForm({ recaptchaToken }: { recaptchaToken: string
               </div>
             </div>
             <div className={styles.gridTwo}>
-              <label>Spouse / marital consent <span>Optional</span><input {...register("spouseName")} /></label>
-              <label>Applicant/member borrower typed name *<input {...register("applicantTypedName")} /><ErrorMessage message={errors.applicantTypedName?.message} /></label>
-              <label>Co-maker 1 <span>Signature still verified by TIMGAS</span><input {...register("coMakerOne")} /></label>
-              <label>Co-maker 2 <span>Signature still verified by TIMGAS</span><input {...register("coMakerTwo")} /></label>
+              <label>
+                Spouse / marital consent
+                <input {...register("spouseName")} />
+                <span>Optional</span>
+              </label>
+              <label>
+                Applicant/member borrower typed name *
+                <input {...register("applicantTypedName")} />
+                <ErrorMessage message={errors.applicantTypedName?.message} />
+              </label>
+              <label>
+                Co-maker 1 <span>Signature still verified by TIMGAS</span>
+                <input {...register("coMakerOne")} />
+              </label>
+              <label>
+                Co-maker 2 <span>Signature still verified by TIMGAS</span>
+                <input {...register("coMakerTwo")} />
+              </label>
             </div>
             <label className={styles.checkRow}>
-              <input type="checkbox" {...register("agreementAccepted")} />
-              <span>I have reviewed and accept the official loan agreement. I understand TIMGAS MPC may require handwritten signatures and supporting documents. *</span>
+              <input type="checkbox" {...register("agreementAccepted", { setValueAs: v => v === true || v === 'on' || v === 'true' })} />
+              <span>
+                I have reviewed and accept the official loan agreement. I
+                understand TIMGAS MPC may require handwritten signatures and
+                supporting documents. *
+              </span>
             </label>
             <ErrorMessage message={errors.agreementAccepted?.message} />
             <label className={styles.checkRow}>
-              <input type="checkbox" {...register("coMakerAuthorizationAcknowledged")} />
-              <span>I acknowledge the official co-maker statement allowing loan restructuring after failure to pay at maturity without obtaining a new co-maker signature, while the co-maker obligation remains valid. *</span>
+              <input
+                type="checkbox"
+                {...register("coMakerAuthorizationAcknowledged", { setValueAs: v => v === true || v === 'on' || v === 'true' })}
+              />
+              <span>
+                I acknowledge the official co-maker statement allowing loan
+                restructuring after failure to pay at maturity without obtaining
+                a new co-maker signature, while the co-maker obligation remains
+                valid. *
+              </span>
             </label>
-            <ErrorMessage message={errors.coMakerAuthorizationAcknowledged?.message} />
+            <ErrorMessage
+              message={errors.coMakerAuthorizationAcknowledged?.message}
+            />
             <label className={styles.checkRow}>
-              <input type="checkbox" {...register("privacyConsent")} />
-              <span>I authorize TIMGAS MPC to collect, validate, and review the personal and financial information submitted for this loan application. *</span>
+              <input type="checkbox" {...register("privacyConsent", { setValueAs: v => v === true || v === 'on' || v === 'true' })} />
+              <span>
+                I authorize TIMGAS MPC to collect, validate, and review the
+                personal and financial information submitted for this loan
+                application. *
+              </span>
             </label>
             <ErrorMessage message={errors.privacyConsent?.message} />
           </fieldset>
@@ -616,7 +804,10 @@ export function LoanApplicationForm({ recaptchaToken }: { recaptchaToken: string
         {step === 4 && (
           <fieldset>
             <legend>Review and submit</legend>
-            <p className={styles.sectionHelp}>Review the information below before sending it to the TIMGAS manager.</p>
+            <p className={styles.sectionHelp}>
+              Review the information below before sending it to the TIMGAS
+              manager.
+            </p>
             <OfficialLoanReview
               data={{
                 applicantName: values.applicantName ?? "",
@@ -639,21 +830,44 @@ export function LoanApplicationForm({ recaptchaToken }: { recaptchaToken: string
                 ),
               }}
             />
-            <div className={styles.finalNotice}><ShieldCheck /><p>This application is private. Only an authorized TIMGAS manager can read and process it. Online submission is not loan approval.</p></div>
-            <label className={`${styles.checkRow} ${styles.reviewConfirmation}`}>
+            <div className={styles.finalNotice}>
+              <ShieldCheck />
+              <p>
+                This application is private. Only an authorized TIMGAS manager
+                can read and process it. Online submission is not loan approval.
+              </p>
+            </div>
+            <label
+              className={`${styles.checkRow} ${styles.reviewConfirmation}`}
+            >
               <input
                 type="checkbox"
                 checked={reviewConfirmed}
                 onChange={(event) => setReviewConfirmed(event.target.checked)}
               />
-              <span>I have reviewed the information above and I am ready to submit this loan application. *</span>
+              <span>
+                I have reviewed the information above and I am ready to submit
+                this loan application. *
+              </span>
             </label>
           </fieldset>
         )}
 
-        {submitError && <p className={styles.submitError} role="alert">{submitError}</p>}
-        <div className={styles.formActions}>
-          {step > 0 && <button type="button" onClick={() => moveToStep(step - 1)}><ArrowLeft /> Previous</button>}
+        {submitError && (
+          <p className={styles.submitError} role="alert">
+            {submitError}
+          </p>
+        )}
+        <div
+          className={`${styles.formActions} ${
+            hasReachedStepEnd ? "" : styles.mobileActionsHidden
+          }`}
+        >
+          {step > 0 && (
+            <button type="button" onClick={() => moveToStep(step - 1)}>
+              <ArrowLeft /> Previous
+            </button>
+          )}
           {step < steps.length - 1 ? (
             <button
               type="button"
@@ -663,7 +877,9 @@ export function LoanApplicationForm({ recaptchaToken }: { recaptchaToken: string
               Continue <ArrowRight />
             </button>
           ) : (
-            <button type="submit" disabled={submitting || !reviewConfirmed}><Send /> {submitting ? "Submitting…" : "Submit loan application"}</button>
+            <button type="submit" disabled={submitting || !reviewConfirmed}>
+              <Send /> {submitting ? "Submitting…" : "Submit loan application"}
+            </button>
           )}
         </div>
       </form>
