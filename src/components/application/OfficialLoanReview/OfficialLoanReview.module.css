@@ -1,0 +1,35 @@
+.viewport { overflow-x: auto; margin-top: 1rem; padding: clamp(.5rem, 2vw, 1rem); background: #e8ece9; border: 1px solid var(--color-border); border-radius: var(--radius-sm); scrollbar-gutter: stable; }
+.document { width: 100%; min-width: 42rem; max-width: 52rem; margin: 0 auto; padding: clamp(1.25rem, 4vw, 3rem); color: #111; background: #fff; box-shadow: 0 .4rem 1.5rem rgb(0 0 0 / 10%); font-family: Arial, sans-serif; font-size: .76rem; line-height: 1.35; }
+.header { display: grid; grid-template-columns: 4.6rem 1fr 4.6rem; align-items: center; text-align: center; }
+.header img { width: 4.35rem; height: 4.35rem; object-fit: contain; }
+.header div { display: grid; justify-items: center; }
+.header p { margin: 0; font-weight: 700; }
+.header small { display: block; font-size: .65rem; }
+.header h3 { grid-column: 1 / -1; margin: 1.2rem 0 1rem; color: #111; font-family: Arial, sans-serif; font-size: 1rem; text-decoration: underline; }
+.twoColumnLines { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .55rem 2rem; margin: .7rem 0; }
+.twoColumnLines p { display: grid; grid-template-columns: auto minmax(4rem, 1fr); gap: .45rem; align-items: end; margin: 0; }
+.twoColumnLines span,
+.statement span,
+.line span { min-height: 1.25rem; padding: 0 .2rem; border-bottom: 1px solid #111; font-weight: 600; overflow-wrap: anywhere; }
+.statement { margin: 1rem 0; line-height: 1.8; }
+.line { display: grid; grid-template-columns: auto 1fr; gap: .4rem; align-items: end; margin: .7rem 0; }
+.optionLine { display: flex; flex-wrap: wrap; gap: .35rem .8rem; align-items: center; margin: .65rem 0; }
+.optionLine span { white-space: nowrap; }
+.checked { color: var(--color-brand-800); font-weight: 800; }
+.document h4 { margin: 1.1rem 0 .35rem; color: #111; font-family: Arial, sans-serif; font-size: .8rem; }
+.formTable { width: 100%; table-layout: fixed; border-collapse: collapse; }
+.formTable th,
+.formTable td { height: 1.8rem; padding: .25rem .35rem; border: 1px solid #111; overflow-wrap: anywhere; text-align: left; }
+.formTable th { background: #f3f3f3; font-size: .65rem; text-align: center; }
+.formTable td { font-size: .68rem; }
+.formTable .emptyRecord { height: auto; padding: .65rem; color: #555; font-style: italic; text-align: center; }
+.agreementText { margin: 1rem 0; text-align: justify; text-indent: 1.5rem; }
+.agreementText p { margin: .6rem 0; }
+.signatureGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.8rem 2.5rem; margin: 1.5rem 0 0; }
+.signatureGrid div { display: grid; text-align: center; }
+.signatureGrid span { min-height: 1.5rem; border-bottom: 1px solid #111; font-weight: 600; }
+.signatureGrid b { margin-top: .25rem; font-size: .65rem; font-weight: 500; }
+
+@media (max-width: 39.99rem) {
+  .viewport { margin-right: -1rem; margin-left: -1rem; border-right: 0; border-left: 0; border-radius: 0; }
+}

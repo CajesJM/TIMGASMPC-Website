@@ -9,7 +9,7 @@ import {
   ShieldCheck,
   Trash2,
 } from "lucide-react";
-import { useRef, useState } from "react";
+import { useRef, useState, type FormEvent } from "react";
 import {
   useFieldArray,
   useForm,
@@ -20,15 +20,16 @@ import { z } from "zod";
 import {
   loanPaymentModeLabels,
   loanPaymentModes,
-  loanTypeLabels,
   loanTypeOptions,
 } from "../../../features/applications/loanApplicationTypes";
 import { db } from "../../../lib/firestore";
+import { OfficialLoanReview } from "../OfficialLoanReview/OfficialLoanReview";
 import styles from "./LoanApplicationForm.module.css";
 
 const agreementVersion = "Loan-Application-Form";
 const maximumAssets = 6;
 const maximumDebts = 4;
+const maximumPurposeCharacters = 5_000;
 
 const optionalText = (maximum = 160) => z.string().trim().max(maximum);
 const requiredText = (label: string, maximum = 160) =>
@@ -45,15 +46,30 @@ const optionalAmount = z.string().trim().refine(
   (value) => !value || (Number.isFinite(Number(value)) && Number(value) >= 0),
   { message: "Enter a valid amount." },
 );
+const optionalDate = z
+  .string()
+  .trim()
+  .refine((value) => !value || /^\d{4}-\d{2}-\d{2}$/.test(value), {
+    message: "Enter a valid release date.",
+  });
 
 const loanApplicationSchema = z.object({
   applicantName: requiredText("Applicant name", 220),
+  applicantEmail: z
+    .string()
+    .trim()
+    .min(1, "Gmail address is required.")
+    .max(254, "Gmail address is too long.")
+    .email("Enter a valid Gmail address.")
+    .refine((value) => value.toLowerCase().endsWith("@gmail.com"), {
+      message: "Use a Gmail address ending in @gmail.com.",
+    }),
   address: requiredText("Address", 300),
   typeOfLoan: z.enum(
     ["prodn", "hon", "salary", "express", "sbl", "mf_first", "mf_second"],
     { message: "Choose the loan type shown in the official form." },
   ),
-  purposeOfLoan: requiredText("Purpose of loan", 500),
+  purposeOfLoan: requiredText("Purpose of loan", maximumPurposeCharacters),
   paymentMode: z.enum(loanPaymentModes, {
     message: "Choose a mode of payment.",
   }),
@@ -69,6 +85,9 @@ const loanApplicationSchema = z.object({
       { message: "Enter a whole number from 1 to 120." },
     ),
   amountApplied: requiredAmount("Amount applied"),
+  cbuAmount: requiredAmount("Amount of CBU"),
+  dateReleased: optionalDate,
+  savingsAmount: requiredAmount("Amount of savings"),
   assets: z
     .array(
       z.object({
@@ -107,12 +126,16 @@ type LoanFormValues = z.infer<typeof loanApplicationSchema>;
 
 const defaultValues: LoanFormValues = {
   applicantName: "",
+  applicantEmail: "",
   address: "",
   typeOfLoan: "prodn",
   purposeOfLoan: "",
   paymentMode: "monthly",
   numberOfMonths: "",
   amountApplied: "",
+  cbuAmount: "",
+  dateReleased: "",
+  savingsAmount: "",
   assets: [],
   debts: [],
   spouseName: "",
@@ -136,12 +159,16 @@ const steps = [
 const stepFields: FieldPath<LoanFormValues>[][] = [
   [
     "applicantName",
+    "applicantEmail",
     "address",
     "typeOfLoan",
     "purposeOfLoan",
     "paymentMode",
     "numberOfMonths",
     "amountApplied",
+    "cbuAmount",
+    "dateReleased",
+    "savingsAmount",
   ],
   ["assets"],
   ["debts"],
@@ -180,6 +207,7 @@ export function LoanApplicationForm() {
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const [submittedReference, setSubmittedReference] = useState("");
+  const [reviewConfirmed, setReviewConfirmed] = useState(false);
   const formRef = useRef<HTMLDivElement>(null);
   const {
     register,
@@ -196,8 +224,15 @@ export function LoanApplicationForm() {
   const assets = useFieldArray({ control, name: "assets" });
   const debts = useFieldArray({ control, name: "debts" });
   const values = useWatch({ control });
+  const purposeCharacterCount = values.purposeOfLoan?.length ?? 0;
+  const requiredConsentsAccepted = Boolean(
+    values.agreementAccepted &&
+      values.coMakerAuthorizationAcknowledged &&
+      values.privacyConsent,
+  );
 
   const moveToStep = (nextStep: number) => {
+    setReviewConfirmed(false);
     setStep(nextStep);
     window.requestAnimationFrame(() => {
       const form = formRef.current;
@@ -244,6 +279,7 @@ export function LoanApplicationForm() {
         source: "online",
         reference,
         applicantName: data.applicantName,
+        applicantEmail: data.applicantEmail.toLowerCase(),
         address: data.address,
         typeOfLoan: data.typeOfLoan,
         purposeOfLoan: data.purposeOfLoan,
@@ -265,9 +301,9 @@ export function LoanApplicationForm() {
         status: "new",
         statusNote: "",
         review: {
-          cbuAmount: null,
-          savingsAmount: null,
-          dateReleased: "",
+          cbuAmount: Number(data.cbuAmount),
+          savingsAmount: Number(data.savingsAmount),
+          dateReleased: data.dateReleased,
           amountApproved: null,
           previousLoans: [],
           assessingCoopEmployee: "",
@@ -285,6 +321,7 @@ export function LoanApplicationForm() {
 
       setSubmittedReference(reference);
       reset(defaultValues);
+      setReviewConfirmed(false);
       setStep(0);
     } catch (error) {
       console.error("Unable to submit the loan application.", error);
@@ -294,6 +331,18 @@ export function LoanApplicationForm() {
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const submitFromReview = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (step < steps.length - 1) {
+      void continueForm();
+      return;
+    }
+
+    if (!reviewConfirmed || submitting) return;
+    void handleSubmit(submitApplication)(event);
   };
 
   if (submittedReference) {
@@ -350,7 +399,7 @@ export function LoanApplicationForm() {
         ))}
       </ol>
 
-      <form onSubmit={handleSubmit(submitApplication)} noValidate>
+      <form onSubmit={submitFromReview} noValidate>
         <div className={styles.honeypot} aria-hidden="true">
           <label>Website<input {...register("website")} tabIndex={-1} /></label>
         </div>
@@ -359,14 +408,57 @@ export function LoanApplicationForm() {
           <fieldset>
             <legend>Borrower and loan information</legend>
             <p className={styles.sectionHelp}>
-              Date filed is recorded automatically. CBU, savings, date
-              released, and amount approved are completed by TIMGAS personnel.
+              Enter the borrower information and the CBU, savings, and release
+              details requested in the official form.
             </p>
+            <section
+              className={styles.cooperativeFields}
+              aria-labelledby="loan-cooperative-fields-title"
+            >
+              <div>
+                <span>Applicant-provided loan record</span>
+                <strong id="loan-cooperative-fields-title">
+                  CBU, savings, and release information
+                </strong>
+              </div>
+              <div className={styles.applicantRecordFields}>
+                <label>
+                  Amount of CBU (₱) *
+                  <input type="number" min="0.01" step="0.01" inputMode="decimal" {...register("cbuAmount")} />
+                  <ErrorMessage message={errors.cbuAmount?.message} />
+                </label>
+                <label>
+                  Date released <span>Optional</span>
+                  <input type="date" {...register("dateReleased")} />
+                  <ErrorMessage message={errors.dateReleased?.message} />
+                </label>
+                <label>
+                  Amount of savings (₱) *
+                  <input type="number" min="0.01" step="0.01" inputMode="decimal" {...register("savingsAmount")} />
+                  <ErrorMessage message={errors.savingsAmount?.message} />
+                </label>
+              </div>
+              <p className={styles.cooperativeNote}>
+                <strong>Date filed</strong> is recorded automatically. <strong>Amount approved</strong> is completed by authorized TIMGAS MPC personnel after assessment.
+              </p>
+            </section>
             <div className={styles.gridTwo}>
               <label>
                 Applicant/member borrower *
                 <input autoComplete="name" {...register("applicantName")} />
                 <ErrorMessage message={errors.applicantName?.message} />
+              </label>
+              <label>
+                Gmail address *
+                <input
+                  type="email"
+                  inputMode="email"
+                  autoComplete="email"
+                  placeholder="applicant@gmail.com"
+                  {...register("applicantEmail")}
+                />
+                <span>TIMGAS MPC may use this address for application updates.</span>
+                <ErrorMessage message={errors.applicantEmail?.message} />
               </label>
               <label>
                 Address in Bohol, Philippines *
@@ -386,7 +478,18 @@ export function LoanApplicationForm() {
             <ErrorMessage message={errors.typeOfLoan?.message} />
             <label>
               Purpose of loan *
-              <textarea rows={3} {...register("purposeOfLoan")} />
+              <textarea
+                rows={5}
+                maxLength={maximumPurposeCharacters}
+                aria-describedby="loan-purpose-character-count"
+                {...register("purposeOfLoan")}
+              />
+              <span
+                id="loan-purpose-character-count"
+                className={styles.characterCount}
+              >
+                {purposeCharacterCount.toLocaleString()} / {maximumPurposeCharacters.toLocaleString()} characters
+              </span>
               <ErrorMessage message={errors.purposeOfLoan?.message} />
             </label>
             <div className={styles.gridThree}>
@@ -516,13 +619,37 @@ export function LoanApplicationForm() {
           <fieldset>
             <legend>Review and submit</legend>
             <p className={styles.sectionHelp}>Review the information below before sending it to the TIMGAS manager.</p>
-            <div className={styles.reviewGrid}>
-              <article><span>Applicant</span><strong>{values.applicantName}</strong><small>{values.address}</small></article>
-              <article><span>Loan request</span><strong>{loanTypeLabels[values.typeOfLoan ?? "prodn"]}</strong><small>₱{Number(values.amountApplied || 0).toLocaleString("en-PH", { minimumFractionDigits: 2 })}</small></article>
-              <article><span>Payment</span><strong>{loanPaymentModeLabels[values.paymentMode ?? "monthly"]}</strong><small>{values.numberOfMonths} month(s)</small></article>
-              <article><span>Supporting information</span><strong>{values.assets?.length ?? 0} asset(s) · {values.debts?.length ?? 0} debt record(s)</strong><small>{values.coMakerOne || values.coMakerTwo ? "Co-maker information provided" : "No co-maker entered"}</small></article>
-            </div>
+            <OfficialLoanReview
+              data={{
+                applicantName: values.applicantName ?? "",
+                applicantEmail: values.applicantEmail ?? "",
+                address: values.address ?? "",
+                typeOfLoan: values.typeOfLoan ?? "prodn",
+                purposeOfLoan: values.purposeOfLoan ?? "",
+                paymentMode: values.paymentMode ?? "monthly",
+                numberOfMonths: values.numberOfMonths ?? "",
+                amountApplied: values.amountApplied ?? "",
+                cbuAmount: values.cbuAmount ?? "",
+                dateReleased: values.dateReleased ?? "",
+                savingsAmount: values.savingsAmount ?? "",
+                assets: values.assets ?? [],
+                debts: values.debts ?? [],
+                spouseName: values.spouseName ?? "",
+                applicantTypedName: values.applicantTypedName ?? "",
+                coMakers: [values.coMakerOne, values.coMakerTwo].filter(
+                  (name): name is string => Boolean(name),
+                ),
+              }}
+            />
             <div className={styles.finalNotice}><ShieldCheck /><p>This application is private. Only an authorized TIMGAS manager can read and process it. Online submission is not loan approval.</p></div>
+            <label className={`${styles.checkRow} ${styles.reviewConfirmation}`}>
+              <input
+                type="checkbox"
+                checked={reviewConfirmed}
+                onChange={(event) => setReviewConfirmed(event.target.checked)}
+              />
+              <span>I have reviewed the information above and I am ready to submit this loan application. *</span>
+            </label>
           </fieldset>
         )}
 
@@ -530,9 +657,15 @@ export function LoanApplicationForm() {
         <div className={styles.formActions}>
           {step > 0 && <button type="button" onClick={() => moveToStep(step - 1)}><ArrowLeft /> Previous</button>}
           {step < steps.length - 1 ? (
-            <button type="button" onClick={() => void continueForm()}>Continue <ArrowRight /></button>
+            <button
+              type="button"
+              disabled={step === 3 && !requiredConsentsAccepted}
+              onClick={() => void continueForm()}
+            >
+              Continue <ArrowRight />
+            </button>
           ) : (
-            <button type="submit" disabled={submitting}><Send /> {submitting ? "Submitting…" : "Submit loan application"}</button>
+            <button type="submit" disabled={submitting || !reviewConfirmed}><Send /> {submitting ? "Submitting…" : "Submit loan application"}</button>
           )}
         </div>
       </form>

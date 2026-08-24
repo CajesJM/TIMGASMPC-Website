@@ -137,6 +137,15 @@
 .tableWrap td strong {
   color: var(--color-brand-800);
 }
+.referenceLink {
+  color: var(--color-brand-800);
+  font-weight: 800;
+  text-decoration: none;
+}
+.referenceLink:hover,
+.referenceLink:focus-visible {
+  text-decoration: underline;
+}
 .status {
   padding: 0.25rem 0.5rem;
   border-radius: var(--radius-pill);
@@ -158,6 +167,14 @@
 .approved {
   color: #226845;
   background: #e3f2ea;
+}
+.disapproved {
+  color: #8a2828;
+  background: #fbe7e7;
+}
+.released {
+  color: #235d66;
+  background: #e3f2f4;
 }
 .bottomGrid {
   display: grid;

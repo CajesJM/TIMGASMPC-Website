@@ -12,16 +12,23 @@ import { CircleCheckBig, Clock3, FileText, Inbox } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { db } from "../../../lib/firestore";
+import {
+  loanStatusLabels,
+  loanTypeLabels,
+  type LoanStatus,
+  type LoanType,
+} from "../../../features/applications/loanApplicationTypes";
 import pageStyles from "../../../styles/admin/AdminPage.module.css";
 import styles from "./DashboardPage.module.css";
 
-type ApplicationStatus = "new" | "in_review" | "for_verification" | "approved";
+type ApplicationStatus = LoanStatus;
 
 type Application = {
   id: string;
   reference: string;
   applicantName: string;
   applicationType: string;
+  applicationGroup: "membership" | "loan";
   submittedAt: Timestamp | null;
   status: ApplicationStatus;
 };
@@ -41,10 +48,7 @@ const emptyMetrics: DashboardMetrics = {
 };
 
 const statusLabels: Record<ApplicationStatus, string> = {
-  new: "New",
-  in_review: "In review",
-  for_verification: "For verification",
-  approved: "Approved",
+  ...loanStatusLabels,
 };
 
 const statusClassNames: Record<ApplicationStatus, string> = {
@@ -52,7 +56,26 @@ const statusClassNames: Record<ApplicationStatus, string> = {
   in_review: "inreview",
   for_verification: "forverification",
   approved: "approved",
+  disapproved: "disapproved",
+  released: "released",
 };
+
+const pipelineStatuses: ApplicationStatus[] = [
+  "new",
+  "in_review",
+  "for_verification",
+  "approved",
+  "disapproved",
+  "released",
+];
+
+function isApplicationStatus(value: unknown): value is ApplicationStatus {
+  return typeof value === "string" && value in statusLabels;
+}
+
+function isLoanType(value: unknown): value is LoanType {
+  return typeof value === "string" && value in loanTypeLabels;
+}
 
 function formatSubmittedAt(value: Timestamp | null) {
   if (!value) return "Date unavailable";
@@ -69,6 +92,8 @@ export function DashboardPage() {
     in_review: 0,
     for_verification: 0,
     approved: 0,
+    disapproved: 0,
+    released: 0,
   });
   const [applications, setApplications] = useState<Application[]>([]);
   const [loading, setLoading] = useState(Boolean(db));
@@ -81,57 +106,41 @@ export function DashboardPage() {
     const firestore = db;
     const loadDashboard = async () => {
       try {
-        const applicationsRef = collection(firestore, "applications");
-        const statusQueries = {
-          new: query(applicationsRef, where("status", "==", "new")),
-          in_review: query(applicationsRef, where("status", "==", "in_review")),
-          for_verification: query(
-            applicationsRef,
-            where("status", "==", "for_verification"),
-          ),
-          approved: query(applicationsRef, where("status", "==", "approved")),
+        const membershipRef = collection(firestore, "applications");
+        const loanRef = collection(firestore, "loanApplications");
+        const countStatus = async (status: ApplicationStatus) => {
+          const [membership, loan] = await Promise.all([
+            getCountFromServer(query(membershipRef, where("status", "==", status))),
+            getCountFromServer(query(loanRef, where("status", "==", status))),
+          ]);
+          return membership.data().count + loan.data().count;
         };
 
-        const [
-          newCount,
-          reviewCount,
-          verificationCount,
-          approvedCount,
-          recentSnapshot,
-        ] = await Promise.all([
-          getCountFromServer(statusQueries.new),
-          getCountFromServer(statusQueries.in_review),
-          getCountFromServer(statusQueries.for_verification),
-          getCountFromServer(statusQueries.approved),
-          getDocs(
-            query(applicationsRef, orderBy("submittedAt", "desc"), limit(6)),
-          ),
-        ]);
+        const [totalMembership, totalLoans, statusCounts, membershipRecent, loanRecent] =
+          await Promise.all([
+            getCountFromServer(membershipRef),
+            getCountFromServer(loanRef),
+            Promise.all(pipelineStatuses.map(countStatus)),
+            getDocs(query(membershipRef, orderBy("submittedAt", "desc"), limit(6))),
+            getDocs(query(loanRef, orderBy("submittedAt", "desc"), limit(6))),
+          ]);
 
-        const counts = {
-          new: newCount.data().count,
-          in_review: reviewCount.data().count,
-          for_verification: verificationCount.data().count,
-          approved: approvedCount.data().count,
-        };
+        const counts = Object.fromEntries(
+          pipelineStatuses.map((itemStatus, index) => [itemStatus, statusCounts[index]]),
+        ) as Record<ApplicationStatus, number>;
 
         setPipeline(counts);
         setMetrics({
-          totalApplications: Object.values(counts).reduce(
-            (total, count) => total + count,
-            0,
-          ),
+          totalApplications:
+            totalMembership.data().count + totalLoans.data().count,
           newApplications: counts.new,
           inProgress: counts.in_review + counts.for_verification,
-          approved: counts.approved,
+          approved: counts.approved + counts.released,
         });
-        setApplications(
-          recentSnapshot.docs.map((document) => {
+        const membershipItems: Application[] = membershipRecent.docs.map(
+          (document) => {
             const data = document.data();
-            const status =
-              data.status in statusLabels
-                ? (data.status as ApplicationStatus)
-                : "new";
+            const status = isApplicationStatus(data.status) ? data.status : "new";
             return {
               id: document.id,
               reference:
@@ -144,13 +153,43 @@ export function DashboardPage() {
                   : "Name unavailable",
               applicationType:
                 typeof data.applicationType === "string"
-                  ? data.applicationType
+                  ? `Membership — ${data.applicationType}`
                   : "Membership",
+              applicationGroup: "membership",
               submittedAt:
                 data.submittedAt instanceof Timestamp ? data.submittedAt : null,
               status,
             };
-          }),
+          },
+        );
+        const loanItems: Application[] = loanRecent.docs.map((document) => {
+          const data = document.data();
+          const status = isApplicationStatus(data.status) ? data.status : "new";
+          return {
+            id: document.id,
+            reference:
+              typeof data.reference === "string" ? data.reference : document.id,
+            applicantName:
+              typeof data.applicantName === "string"
+                ? data.applicantName
+                : "Name unavailable",
+            applicationType: isLoanType(data.typeOfLoan)
+              ? `Loan — ${loanTypeLabels[data.typeOfLoan]}`
+              : "Loan application",
+            applicationGroup: "loan",
+            submittedAt:
+              data.submittedAt instanceof Timestamp ? data.submittedAt : null,
+            status,
+          };
+        });
+        setApplications(
+          [...membershipItems, ...loanItems]
+            .sort(
+              (left, right) =>
+                (right.submittedAt?.toMillis() ?? 0) -
+                (left.submittedAt?.toMillis() ?? 0),
+            )
+            .slice(0, 6),
         );
       } catch (error) {
         console.error("Unable to load the manager dashboard.", error);
@@ -178,7 +217,7 @@ export function DashboardPage() {
             <p className="eyebrow">Easy Apply workspace</p>
             <h1>Application and content overview</h1>
             <p>
-              Review recent membership inquiries and manage the information
+              Review recent membership and loan applications, and manage the information
               published on the TIMGAS MPC website.
             </p>
           </div>
@@ -223,7 +262,7 @@ export function DashboardPage() {
               <strong>{loading ? "—" : metrics.approved}</strong>
             </div>
             <CircleCheckBig />
-            <small>Completed application review</small>
+            <small>Approved or released applications</small>
           </article>
         </section>
       </div>
@@ -232,7 +271,7 @@ export function DashboardPage() {
           <div>
             <p className={styles.sectionLabel}>Easy Apply</p>
             <h2>Recent applications</h2>
-            <p>The six latest membership inquiries submitted online.</p>
+            <p>The six latest membership and loan applications submitted online.</p>
           </div>
           <Link to="/manager/applications">View all applications</Link>
         </div>
@@ -243,7 +282,7 @@ export function DashboardPage() {
             <FileText aria-hidden="true" />
             <strong>No applications yet</strong>
             <span>
-              New online membership submissions will appear here.
+              New membership and loan submissions will appear here.
             </span>
           </div>
         ) : (
@@ -262,7 +301,12 @@ export function DashboardPage() {
                 {applications.map((item) => (
                   <tr key={item.id}>
                     <td>
-                      <strong>{item.reference}</strong>
+                      <Link
+                        to={`/manager/applications?type=${item.applicationGroup}`}
+                        className={styles.referenceLink}
+                      >
+                        {item.reference}
+                      </Link>
                     </td>
                     <td>{item.applicantName}</td>
                     <td>{item.applicationType}</td>
@@ -291,7 +335,7 @@ export function DashboardPage() {
             </div>
           </div>
           <div className={styles.pipeline}>
-            {(Object.keys(statusLabels) as ApplicationStatus[]).map(
+            {pipelineStatuses.map(
               (status) => {
                 const value = pipeline[status];
                 const width =

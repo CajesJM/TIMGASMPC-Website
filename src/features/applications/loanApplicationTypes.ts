@@ -95,6 +95,7 @@ export type LoanApplication = {
   id: string;
   reference: string;
   applicantName: string;
+  applicantEmail: string;
   address: string;
   typeOfLoan: LoanType;
   purposeOfLoan: string;
@@ -160,6 +161,7 @@ export function parseLoanApplication(
     id: snapshot.id,
     reference: text(data.reference) || snapshot.id,
     applicantName: text(data.applicantName) || "Name unavailable",
+    applicantEmail: text(data.applicantEmail),
     address: text(data.address),
     typeOfLoan: isLoanType(data.typeOfLoan) ? data.typeOfLoan : "prodn",
     purposeOfLoan: text(data.purposeOfLoan),

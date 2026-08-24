@@ -31,6 +31,13 @@
 .formShell fieldset { min-width: 0; margin: 0; padding: 0; border: 0; }
 .formShell legend { margin-bottom: .3rem; color: var(--color-brand-900); font-family: var(--font-display); font-size: clamp(1.2rem, 2vw, 1.55rem); font-weight: 700; }
 .sectionHelp { margin: 0 0 1.25rem; color: var(--color-text-muted); font-size: .85rem; }
+.cooperativeFields { display: grid; gap: .8rem; margin: 0 0 1.2rem; padding: 1rem; background: #f7faf8; border: 1px solid var(--color-border); border-left: 3px solid var(--color-gold-500); }
+.cooperativeFields > div { display: grid; gap: .15rem; }
+.cooperativeFields > div span { color: var(--color-gold-700); font-size: .65rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.cooperativeFields > div strong { color: var(--color-brand-950); font-size: .95rem; }
+.applicantRecordFields { display: grid !important; gap: .75rem; }
+.cooperativeNote { margin: 0; padding-top: .7rem; color: var(--color-text-muted); border-top: 1px solid var(--color-border); font-size: .75rem; }
+.cooperativeNote strong { color: var(--color-brand-900); }
 .gridTwo,
 .gridThree { display: grid; gap: .9rem 1rem; margin-bottom: 1rem; align-items: start; }
 .formShell label { display: grid; gap: .4rem; color: var(--color-text); font-size: .8rem; font-weight: 700; }
@@ -42,6 +49,7 @@
 .formShell input:focus-visible,
 .formShell select:focus-visible,
 .formShell textarea:focus-visible { border-color: var(--color-brand-700); outline: 3px solid rgb(30 119 83 / 16%); }
+.characterCount { justify-self: end; color: var(--color-text-muted); font-variant-numeric: tabular-nums; }
 .fieldError { color: #a52929; font-size: .72rem; font-weight: 600; }
 
 .loanTypes { display: flex; flex-wrap: wrap; gap: .65rem 1.1rem; margin: .4rem 0 1rem; padding: .9rem 1rem; background: var(--color-surface); border: 1px solid var(--color-border); }
@@ -76,11 +84,8 @@
 .checkRow { display: flex !important; gap: .65rem; align-items: start; margin-top: .9rem; line-height: 1.5; font-weight: 600 !important; }
 .checkRow input { flex: none; margin-top: .18rem; }
 .checkRow span { color: var(--color-text) !important; font-size: .8rem !important; }
+.reviewConfirmation { padding: .85rem 1rem; background: var(--color-surface); border: 1px solid var(--color-border); }
 
-.reviewGrid { display: grid; gap: .75rem; }
-.reviewGrid article { display: grid; gap: .2rem; padding: 1rem; background: var(--color-surface); border: 1px solid var(--color-border); }
-.reviewGrid span { color: var(--color-text-muted); font-size: .7rem; letter-spacing: .06em; text-transform: uppercase; }
-.reviewGrid small { color: var(--color-text-muted); }
 .formActions { position: sticky; bottom: -1px; z-index: 2; display: flex; gap: .75rem; justify-content: flex-end; margin: 1.5rem calc(clamp(1rem, 3vw, 2rem) * -1) calc(clamp(1rem, 3vw, 2rem) * -1); padding: .85rem clamp(1rem, 3vw, 2rem); background: rgb(255 255 255 / 96%); border-top: 1px solid var(--color-border); box-shadow: 0 -.6rem 1.5rem rgb(14 53 39 / 5%); backdrop-filter: blur(8px); }
 .formActions button:first-child:not(:last-child) { color: var(--color-brand-900); background: #fff; border: 1px solid var(--color-border); }
 .submitError { margin: 1rem 0 0; padding: .8rem; color: #842323; background: #fff0f0; border-left: 3px solid #b73131; font-size: .82rem; }
@@ -89,9 +94,9 @@
 .success > svg { width: 2.4rem; height: 2.4rem; color: var(--color-success); }
 
 @media (min-width: 40rem) {
+  .applicantRecordFields { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .gridTwo,
-  .entryRow,
-  .reviewGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .entryRow { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .gridThree { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .debtEntry { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }

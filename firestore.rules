@@ -112,11 +112,17 @@ service cloud.firestore {
           'recommendingLoanAnalyst', 'lendingDepartmentManager',
           'generalManager', 'bodAction', 'approvedBy', 'chairperson'
         ])
-        && (review.cbuAmount == null || review.cbuAmount is number)
-        && (review.savingsAmount == null || review.savingsAmount is number)
+        && (review.cbuAmount == null || (
+          review.cbuAmount is number && review.cbuAmount >= 0
+        ))
+        && (review.savingsAmount == null || (
+          review.savingsAmount is number && review.savingsAmount >= 0
+        ))
         && review.dateReleased is string
         && review.dateReleased.size() <= 10
-        && (review.amountApproved == null || review.amountApproved is number)
+        && (review.amountApproved == null || (
+          review.amountApproved is number && review.amountApproved >= 0
+        ))
         && validPreviousLoans(review.previousLoans)
         && review.assessingCoopEmployee is string
         && review.assessingCoopEmployee.size() <= 220
@@ -206,14 +212,14 @@ service cloud.firestore {
 
     function validLoanApplication(data) {
       return data.keys().hasOnly([
-          'schemaVersion', 'source', 'reference', 'applicantName', 'address',
+          'schemaVersion', 'source', 'reference', 'applicantName', 'applicantEmail', 'address',
           'typeOfLoan', 'purposeOfLoan', 'paymentMode', 'numberOfMonths',
           'amountApplied', 'assets', 'debts', 'spouseName', 'coMakers',
           'agreement', 'privacyConsent', 'status', 'statusNote', 'review',
           'submittedAt', 'updatedAt'
         ])
         && data.keys().hasAll([
-          'schemaVersion', 'source', 'reference', 'applicantName', 'address',
+          'schemaVersion', 'source', 'reference', 'applicantName', 'applicantEmail', 'address',
           'typeOfLoan', 'purposeOfLoan', 'paymentMode', 'numberOfMonths',
           'amountApplied', 'assets', 'debts', 'spouseName', 'coMakers',
           'agreement', 'privacyConsent', 'status', 'statusNote', 'review',
@@ -226,6 +232,10 @@ service cloud.firestore {
         && data.applicantName is string
         && data.applicantName.size() >= 3
         && data.applicantName.size() <= 220
+        && data.applicantEmail is string
+        && data.applicantEmail.size() >= 11
+        && data.applicantEmail.size() <= 254
+        && data.applicantEmail.matches('^[^@]+@gmail[.]com$')
         && data.address is string
         && data.address.size() >= 3
         && data.address.size() <= 300
@@ -234,7 +244,7 @@ service cloud.firestore {
         ]
         && data.purposeOfLoan is string
         && data.purposeOfLoan.size() >= 3
-        && data.purposeOfLoan.size() <= 500
+        && data.purposeOfLoan.size() <= 5000
         && data.paymentMode in [
           'daily', 'weekly', 'semi_monthly', 'monthly'
         ]
@@ -270,9 +280,14 @@ service cloud.firestore {
         && data.status == 'new'
         && data.statusNote == ''
         && validLoanReview(data.review)
-        && data.review.cbuAmount == null
-        && data.review.savingsAmount == null
-        && data.review.dateReleased == ''
+        && data.review.cbuAmount is number
+        && data.review.cbuAmount > 0
+        && data.review.savingsAmount is number
+        && data.review.savingsAmount > 0
+        && (
+          data.review.dateReleased == ''
+          || data.review.dateReleased.matches('^\\d{4}-\\d{2}-\\d{2}$')
+        )
         && data.review.amountApproved == null
         && data.review.previousLoans.size() == 0
         && data.review.assessingCoopEmployee == ''

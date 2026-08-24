@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
 import { App } from "./App";
@@ -96,12 +96,97 @@ describe("TIMGAS website", () => {
     expect(
       screen.getByRole("dialog", { name: /apply for a timgas mpc loan/i }),
     ).toBeVisible();
+    const loanDialog = screen.getByRole("dialog", {
+      name: /apply for a timgas mpc loan/i,
+    });
     expect(
       screen.getByRole("heading", { name: /loan application form/i }),
     ).toBeInTheDocument();
     expect(screen.getByLabelText(/applicant\/member borrower/i)).toBeVisible();
     expect(screen.getByLabelText(/mf \(first field\)/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/mf \(second field\)/i)).toBeInTheDocument();
+    expect(within(loanDialog).getByLabelText(/amount of cbu/i)).toBeVisible();
+    expect(within(loanDialog).getByLabelText(/date released/i)).toBeVisible();
+    expect(within(loanDialog).getByText(/^optional$/i)).toBeVisible();
+    expect(within(loanDialog).getByLabelText(/amount of savings/i)).toBeVisible();
+    expect(within(loanDialog).getByText(/amount approved/i)).toBeVisible();
+
+    await user.type(
+      screen.getByLabelText(/applicant\/member borrower/i),
+      "Test Borrower",
+    );
+    await user.type(
+      within(loanDialog).getByLabelText(/gmail address/i),
+      "test.borrower@gmail.com",
+    );
+    await user.type(screen.getByLabelText(/address in bohol/i), "Trinidad, Bohol");
+    const purposeField = screen.getByLabelText(/purpose of loan/i);
+    expect(purposeField).toHaveAttribute("maxlength", "5000");
+    expect(within(loanDialog).getByText("0 / 5,000 characters")).toBeVisible();
+    await user.type(purposeField, "Farm supplies");
+    expect(within(loanDialog).getByText("13 / 5,000 characters")).toBeVisible();
+    await user.type(screen.getByLabelText(/number of months/i), "12");
+    await user.type(screen.getByLabelText(/amount applied/i), "10000");
+    await user.type(screen.getByLabelText(/amount of cbu/i), "2500");
+    await user.type(screen.getByLabelText(/amount of savings/i), "1500");
+    await user.click(
+      within(loanDialog).getByRole("button", { name: /^continue$/i }),
+    );
+    expect(screen.getByText(/step 2 of 5/i)).toBeInTheDocument();
+    await user.click(
+      within(loanDialog).getByRole("button", { name: /^continue$/i }),
+    );
+    expect(screen.getByText(/step 3 of 5/i)).toBeInTheDocument();
+    await user.click(
+      within(loanDialog).getByRole("button", { name: /^continue$/i }),
+    );
+    expect(screen.getByText(/step 4 of 5/i)).toBeInTheDocument();
+    await user.type(
+      screen.getByLabelText(/applicant\/member borrower typed name/i),
+      "Test Borrower",
+    );
+    const consentContinueButton = within(loanDialog).getByRole("button", {
+      name: /^continue$/i,
+    });
+    expect(consentContinueButton).toBeDisabled();
+    await user.click(screen.getByLabelText(/reviewed and accept the official loan agreement/i));
+    expect(consentContinueButton).toBeDisabled();
+    await user.click(screen.getByLabelText(/acknowledge the official co-maker statement/i));
+    expect(consentContinueButton).toBeDisabled();
+    await user.click(screen.getByLabelText(/authorize timgas mpc to collect/i));
+    expect(consentContinueButton).toBeEnabled();
+    await user.click(consentContinueButton);
+
+    expect(screen.getByText(/step 5 of 5/i)).toBeInTheDocument();
+    expect(loanDialog.querySelector("legend")).toHaveTextContent(
+      "Review and submit",
+    );
+    const officialLoanPreview = within(loanDialog).getByLabelText(
+      /official loan application preview/i,
+    );
+    expect(
+      within(officialLoanPreview).getByRole("img", {
+        name: /timgas mpc cooperative logo/i,
+      }),
+    ).toBeVisible();
+    expect(
+      within(officialLoanPreview).getByRole("heading", {
+        name: /loan application form/i,
+      }),
+    ).toBeVisible();
+    expect(
+      within(officialLoanPreview).getByText(/no asset information was provided/i),
+    ).toBeVisible();
+    expect(screen.queryByText(/loan application received/i)).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /submit loan application/i }),
+    ).toBeDisabled();
+    await user.click(
+      screen.getByLabelText(/reviewed the information above and i am ready/i),
+    );
+    expect(
+      screen.getByRole("button", { name: /submit loan application/i }),
+    ).toBeEnabled();
     await user.keyboard("{Escape}");
     expect(
       screen.queryByRole("dialog", { name: /apply for a timgas mpc loan/i }),
@@ -109,7 +194,7 @@ describe("TIMGAS website", () => {
     expect(
       screen.getByRole("button", { name: /continue loan form/i }),
     ).toBeVisible();
-  });
+  }, 10_000);
 
   it("uses homepage anchors for the public navigation", () => {
     const { container } = renderApp();

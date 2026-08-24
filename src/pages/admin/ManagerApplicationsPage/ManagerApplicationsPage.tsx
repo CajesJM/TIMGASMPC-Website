@@ -1,14 +1,17 @@
-import { useOutletContext } from "react-router-dom";
+import { useOutletContext, useSearchParams } from "react-router-dom";
 import { AdminApplicationsManager } from "../../../components/admin/AdminApplicationsManager/AdminApplicationsManager";
 import { AdminLoanApplicationsManager } from "../../../components/admin/AdminLoanApplicationsManager/AdminLoanApplicationsManager";
 import type { ManagerOutletContext } from "../../../layouts/admin/ManagerLayout/ManagerLayout";
 import pageStyles from "../../../styles/admin/AdminPage.module.css";
 import styles from "./ManagerApplicationsPage.module.css";
-import { useState } from "react";
 
 export function ManagerApplicationsPage() {
   const { showToast } = useOutletContext<ManagerOutletContext>();
-  const [applicationType, setApplicationType] = useState<"membership" | "loan">("membership");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const applicationType = searchParams.get("type") === "loan" ? "loan" : "membership";
+  const selectApplicationType = (type: "membership" | "loan") => {
+    setSearchParams(type === "loan" ? { type: "loan" } : {}, { replace: true });
+  };
 
   return (
     <div className={pageStyles.content}>
@@ -28,7 +31,7 @@ export function ManagerApplicationsPage() {
           role="tab"
           aria-selected={applicationType === "membership"}
           className={applicationType === "membership" ? styles.active : undefined}
-          onClick={() => setApplicationType("membership")}
+          onClick={() => selectApplicationType("membership")}
         >
           Membership applications
         </button>
@@ -37,7 +40,7 @@ export function ManagerApplicationsPage() {
           role="tab"
           aria-selected={applicationType === "loan"}
           className={applicationType === "loan" ? styles.active : undefined}
-          onClick={() => setApplicationType("loan")}
+          onClick={() => selectApplicationType("loan")}
         >
           Loan applications
         </button>

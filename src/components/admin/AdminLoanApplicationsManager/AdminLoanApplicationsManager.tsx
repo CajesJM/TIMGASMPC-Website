@@ -18,6 +18,7 @@ import {
   X,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+import timgasLogo from "../../../assets/images/timgas-logo.png";
 import {
   formatPeso,
   loanPaymentModeLabels,
@@ -103,6 +104,7 @@ export function AdminLoanApplicationsManager({
         (filter === "all" || item.status === filter) &&
         (!term ||
           item.applicantName.toLowerCase().includes(term) ||
+          item.applicantEmail.toLowerCase().includes(term) ||
           item.reference.toLowerCase().includes(term)),
     );
   }, [filter, items, search]);
@@ -190,7 +192,7 @@ export function AdminLoanApplicationsManager({
             <tbody>{visible.map((item) => (
               <tr key={item.id}>
                 <td><button className={styles.reference} onClick={() => openApplication(item)}>{item.reference}</button></td>
-                <td>{item.applicantName}<small>{item.address}</small></td>
+                <td>{item.applicantName}<small>{item.applicantEmail || item.address}</small></td>
                 <td>{loanTypeLabels[item.typeOfLoan]}</td>
                 <td>{formatPeso(item.amountApplied)}</td>
                 <td>{dateFiled(item)}</td>
@@ -220,22 +222,35 @@ export function AdminLoanApplicationsManager({
             <div className={styles.documentWrap}>
               <article className={styles.document}>
                 <header className={styles.documentHeader}>
-                  <p>Tinabangay sa Igsoong Mag-uuma Gasa Ni San Isidro</p>
-                  <p>Multipurpose Cooperative (TIMGAS MPC)</p>
-                  <small>Poblacion, Trinidad, Bohol</small>
-                  <small>CDA Reg No. 9520-07005314 / CIN:0103070079</small>
-                  <small>TIN: 006-120-972-000 NON VAT REG.</small>
+                  <img src={timgasLogo} alt="TIMGAS MPC cooperative logo" />
+                  <div>
+                    <p>Tinabangay sa Igsoong Mag-uuma Gasa Ni San Isidro</p>
+                    <p>Multipurpose Cooperative (TIMGAS MPC)</p>
+                    <small>Poblacion, Trinidad, Bohol</small>
+                    <small>CDA Reg No. 9520-07005314 / CIN:0103070079</small>
+                    <small>TIN: 006-120-972-000 NON VAT REG.</small>
+                  </div>
                   <h2 id="loan-document-title">LOAN APPLICATION FORM</h2>
                 </header>
 
                 <section className={styles.twoColumnLines}>
                   <p><b>Date Filed:</b><span>{dateFiled(selected)}</span></p>
-                  <label><b>Amount of CBU:</b><input type="number" min="0" step="0.01" value={review.cbuAmount ?? ""} onChange={(event) => updateReview("cbuAmount", numberFromInput(event.target.value))} /></label>
-                  <label><b>Date Released:</b><input type="date" value={review.dateReleased} onChange={(event) => updateReview("dateReleased", event.target.value)} /></label>
-                  <label><b>Amount of Savings:</b><input type="number" min="0" step="0.01" value={review.savingsAmount ?? ""} onChange={(event) => updateReview("savingsAmount", numberFromInput(event.target.value))} /></label>
+                  <p><b>Amount of CBU:</b><span>{formatPeso(review.cbuAmount)}</span></p>
+                  <label><b>Date Released (optional):</b><input type="date" value={review.dateReleased} onChange={(event) => updateReview("dateReleased", event.target.value)} /></label>
+                  <p><b>Amount of Savings:</b><span>{formatPeso(review.savingsAmount)}</span></p>
                 </section>
 
                 <p className={styles.statement}>I, <span>{selected.applicantName}</span> of <span>{selected.address}</span>, Bohol, Philippines hereby applies for:</p>
+                <p className={styles.line}>
+                  <b>Applicant Gmail:</b>
+                  <span>
+                    {selected.applicantEmail ? (
+                      <a href={`mailto:${selected.applicantEmail}`}>{selected.applicantEmail}</a>
+                    ) : (
+                      "Not provided in this application"
+                    )}
+                  </span>
+                </p>
                 <div className={styles.optionLine}><b>Type of loan:</b>{loanTypeOptions.map((option) => <span key={option.value} className={selected.typeOfLoan === option.value ? styles.checked : undefined}>{selected.typeOfLoan === option.value ? "✓" : "□"} {option.label}</span>)}</div>
                 <p className={styles.line}><b>Purpose of Loan:</b><span>{selected.purposeOfLoan}</span></p>
                 <div className={styles.optionLine}><b>Mode of Payment:</b>{Object.entries(loanPaymentModeLabels).map(([value, label]) => <span key={value} className={selected.paymentMode === value ? styles.checked : undefined}>{selected.paymentMode === value ? "✓" : "□"} {label}</span>)}</div>
@@ -248,17 +263,42 @@ export function AdminLoanApplicationsManager({
                 <h3>Asset Information:</h3>
                 <table className={styles.formTable}>
                   <thead><tr><th>Property Description</th><th>Value</th><th>Property Description</th><th>Value</th></tr></thead>
-                  <tbody>{[0, 1, 2].map((row) => {
-                    const left = selected.assets[row * 2];
-                    const right = selected.assets[row * 2 + 1];
-                    return <tr key={row}><td>{left?.propertyDescription}</td><td>{left ? formatPeso(left.value) : ""}</td><td>{right?.propertyDescription}</td><td>{right ? formatPeso(right.value) : ""}</td></tr>;
-                  })}</tbody>
+                  <tbody>
+                    {selected.assets.length > 0 ? Array.from(
+                      { length: Math.ceil(selected.assets.length / 2) },
+                      (_, row) => {
+                        const left = selected.assets[row * 2];
+                        const right = selected.assets[row * 2 + 1];
+                        return (
+                          <tr key={row}>
+                            <td>{left.propertyDescription || "Not described"}</td>
+                            <td>{formatPeso(left.value)}</td>
+                            <td>{right?.propertyDescription || ""}</td>
+                            <td>{right ? formatPeso(right.value) : ""}</td>
+                          </tr>
+                        );
+                      },
+                    ) : (
+                      <tr><td className={styles.emptyRecord} colSpan={4}>No asset information was provided.</td></tr>
+                    )}
+                  </tbody>
                 </table>
 
                 <h3>Debt Information:</h3>
                 <table className={styles.formTable}>
                   <thead><tr><th>Source of Credit</th><th>Amount Granted</th><th>Outstanding Balance</th><th>Remarks</th></tr></thead>
-                  <tbody>{[0, 1, 2, 3].map((row) => { const debt = selected.debts[row]; return <tr key={row}><td>{debt?.sourceOfCredit}</td><td>{debt ? formatPeso(debt.amountGranted) : ""}</td><td>{debt ? formatPeso(debt.outstandingBalance) : ""}</td><td>{debt?.remarks}</td></tr>; })}</tbody>
+                  <tbody>
+                    {selected.debts.length > 0 ? selected.debts.map((debt, index) => (
+                      <tr key={`${debt.sourceOfCredit}-${index}`}>
+                        <td>{debt.sourceOfCredit || "Not specified"}</td>
+                        <td>{formatPeso(debt.amountGranted)}</td>
+                        <td>{formatPeso(debt.outstandingBalance)}</td>
+                        <td>{debt.remarks || "—"}</td>
+                      </tr>
+                    )) : (
+                      <tr><td className={styles.emptyRecord} colSpan={4}>No debt information was provided.</td></tr>
+                    )}
+                  </tbody>
                 </table>
 
                 <div className={styles.agreementText}>
@@ -303,9 +343,15 @@ export function AdminLoanApplicationsManager({
 
                 <h3>BOD’s Action (for P50,000.00 above loan)</h3>
                 <textarea className={styles.actionBox} rows={4} value={review.bodAction} onChange={(event) => updateReview("bodAction", event.target.value)} />
-                <section className={styles.signatureGrid}>
-                  <label><input value={review.approvedBy} onChange={(event) => updateReview("approvedBy", event.target.value)} /><b>Approved by</b></label>
-                  <label><input value={review.chairperson} onChange={(event) => updateReview("chairperson", event.target.value)} /><b>Chairperson</b></label>
+                <section className={styles.approvalSignature}>
+                  <strong>Approved by:</strong>
+                  <label>
+                    <input
+                      value={review.chairperson || review.approvedBy}
+                      onChange={(event) => updateReview("chairperson", event.target.value)}
+                    />
+                    <b>Chairperson</b>
+                  </label>
                 </section>
               </article>
             </div>
