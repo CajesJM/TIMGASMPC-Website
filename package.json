@@ -14,7 +14,10 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.0",
+    "docx": "^9.7.1",
     "firebase": "^12.17.1",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^4.2.1",
     "lucide-react": "^1.31.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",

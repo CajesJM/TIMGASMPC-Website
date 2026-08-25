@@ -102,7 +102,9 @@ export function AdminProfileManager({
     ],
     [newPassword],
   );
-  const passedPasswordChecks = passwordChecks.filter((check) => check.passed).length;
+  const passedPasswordChecks = passwordChecks.filter(
+    (check) => check.passed,
+  ).length;
   const passwordStrength =
     passedPasswordChecks <= 2
       ? "Weak"
@@ -203,6 +205,10 @@ export function AdminProfileManager({
       setAvatar(null);
       setRemoveAvatar(false);
       setError("");
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+      setPasswordError("");
       if (avatarInputRef.current) avatarInputRef.current.value = "";
     }
     setIsEditing((current) => !current);
@@ -336,7 +342,10 @@ export function AdminProfileManager({
     setChangingPassword(true);
     setPasswordError("");
     try {
-      const credential = EmailAuthProvider.credential(user.email, currentPassword);
+      const credential = EmailAuthProvider.credential(
+        user.email,
+        currentPassword,
+      );
       await reauthenticateWithCredential(user, credential);
       await updatePassword(user, newPassword);
       setCurrentPassword("");
@@ -503,7 +512,10 @@ export function AdminProfileManager({
             <input type="email" value={user?.email ?? ""} disabled readOnly />
           </label>
         </div>
-        <section className={styles.passwordPanel} aria-labelledby="password-heading">
+        <section
+          className={`${styles.passwordPanel} ${!isEditing ? styles.passwordLocked : ""}`}
+          aria-labelledby="password-heading"
+        >
           <div className={styles.passwordHeading}>
             <span className={styles.passwordIcon} aria-hidden="true">
               <KeyRound />
@@ -536,7 +548,7 @@ export function AdminProfileManager({
                 value={currentPassword}
                 onChange={(event) => setCurrentPassword(event.target.value)}
                 autoComplete="current-password"
-                disabled={changingPassword || loading}
+                disabled={changingPassword || loading || !isEditing}
               />
             </label>
             <label>
@@ -546,7 +558,7 @@ export function AdminProfileManager({
                 value={newPassword}
                 onChange={(event) => setNewPassword(event.target.value)}
                 autoComplete="new-password"
-                disabled={changingPassword || loading}
+                disabled={changingPassword || loading || !isEditing}
               />
             </label>
             <label>
@@ -556,11 +568,15 @@ export function AdminProfileManager({
                 value={confirmPassword}
                 onChange={(event) => setConfirmPassword(event.target.value)}
                 autoComplete="new-password"
-                disabled={changingPassword || loading}
+                disabled={changingPassword || loading || !isEditing}
               />
               {confirmPassword && (
-                <small className={passwordsMatch ? styles.match : styles.noMatch}>
-                  {passwordsMatch ? "Passwords match." : "Passwords do not match."}
+                <small
+                  className={passwordsMatch ? styles.match : styles.noMatch}
+                >
+                  {passwordsMatch
+                    ? "Passwords match."
+                    : "Passwords do not match."}
                 </small>
               )}
             </label>
@@ -571,23 +587,40 @@ export function AdminProfileManager({
             >
               <div className={styles.strengthLine}>
                 <span>Password strength</span>
-                <strong data-strength={passwordStrength.toLowerCase().replace(" ", "-")}>
+                <strong
+                  data-strength={passwordStrength
+                    .toLowerCase()
+                    .replace(" ", "-")}
+                >
                   {newPassword ? passwordStrength : "Not set"}
                 </strong>
               </div>
               <div className={styles.strengthMeter} aria-hidden="true">
-                <i style={{ "--strength": `${passedPasswordChecks * 20}%` } as CSSProperties} />
+                <i
+                  style={
+                    {
+                      "--strength": `${passedPasswordChecks * 20}%`,
+                    } as CSSProperties
+                  }
+                />
               </div>
               <ul>
                 {passwordChecks.map((check) => (
-                  <li key={check.label} className={check.passed ? styles.checkPassed : ""}>
+                  <li
+                    key={check.label}
+                    className={check.passed ? styles.checkPassed : ""}
+                  >
                     <Check aria-hidden="true" />
                     {check.label}
                   </li>
                 ))}
               </ul>
             </div>
-            {passwordError && <p className={styles.error} role="alert">{passwordError}</p>}
+            {passwordError && (
+              <p className={styles.error} role="alert">
+                {passwordError}
+              </p>
+            )}
             <button
               className={styles.passwordSubmit}
               type="button"
@@ -595,19 +628,18 @@ export function AdminProfileManager({
               disabled={
                 changingPassword ||
                 loading ||
+                !isEditing ||
                 !currentPassword ||
                 !newPasswordIsValid ||
                 !passwordsMatch
               }
             >
-              <KeyRound /> {changingPassword ? "Changing password…" : "Change password"}
+              <KeyRound />{" "}
+              {changingPassword ? "Changing password…" : "Change password"}
             </button>
           </div>
         </section>
-        <p className={styles.note}>
-          The email address is managed through Firebase Authentication and
-          cannot be changed from this form.
-        </p>
+
         {error && (
           <p className={styles.error} role="alert">
             {error}

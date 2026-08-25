@@ -3,6 +3,7 @@ import {
   ArrowLeft,
   ArrowRight,
   CheckCircle2,
+  FileDown,
   Plus,
   Send,
   ShieldCheck,
@@ -102,22 +103,24 @@ const loanApplicationSchema = z.object({
   assets: z
     .array(
       z.object({
-        propertyDescription: optionalText(200),
-        value: optionalAmount,
+        propertyDescription: requiredText("Property description", 200),
+        value: requiredAmount("Property value"),
       }),
     )
+    .min(1, "Add at least one property before continuing.")
     .max(maximumAssets),
   debts: z
     .array(
       z.object({
-        sourceOfCredit: optionalText(180),
+        sourceOfCredit: requiredText("Source of credit", 180),
         amountGranted: optionalAmount,
         outstandingBalance: optionalAmount,
         remarks: optionalText(250),
       }),
     )
+    .min(1, "Add at least one source of credit before continuing.")
     .max(maximumDebts),
-  spouseName: optionalText(220),
+  spouseName: requiredText("Spouse / marital consent", 220),
   coMakerOne: optionalText(220),
   coMakerTwo: optionalText(220),
   applicantTypedName: requiredText("Typed applicant name", 220),
@@ -183,13 +186,13 @@ const stepFields: FieldPath<LoanFormValues>[][] = [
     "numberOfMonths",
     "amountApplied",
     "cbuAmount",
-    "dateReleased",
     "savingsAmount",
   ],
   ["assets"],
   ["debts"],
   [
     "applicantTypedName",
+    "spouseName",
     "agreementAccepted",
     "coMakerAuthorizationAcknowledged",
     "privacyConsent",
@@ -217,9 +220,9 @@ function ErrorMessage({ message }: { message?: string }) {
 }
 
 export function LoanApplicationForm({
-  recaptchaToken,
+  getRecaptchaToken,
 }: {
-  recaptchaToken: string;
+  getRecaptchaToken: () => Promise<string>;
 }) {
   const [step, setStep] = useState(0);
   const [submitting, setSubmitting] = useState(false);
@@ -234,6 +237,7 @@ export function LoanApplicationForm({
     handleSubmit,
     trigger,
     reset,
+    setError,
     formState: { errors },
     setValue,
   } = useForm<LoanFormValues>({
@@ -322,6 +326,22 @@ export function LoanApplicationForm({
   };
 
   const continueForm = async () => {
+    if (step === 1 && assets.fields.length === 0) {
+      setError("assets", {
+        type: "manual",
+        message: "Add at least one property before continuing.",
+      });
+      return;
+    }
+
+    if (step === 2 && debts.fields.length === 0) {
+      setError("debts", {
+        type: "manual",
+        message: "Add at least one source of credit before continuing.",
+      });
+      return;
+    }
+
     const valid = await trigger(stepFields[step], { shouldFocus: true });
     if (valid) moveToStep(Math.min(step + 1, steps.length - 1));
   };
@@ -353,6 +373,7 @@ export function LoanApplicationForm({
           remarks: debt.remarks,
         }));
 
+      const recaptchaToken = await getRecaptchaToken();
       await submitApplicationWithCaptcha(
         "loanApplications",
         {
@@ -407,7 +428,9 @@ export function LoanApplicationForm({
     } catch (error) {
       console.error("Unable to submit the loan application.", error);
       setSubmitError(
-        "Your loan application could not be submitted. Check your connection and try again, or download the manual form.",
+        error instanceof Error && error.message.startsWith("Security verification")
+          ? error.message
+          : "Your loan application could not be submitted. Check your connection and try again, or download the manual form.",
       );
     } finally {
       setSubmitting(false);
@@ -440,9 +463,22 @@ export function LoanApplicationForm({
           supporting documents, validation, co-maker signatures, and an office
           visit before acting on the application.
         </p>
-        <button type="button" onClick={() => setSubmittedReference("")}>
-          Submit another loan application
-        </button>
+        <div className={styles.successNextSteps}>
+          <h4>What happens next</h4>
+          <p>
+            The TIMGAS manager will send loan application updates to the Gmail
+            address you provided. Please check your inbox and Spam folder
+            regularly.
+          </p>
+          <p>
+            If you do not receive a message within seven days, download and
+            complete the official loan application form, then bring it to the
+            TIMGAS MPC office together with your reference number for follow-up.
+          </p>
+          <a href="/downloads/Loan-Application-Form.xls" download>
+            <FileDown aria-hidden="true" /> Download the official loan application form
+          </a>
+        </div>
       </section>
     );
   }
@@ -524,9 +560,14 @@ export function LoanApplicationForm({
                   <ErrorMessage message={errors.cbuAmount?.message} />
                 </label>
                 <label>
-                  Date released
-                  <input type="date" {...register("dateReleased")} />
-                  <span>Optional</span>
+                  Date released — TIMGAS use only
+                  <input
+                    className={styles.readOnlyReleaseDate}
+                    type="date"
+                    readOnly
+                    aria-readonly="true"
+                    {...register("dateReleased")}
+                  />
                   <ErrorMessage message={errors.dateReleased?.message} />
                 </label>
                 <label>
@@ -675,8 +716,8 @@ export function LoanApplicationForm({
           <fieldset>
             <legend>Asset information</legend>
             <p className={styles.sectionHelp}>
-              Enter the property descriptions and values requested in the
-              official form. You may add up to six assets.
+              Add at least one property with its description and value. You
+              may add up to six properties.
             </p>
             <div className={styles.listHeading}>
               <strong>Properties</strong>
@@ -692,19 +733,24 @@ export function LoanApplicationForm({
             </div>
             {assets.fields.length === 0 ? (
               <p className={styles.emptyList}>
-                No asset entered. Add one if applicable.
+                No property entered yet. Add at least one to continue.
               </p>
             ) : (
               assets.fields.map((field, index) => (
                 <div className={styles.entryRow} key={field.id}>
                   <label>
-                    Property description
+                    Property description *
                     <input
                       {...register(`assets.${index}.propertyDescription`)}
                     />
+                    <ErrorMessage
+                      message={
+                        errors.assets?.[index]?.propertyDescription?.message
+                      }
+                    />
                   </label>
                   <label>
-                    Value (₱)
+                    Value (₱) *
                     <input
                       type="number"
                       min="0"
@@ -726,6 +772,7 @@ export function LoanApplicationForm({
                 </div>
               ))
             )}
+            <ErrorMessage message={errors.assets?.message} />
           </fieldset>
         )}
 
@@ -733,7 +780,7 @@ export function LoanApplicationForm({
           <fieldset>
             <legend>Debt information</legend>
             <p className={styles.sectionHelp}>
-              Enter existing credit information as requested in the official
+              Add at least one source of credit as requested in the official
               form. You may add up to four records.
             </p>
             <div className={styles.listHeading}>
@@ -754,13 +801,18 @@ export function LoanApplicationForm({
               </button>
             </div>
             {debts.fields.length === 0 ? (
-              <p className={styles.emptyList}>No debt record entered.</p>
+              <p className={styles.emptyList}>
+                No credit source entered yet. Add at least one to continue.
+              </p>
             ) : (
               debts.fields.map((field, index) => (
                 <div className={styles.debtEntry} key={field.id}>
                   <label>
-                    Source of credit
+                    Source of credit *
                     <input {...register(`debts.${index}.sourceOfCredit`)} />
+                    <ErrorMessage
+                      message={errors.debts?.[index]?.sourceOfCredit?.message}
+                    />
                   </label>
                   <label>
                     Amount granted (₱)
@@ -802,6 +854,7 @@ export function LoanApplicationForm({
                 </div>
               ))
             )}
+            <ErrorMessage message={errors.debts?.message} />
           </fieldset>
         )}
 
@@ -823,9 +876,9 @@ export function LoanApplicationForm({
             </div>
             <div className={styles.gridTwo}>
               <label>
-                Spouse / marital consent
+                Spouse / marital consent *
                 <input {...register("spouseName")} />
-                <span>Optional</span>
+                <ErrorMessage message={errors.spouseName?.message} />
               </label>
               <label>
                 Applicant/member borrower typed name *

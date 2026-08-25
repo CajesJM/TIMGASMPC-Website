@@ -234,6 +234,13 @@
 .honeypot { position: absolute; left: -10000px; }
 .success { display: grid; justify-items: start; gap: .75rem; }
 .success > svg { width: 2.4rem; height: 2.4rem; color: var(--color-success); }
+.successNextSteps { width: 100%; margin-top: .25rem; padding: 1rem; background: #f4f9f6; border: 1px solid #d7e5dc; border-radius: .55rem; }
+.successNextSteps h4 { margin: 0 0 .45rem; color: var(--color-brand-950); font-size: 1rem; }
+.successNextSteps p + p { margin-top: .65rem; }
+.successNextSteps a { display: inline-flex; gap: .45rem; align-items: center; margin-top: .9rem; color: var(--color-brand-800); font-size: .85rem; font-weight: 800; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: .2rem; }
+.successNextSteps a:hover { color: var(--color-brand-950); }
+.successNextSteps a:focus-visible { border-radius: .2rem; outline: 3px solid rgb(30 119 83 / 18%); outline-offset: 3px; }
+.successNextSteps a svg { width: 1rem; height: 1rem; flex: none; }
 
 @media (min-width: 40rem) {
   .gridTwo,

@@ -11,13 +11,16 @@ import {
 import {
   ChevronLeft,
   ChevronRight,
+  Download,
   Eye,
   FileText,
+  LoaderCircle,
+  Printer,
   Search,
   Trash2,
   X,
 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   applicationStatusLabels,
   applicationStatuses,
@@ -27,6 +30,10 @@ import {
   type ApplicationStatus,
   type MembershipApplication,
 } from "../../../features/applications/applicationTypes";
+import {
+  downloadApplicationDocument,
+  printApplicationDocument,
+} from "../../../features/applications/applicationDocumentExport";
 import type { ShowToast } from "../../../features/notifications/toastTypes";
 import { db } from "../../../lib/firestore";
 import { OfficialMembershipReview } from "../../application/OfficialMembershipReview/OfficialMembershipReview";
@@ -49,6 +56,8 @@ export function AdminApplicationsManager({
   const [deleteTarget, setDeleteTarget] =
     useState<MembershipApplication | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [exporting, setExporting] = useState<"docx" | "pdf" | "print" | null>(null);
+  const documentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!db) return;
@@ -118,6 +127,41 @@ export function AdminApplicationsManager({
       showToast("Application could not be deleted.", "error");
     } finally {
       setDeleting(false);
+    }
+  };
+
+  const exportApplication = async (format: "docx" | "pdf") => {
+    if (!selected || !documentRef.current || exporting) return;
+    setExporting(format);
+    try {
+      await downloadApplicationDocument(
+        documentRef.current,
+        `${selected.reference}-membership-application`,
+        format,
+      );
+      showToast(`Membership application ${format.toUpperCase()} downloaded.`);
+    } catch (error) {
+      console.error(`Unable to export membership application as ${format}.`, error);
+      showToast("The application file could not be generated.", "error");
+    } finally {
+      setExporting(null);
+    }
+  };
+
+  const printApplication = async () => {
+    if (!selected || !documentRef.current || exporting) return;
+    setExporting("print");
+    try {
+      await printApplicationDocument(
+        documentRef.current,
+        `${selected.reference} membership application`,
+      );
+      showToast("Membership application opened for printing.");
+    } catch (error) {
+      console.error("Unable to print membership application.", error);
+      showToast("The print view could not be opened.", "error");
+    } finally {
+      setExporting(null);
     }
   };
 
@@ -267,16 +311,49 @@ export function AdminApplicationsManager({
             aria-labelledby="application-title"
           >
             <header className={styles.modalBar}>
-              <div>
+              <div className={styles.modalTitle}>
                 <span>Official digital record</span>
                 <strong id="application-title">{selected.reference}</strong>
               </div>
-              <button
-                onClick={() => setSelected(null)}
-                aria-label="Close application"
-              >
-                <X />
-              </button>
+              <section className={styles.modalActions} aria-label="Application file actions">
+                <button
+                  type="button"
+                  onClick={() => void exportApplication("docx")}
+                  disabled={exporting !== null}
+                >
+                  <Download aria-hidden="true" />
+                  <span>{exporting === "docx" ? "Preparing…" : "DOCX"}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => void exportApplication("pdf")}
+                  disabled={exporting !== null}
+                >
+                  <Download aria-hidden="true" />
+                  <span>{exporting === "pdf" ? "Preparing…" : "PDF"}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => void printApplication()}
+                  disabled={exporting !== null}
+                  aria-busy={exporting === "print"}
+                >
+                  {exporting === "print" ? (
+                    <LoaderCircle className={styles.spinner} aria-hidden="true" />
+                  ) : (
+                    <Printer aria-hidden="true" />
+                  )}
+                  <span>{exporting === "print" ? "Preparing…" : "Print"}</span>
+                </button>
+                <button
+                  type="button"
+                  className={styles.closeButton}
+                  onClick={() => setSelected(null)}
+                  aria-label="Close application"
+                >
+                  <X />
+                </button>
+              </section>
             </header>
             <section className={styles.reviewBar} aria-label="Application review">
               <label>
@@ -311,7 +388,7 @@ export function AdminApplicationsManager({
                 Save review
               </button>
             </section>
-            <div className={styles.documentWrap}>
+            <div className={styles.documentWrap} ref={documentRef}>
               <OfficialMembershipReview
                 data={{
                   reference: selected.reference,

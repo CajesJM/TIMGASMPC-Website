@@ -19,14 +19,17 @@ export type OfficialMembershipReviewData = {
 };
 
 const documentValue = (text: string) => text || "\u00a0";
-const profileRows = 8;
+const minimumDependentRows = 3;
+const dateWithoutTime = (value: string) =>
+  value.replace(/,\s*\d{1,2}:\d{2}(?::\d{2})?\s*(?:AM|PM)$/i, "");
 
 function Line({ value, className = "" }: { value: string; className?: string }) {
   return <span className={`${styles.line} ${className}`}>{documentValue(value)}</span>;
 }
 
 function FormField({ label, value, className = "" }: { label: string; value: string; className?: string }) {
-  return <span className={`${styles.formField} ${className}`}><b>{label}</b><Line value={value} /></span>;
+  const normalizedLabel = label.trim().endsWith(":") ? label : `${label}:`;
+  return <span className={`${styles.formField} ${className}`}><b>{normalizedLabel}</b><Line value={value} /></span>;
 }
 
 function DocumentHeader({ title, place }: { title: string; place: string }) {
@@ -35,17 +38,30 @@ function DocumentHeader({ title, place }: { title: string; place: string }) {
 
 function MembershipProfile({ data }: { data: OfficialMembershipReviewData }) {
   const { profile } = data;
-  const dependents = Array.from({ length: profileRows }, (_, index) => data.dependents[index] ?? { name: "", dateOfBirth: "", age: "", relationship: "" });
-  return <article className={`${styles.page} ${styles.profilePage}`} aria-label="Membership profile">
+  const dependentRowCount = Math.max(
+    minimumDependentRows,
+    data.dependents.length,
+  );
+  const dependents = Array.from(
+    { length: dependentRowCount },
+    (_, index) =>
+      data.dependents[index] ?? {
+        name: "",
+        dateOfBirth: "",
+        age: "",
+        relationship: "",
+      },
+  );
+  return <article className={`${styles.page} ${styles.profilePage}`} aria-label="Membership profile" data-application-export-page>
     <DocumentHeader title="MEMBERSHIP PROFILE" place="Trinidad, Bohol" />
     <div className={styles.idRow}><FormField label="ID No." value="Assigned by TIMGAS" /><FormField label="Date Applied" value={data.dateApplied} /></div>
     <div className={styles.idRow}><FormField label="TIN No." value={profile.tinNumber} /><FormField label="Date PMES Attended:" value={profile.pmesDate} /></div>
     <p className={styles.department}><b>Name of Department:</b><Line value={profile.departmentName} /></p>
     <p className={styles.membershipType}><b>Type of Membership:</b><span>{data.membershipType === "associate" ? "☑" : "☐"} Associates</span><span>{data.membershipType === "regular" ? "☑" : "☐"} Regular</span></p>
-    <p className={styles.nameLine}><b>Name</b><span><Line value={profile.familyName} /><small>(Family Name)</small></span><span><Line value={profile.givenName} /><small>(Given Name)</small></span><span><Line value={profile.middleName} /><small>(Middle Name)</small></span></p>
+    <p className={styles.nameLine}><b>Name:</b><span><Line value={profile.familyName} /><small>(Family Name)</small></span><span><Line value={profile.givenName} /><small>(Given Name)</small></span><span><Line value={profile.middleName} /><small>(Middle Name)</small></span></p>
     <div className={styles.shortFields}><FormField label="Nickname" value={profile.nickname} /><FormField label="Sex" value={profile.sex} /><FormField label="Civil Status" value={profile.civilStatus} /></div>
     <div className={styles.identityFields}><FormField label="Occupation" value={profile.occupation} /><FormField label="Date of Birth" value={profile.dateOfBirth} /><FormField label="Place of Birth" value={profile.placeOfBirth} /></div>
-    <p className={styles.fullField}><b>Address</b><Line value={profile.address} /></p>
+    <p className={styles.fullField}><b>Address:</b><Line value={profile.address} /></p>
     <div className={styles.contactRow}><FormField label="Cellphone No." value={profile.cellphone} /><FormField label="Gmail address" value={data.applicantEmail} /></div>
     <div className={styles.idDetails}><FormField label="Valid ID:" value={profile.validIdType} /><FormField label="ID Number:" value={profile.validIdNumber} /></div>
     <p className={styles.fullField}><b>Mother’s Maiden Name:</b><Line value={profile.motherMaidenName} /></p>
@@ -69,9 +85,9 @@ function MembershipAgreement({ data }: { data: OfficialMembershipReviewData }) {
   const residence = data.profile.address
     .replace(/,?\s*Bohol(?:,\s*Philippines)?\s*$/i, "")
     .trim();
-  return <article className={`${styles.page} ${styles.agreementPage}`} aria-label="Membership agreement">
+  return <article className={`${styles.page} ${styles.agreementPage}`} aria-label="Membership agreement" data-application-export-page>
     <DocumentHeader title="MEMBERSHIP AGREEMENT" place="Poblacion, Trinidad, Bohol" />
-    <p className={styles.agreementDate}><b>Date</b><Line value={data.dateApplied} /></p>
+    <p className={styles.agreementDate}><b>Date:</b><Line value={dateWithoutTime(data.dateApplied)} /></p>
     <p>The Board of Directors<br />TIMGAS Multipurpose Cooperative<br />Poblacion, Trinidad, Bohol</p>
     <p className={styles.agreementLead}>I, <Line value={applicantName} />, a resident of <Line value={residence} />, Bohol, <b>HEREBY AGREE TO BE A MEMBER OF THE TIMGAS MULTIPURPOSE COOPERATIVE</b>, Poblacion, Trinidad, Bohol. I will take the training <b>“Basic Cooperative Course”</b> as prescribed for the prospective members and I understand the purposes and objectives of this cooperative.</p>
     <h4>Terms and Conditions:</h4>

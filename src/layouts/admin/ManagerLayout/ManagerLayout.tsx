@@ -70,9 +70,7 @@ export function ManagerLayout() {
     message: string;
     tone: ToastTone;
   } | null>(null);
-  const toastTimerRef = useRef<ReturnType<typeof window.setTimeout> | null>(
-    null,
-  );
+  const toastTimerRef = useRef<number | null>(null);
   const handleProfileChange = useCallback(
     (profile: ManagerIdentity) => setManagerIdentity(profile),
     [],

@@ -11,16 +11,23 @@ import {
 import {
   ChevronLeft,
   ChevronRight,
+  Download,
   Eye,
   FileSpreadsheet,
+  LoaderCircle,
   Plus,
+  Printer,
   Search,
   Trash2,
   X,
 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import timgasLogo from "../../../assets/images/timgas-logo.png";
 import { ensureBoholAddress } from "../../../features/applications/boholLocations";
+import {
+  downloadApplicationDocument,
+  printApplicationDocument,
+} from "../../../features/applications/applicationDocumentExport";
 import {
   formatPeso,
   loanPaymentModeLabels,
@@ -69,6 +76,8 @@ export function AdminLoanApplicationsManager({
     null,
   );
   const [deleting, setDeleting] = useState(false);
+  const [exporting, setExporting] = useState<"docx" | "pdf" | "print" | null>(null);
+  const documentRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     if (!db) return;
@@ -180,6 +189,41 @@ export function AdminLoanApplicationsManager({
       showToast("Loan application could not be deleted.", "error");
     } finally {
       setDeleting(false);
+    }
+  };
+
+  const exportApplication = async (format: "docx" | "pdf") => {
+    if (!selected || !documentRef.current || exporting) return;
+    setExporting(format);
+    try {
+      await downloadApplicationDocument(
+        documentRef.current,
+        `${selected.reference}-loan-application`,
+        format,
+      );
+      showToast(`Loan application ${format.toUpperCase()} downloaded.`);
+    } catch (error) {
+      console.error(`Unable to export loan application as ${format}.`, error);
+      showToast("The loan application file could not be generated.", "error");
+    } finally {
+      setExporting(null);
+    }
+  };
+
+  const printApplication = async () => {
+    if (!selected || !documentRef.current || exporting) return;
+    setExporting("print");
+    try {
+      await printApplicationDocument(
+        documentRef.current,
+        `${selected.reference} loan application`,
+      );
+      showToast("Loan application opened for printing.");
+    } catch (error) {
+      console.error("Unable to print loan application.", error);
+      showToast("The print view could not be opened.", "error");
+    } finally {
+      setExporting(null);
     }
   };
 
@@ -329,16 +373,49 @@ export function AdminLoanApplicationsManager({
             aria-labelledby="loan-document-title"
           >
             <div className={styles.modalBar}>
-              <div>
+              <div className={styles.modalTitle}>
                 <span>Official digital record</span>
-                <strong>{selected.reference}</strong>
+                <strong id="loan-document-title">{selected.reference}</strong>
               </div>
-              <button
-                onClick={closeApplication}
-                aria-label="Close loan application"
-              >
-                <X />
-              </button>
+              <section className={styles.modalActions} aria-label="Loan application file actions">
+                <button
+                  type="button"
+                  onClick={() => void exportApplication("docx")}
+                  disabled={exporting !== null}
+                >
+                  <Download aria-hidden="true" />
+                  <span>{exporting === "docx" ? "Preparing…" : "DOCX"}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => void exportApplication("pdf")}
+                  disabled={exporting !== null}
+                >
+                  <Download aria-hidden="true" />
+                  <span>{exporting === "pdf" ? "Preparing…" : "PDF"}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => void printApplication()}
+                  disabled={exporting !== null}
+                  aria-busy={exporting === "print"}
+                >
+                  {exporting === "print" ? (
+                    <LoaderCircle className={styles.spinner} aria-hidden="true" />
+                  ) : (
+                    <Printer aria-hidden="true" />
+                  )}
+                  <span>{exporting === "print" ? "Preparing…" : "Print"}</span>
+                </button>
+                <button
+                  type="button"
+                  className={styles.closeButton}
+                  onClick={closeApplication}
+                  aria-label="Close loan application"
+                >
+                  <X />
+                </button>
+              </section>
             </div>
             <footer className={styles.reviewBar}>
               <label>
@@ -371,7 +448,11 @@ export function AdminLoanApplicationsManager({
               </button>
             </footer>
             <div className={styles.documentWrap}>
-              <article className={styles.document}>
+              <article
+                className={styles.document}
+                ref={documentRef}
+                data-application-export-page
+              >
                 <header className={styles.documentHeader}>
                   <img src={timgasLogo} alt="TIMGAS MPC cooperative logo" />
                   <div>

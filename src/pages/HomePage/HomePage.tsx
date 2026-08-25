@@ -4,9 +4,10 @@ import {
   PhotoCarousel,
   type CarouselPhoto,
 } from "../../components/PhotoCarousel/PhotoCarousel";
-import officeImage from "../../assets/images/Timgas2.png";
+import officeImage from "../../assets/images/Hero.png";
 import officeFacadeImage from "../../assets/images/timgas-office-facade.jpg";
 import roadsideSignImage from "../../assets/images/timgas-roadside-sign.jpg";
+import frontView from "../../assets/images/Timgas.png";
 import { principles } from "../../data/content";
 import { AboutPage } from "../AboutPage/AboutPage";
 import { ContactPage } from "../ContactPage/ContactPage";
@@ -30,6 +31,11 @@ const officePhotos: CarouselPhoto[] = [
     src: roadsideSignImage,
     alt: "TIMGAS MPC roadside sign in Trinidad, Bohol",
     caption: "TIMGAS roadside sign",
+  },
+  {
+    src: frontView,
+    alt: "Front view of the TIMGAS MPC office",
+    caption: "Front view of the office",
   },
 ];
 

@@ -5,7 +5,7 @@ import {
   HandCoins,
   UsersRound,
 } from "lucide-react";
-import { useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { LoanApplicationForm } from "../../components/application/LoanApplicationForm/LoanApplicationForm";
 import { MembershipApplicationForm } from "../../components/application/MembershipApplicationForm/MembershipApplicationForm";
 import { ApplicationModal } from "../../components/application/MembershipApplicationModal/MembershipApplicationModal";
@@ -23,13 +23,29 @@ const verificationSteps = [
   "Submit only after cooperative staff confirm that your application is complete.",
 ];
 
+type ApplicationTarget = "membership" | "loan";
+type CaptchaCredential = { token: string; verifiedAt: number };
+type PendingCaptcha = {
+  target: ApplicationTarget;
+  resolve: (token: string) => void;
+  reject: (error: Error) => void;
+};
+
+const maximumCachedCaptchaAge = 90_000;
+
 export function MembershipPage() {
   const [showOnlineForm, setShowOnlineForm] = useState(false);
   const [onlineFormLoaded, setOnlineFormLoaded] = useState(false);
   const [showLoanForm, setShowLoanForm] = useState(false);
   const [loanFormLoaded, setLoanFormLoaded] = useState(false);
-  const [captchaTarget, setCaptchaTarget] = useState<"membership" | "loan" | null>(null);
-  const [recaptchaToken, setRecaptchaToken] = useState("");
+  const [captchaTarget, setCaptchaTarget] = useState<ApplicationTarget | null>(null);
+  const [captchaPurpose, setCaptchaPurpose] = useState<"opening" | "submitting">(
+    "opening",
+  );
+  const [captchaCredentials, setCaptchaCredentials] = useState<
+    Partial<Record<ApplicationTarget, CaptchaCredential>>
+  >({});
+  const pendingCaptchaRef = useRef<PendingCaptcha | null>(null);
 
   const openOnlineForm = () => {
     setOnlineFormLoaded(true);
@@ -41,14 +57,64 @@ export function MembershipPage() {
     setShowLoanForm(true);
   };
 
-  const completeCaptcha = (token: string) => {
+  const requestOpeningCaptcha = (target: ApplicationTarget) => {
+    setCaptchaPurpose("opening");
+    setCaptchaTarget(target);
+  };
+
+  const completeCaptcha = useCallback((token: string) => {
     if (!captchaTarget || !token) return;
     const target = captchaTarget;
-    setRecaptchaToken(token);
     setCaptchaTarget(null);
+
+    const pendingCaptcha = pendingCaptchaRef.current;
+    if (pendingCaptcha?.target === target) {
+      pendingCaptchaRef.current = null;
+      pendingCaptcha.resolve(token);
+      return;
+    }
+
+    setCaptchaCredentials((current) => ({
+      ...current,
+      [target]: { token, verifiedAt: Date.now() },
+    }));
     if (target === "membership") openOnlineForm();
     else openLoanForm();
-  };
+  }, [captchaTarget]);
+
+  const closeCaptcha = useCallback(() => {
+    const pendingCaptcha = pendingCaptchaRef.current;
+    if (pendingCaptcha && pendingCaptcha.target === captchaTarget) {
+      pendingCaptchaRef.current = null;
+      pendingCaptcha.reject(
+        new Error("Security verification was cancelled. Complete it to submit your application."),
+      );
+    }
+    setCaptchaTarget(null);
+  }, [captchaTarget]);
+
+  const getRecaptchaToken = useCallback(
+    (target: ApplicationTarget) => {
+      const credential = captchaCredentials[target];
+      if (
+        credential &&
+        Date.now() - credential.verifiedAt <= maximumCachedCaptchaAge
+      ) {
+        setCaptchaCredentials((current) => ({
+          ...current,
+          [target]: undefined,
+        }));
+        return Promise.resolve(credential.token);
+      }
+
+      return new Promise<string>((resolve, reject) => {
+        pendingCaptchaRef.current = { target, resolve, reject };
+        setCaptchaPurpose("submitting");
+        setCaptchaTarget(target);
+      });
+    },
+    [captchaCredentials],
+  );
 
   return (
     <div id="membership">
@@ -93,7 +159,7 @@ export function MembershipPage() {
                 </p>
               </div>
               <div className={pageStyles.applicationActions}>
-                <button type="button" onClick={() => setCaptchaTarget("membership")}>
+                <button type="button" onClick={() => requestOpeningCaptcha("membership")}>
                   <FilePenLine /> {onlineFormLoaded ? "Continue online" : "Apply online"}
                 </button>
                 <a href="/downloads/Membership-Application-Form-Revised-2023.docx" download>
@@ -116,7 +182,7 @@ export function MembershipPage() {
                 </p>
               </div>
               <div className={pageStyles.applicationActions}>
-                <button type="button" onClick={() => setCaptchaTarget("loan")}>
+                <button type="button" onClick={() => requestOpeningCaptcha("loan")}>
                   <FilePenLine /> {loanFormLoaded ? "Continue loan form" : "Apply for a loan"}
                 </button>
                 <a href="/downloads/Loan-Application-Form.xls" download>
@@ -139,7 +205,9 @@ export function MembershipPage() {
           closeLabel="Close membership application"
           idPrefix="membership"
         >
-          <MembershipApplicationForm recaptchaToken={recaptchaToken} />
+          <MembershipApplicationForm
+            getRecaptchaToken={() => getRecaptchaToken("membership")}
+          />
         </ApplicationModal>
       )}
 
@@ -153,7 +221,9 @@ export function MembershipPage() {
           closeLabel="Close loan application"
           idPrefix="loan"
         >
-          <LoanApplicationForm recaptchaToken={recaptchaToken} />
+          <LoanApplicationForm
+            getRecaptchaToken={() => getRecaptchaToken("loan")}
+          />
         </ApplicationModal>
       )}
 
@@ -161,7 +231,8 @@ export function MembershipPage() {
         <RecaptchaGate
           applicationName={captchaTarget === "loan" ? "loan application" : "membership application"}
           open
-          onClose={() => setCaptchaTarget(null)}
+          purpose={captchaPurpose}
+          onClose={closeCaptcha}
           onVerified={completeCaptcha}
         />
       )}

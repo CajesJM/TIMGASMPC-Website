@@ -19,25 +19,58 @@ type RecaptchaApi = {
 declare global {
   interface Window {
     grecaptcha?: RecaptchaApi;
+    onTimgasRecaptchaLoad?: () => void;
   }
 }
 
 let captchaScript: Promise<RecaptchaApi> | null = null;
+const captchaScriptId = "timgas-recaptcha-api";
+const captchaLoadTimeout = 15_000;
 
 function loadRecaptcha() {
   if (window.grecaptcha) return Promise.resolve(window.grecaptcha);
   if (captchaScript) return captchaScript;
 
   captchaScript = new Promise<RecaptchaApi>((resolve, reject) => {
+    let settled = false;
     const script = document.createElement("script");
-    script.src = "https://www.google.com/recaptcha/api.js?render=explicit";
+    script.id = captchaScriptId;
+    script.src =
+      "https://www.google.com/recaptcha/api.js?onload=onTimgasRecaptchaLoad&render=explicit";
     script.async = true;
     script.defer = true;
-    script.onload = () => {
-      if (window.grecaptcha) resolve(window.grecaptcha);
-      else reject(new Error("reCAPTCHA did not finish loading."));
+
+    const finish = (api: RecaptchaApi) => {
+      if (settled) return;
+      settled = true;
+      window.clearTimeout(timeoutId);
+      delete window.onTimgasRecaptchaLoad;
+      resolve(api);
     };
-    script.onerror = () => reject(new Error("reCAPTCHA could not be loaded."));
+    const fail = (error: Error) => {
+      if (settled) return;
+      settled = true;
+      window.clearTimeout(timeoutId);
+      delete window.onTimgasRecaptchaLoad;
+      script.remove();
+      captchaScript = null;
+      reject(error);
+    };
+
+    window.onTimgasRecaptchaLoad = () => {
+      if (window.grecaptcha) {
+        finish(window.grecaptcha);
+      } else {
+        fail(new Error("reCAPTCHA did not finish initializing."));
+      }
+    };
+    script.onerror = () => fail(new Error("reCAPTCHA could not be loaded."));
+    const timeoutId = window.setTimeout(
+      () => fail(new Error("reCAPTCHA loading timed out.")),
+      captchaLoadTimeout,
+    );
+
+    document.getElementById(captchaScriptId)?.remove();
     document.head.append(script);
   });
 
@@ -47,13 +80,21 @@ function loadRecaptcha() {
 type RecaptchaGateProps = {
   applicationName: string;
   open: boolean;
+  purpose?: "opening" | "submitting";
   onClose: () => void;
   onVerified: (token: string) => void;
 };
 
-export function RecaptchaGate({ applicationName, open, onClose, onVerified }: RecaptchaGateProps) {
+export function RecaptchaGate({
+  applicationName,
+  open,
+  purpose = "opening",
+  onClose,
+  onVerified,
+}: RecaptchaGateProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const widgetIdRef = useRef<number | undefined>(undefined);
+  const verificationCompletedRef = useRef(false);
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
   const [message, setMessage] = useState("");
   const siteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY?.trim();
@@ -64,6 +105,9 @@ export function RecaptchaGate({ applicationName, open, onClose, onVerified }: Re
 
   useEffect(() => {
     if (!open) return;
+
+    widgetIdRef.current = undefined;
+    verificationCompletedRef.current = false;
 
     if (isTestEnvironment) {
       return;
@@ -81,9 +125,19 @@ export function RecaptchaGate({ applicationName, open, onClose, onVerified }: Re
         if (cancelled || !containerRef.current) return;
         widgetIdRef.current = captcha.render(containerRef.current, {
           sitekey: siteKey,
-          callback: (token) => onVerified(token),
-          "expired-callback": () => setMessage("The verification expired. Please check the box again."),
-          "error-callback": () => setMessage("Verification could not be completed. Check your connection and try again."),
+          callback: (token) => {
+            verificationCompletedRef.current = true;
+            onVerified(token);
+          },
+          "expired-callback": () => {
+            verificationCompletedRef.current = false;
+            setStatus("ready");
+            setMessage("The verification expired. Please check the box again.");
+          },
+          "error-callback": () => {
+            setStatus("error");
+            setMessage("Verification could not be completed. Check your connection and try again.");
+          },
         });
         setStatus("ready");
       })
@@ -95,7 +149,11 @@ export function RecaptchaGate({ applicationName, open, onClose, onVerified }: Re
 
     return () => {
       cancelled = true;
-      if (widgetIdRef.current !== undefined && window.grecaptcha) {
+      if (
+        !verificationCompletedRef.current &&
+        widgetIdRef.current !== undefined &&
+        window.grecaptcha
+      ) {
         window.grecaptcha.reset(widgetIdRef.current);
       }
       widgetIdRef.current = undefined;
@@ -111,9 +169,11 @@ export function RecaptchaGate({ applicationName, open, onClose, onVerified }: Re
         <div className={styles.icon}><ShieldCheck aria-hidden="true" /></div>
         <p className={styles.eyebrow}>Security check</p>
         <h2 id="recaptcha-title">Verify before continuing</h2>
-        <p id="recaptcha-description">Please complete the security check before opening the {applicationName.toLowerCase()}.</p>
+        <p id="recaptcha-description">
+          Please complete the security check before {purpose === "submitting" ? "submitting" : "opening"} the {applicationName.toLowerCase()}.
+        </p>
         {isTestEnvironment ? (
-          <label className={styles.testCheckbox}><input type="checkbox" onChange={(event) => { if (event.target.checked) onVerified("test-recaptcha-token"); }} /> I’m not a robot</label>
+          <label className={styles.testCheckbox}><input type="checkbox" onChange={(event) => { if (event.target.checked) { verificationCompletedRef.current = true; onVerified("test-recaptcha-token"); } }} /> I’m not a robot</label>
         ) : (
           <div className={styles.captchaArea} aria-live="polite"><div ref={containerRef} /><p hidden={status !== "loading"}>Loading security check…</p></div>
         )}

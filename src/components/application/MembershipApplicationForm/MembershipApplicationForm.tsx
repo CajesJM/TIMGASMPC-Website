@@ -3,6 +3,7 @@ import {
   ArrowLeft,
   ArrowRight,
   CheckCircle2,
+  FileDown,
   Plus,
   Send,
   ShieldCheck,
@@ -62,6 +63,48 @@ const optionalText = (maximum = 120) => z.string().trim().max(maximum);
 const requiredText = (label: string, maximum = 120) =>
   z.string().trim().min(1, `${label} is required.`).max(maximum);
 
+const minimumMembershipAge = 15;
+
+function isAtLeastMembershipAge(value: string, today = new Date()) {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+  if (!match) return false;
+
+  const [, yearText, monthText, dayText] = match;
+  const year = Number(yearText);
+  const month = Number(monthText);
+  const day = Number(dayText);
+  const birthDate = new Date(year, month - 1, day);
+
+  if (
+    birthDate.getFullYear() !== year ||
+    birthDate.getMonth() !== month - 1 ||
+    birthDate.getDate() !== day ||
+    birthDate > today
+  ) {
+    return false;
+  }
+
+  let age = today.getFullYear() - year;
+  const birthdayHasOccurred =
+    today.getMonth() + 1 > month ||
+    (today.getMonth() + 1 === month && today.getDate() >= day);
+
+  if (!birthdayHasOccurred) age -= 1;
+  return age >= minimumMembershipAge;
+}
+
+function getLatestEligibleBirthDate(today = new Date()) {
+  const cutoff = new Date(
+    today.getFullYear() - minimumMembershipAge,
+    today.getMonth(),
+    today.getDate(),
+  );
+  const year = cutoff.getFullYear();
+  const month = String(cutoff.getMonth() + 1).padStart(2, "0");
+  const day = String(cutoff.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
 const applicationSchema = z
   .object({
     membershipType: z.enum(["associate", "regular"], {
@@ -74,55 +117,77 @@ const applicationSchema = z
       .max(30)
       .regex(/^\d*$/, "TIN number can contain numbers only."),
     pmesDate: optionalText(10),
-    applicantEmail: z.string().trim().min(1, "Gmail address is required.").max(254).email("Enter a valid Gmail address.").refine((value) => value.toLowerCase().endsWith("@gmail.com"), { message: "Use a Gmail address ending in @gmail.com." }),
+    applicantEmail: z
+      .string()
+      .trim()
+      .min(1, "Gmail address is required.")
+      .max(254)
+      .email("Enter a valid Gmail address.")
+      .refine((value) => value.toLowerCase().endsWith("@gmail.com"), {
+        message: "Use a Gmail address ending in @gmail.com.",
+      }),
     familyName: requiredText("Family name"),
     givenName: requiredText("Given name"),
     middleName: optionalText(),
     nickname: optionalText(60),
     sex: requiredText("Sex", 30),
     civilStatus: requiredText("Civil status", 40),
-    occupation: optionalText(),
-    dateOfBirth: requiredText("Date of birth", 10),
+    occupation: requiredText("Occupation"),
+    dateOfBirth: requiredText("Date of birth", 10).refine(
+      isAtLeastMembershipAge,
+      `Applicant must be at least ${minimumMembershipAge} years old.`,
+    ),
     placeOfBirth: requiredText("Place of birth", 180),
     address: optionalText(300),
     barangay: requiredText("Barangay", 120),
-    municipality: z.string().refine((value) => boholMunicipalities.includes(value as (typeof boholMunicipalities)[number]), "Choose a municipality or city in Bohol."),
+    municipality: z
+      .string()
+      .refine(
+        (value) =>
+          boholMunicipalities.includes(
+            value as (typeof boholMunicipalities)[number],
+          ),
+        "Choose a municipality or city in Bohol.",
+      ),
     cellphone: z
       .string()
       .regex(
         /^[1-9]\d{9}$/,
         "Enter 10 digits after +63. The number cannot start with 0.",
       ),
-    validIdType: z.string().refine(
-      (value) =>
-        philippineValidIdTypes.includes(
-          value as (typeof philippineValidIdTypes)[number],
-        ),
-      "Choose a valid ID type.",
-    ),
+    validIdType: z
+      .string()
+      .refine(
+        (value) =>
+          philippineValidIdTypes.includes(
+            value as (typeof philippineValidIdTypes)[number],
+          ),
+        "Choose a valid ID type.",
+      ),
     validIdNumber: z
       .string()
       .trim()
       .min(1, "Valid ID number is required.")
       .max(80)
       .regex(/^\d+$/, "Valid ID number can contain numbers only."),
-    motherMaidenName: optionalText(150),
-    fatherFullName: optionalText(150),
+    motherMaidenName: requiredText("Mother’s maiden name", 150),
+    fatherFullName: requiredText("Father’s full name", 150),
     spouseName: optionalText(150),
     spouseDateOfBirth: optionalText(10),
     dependents: z
       .array(
         z.object({
-          name: optionalText(150),
-          dateOfBirth: optionalText(10),
-          age: optionalText(3),
-          relationship: optionalText(60),
+          name: requiredText("Dependent’s name", 150),
+          dateOfBirth: requiredText("Dependent’s date of birth", 10),
+          age: requiredText("Dependent’s age", 3),
+          relationship: requiredText("Dependent’s relationship", 60),
         }),
       )
+      .min(1, "Add at least one dependent.")
       .max(maximumDependents),
-    husbandIncomeSource: optionalText(160),
+    husbandIncomeSource: requiredText("Husband’s source of income", 160),
     husbandEmployer: optionalText(180),
-    wifeIncomeSource: optionalText(160),
+    wifeIncomeSource: requiredText("Wife’s source of income", 160),
     wifeEmployer: optionalText(180),
     sector: z.enum(["arb", "arb_household", "non_arb", "rural_women"], {
       message: "Choose the sector stated in the form.",
@@ -145,6 +210,14 @@ const applicationSchema = z
     website: z.string().max(0),
   })
   .superRefine((data, context) => {
+    if (data.civilStatus === "Married" && !data.spouseName.trim()) {
+      context.addIssue({
+        code: "custom",
+        path: ["spouseName"],
+        message: "Spouse’s name is required when civil status is Married.",
+      });
+    }
+
     if (data.accusedOrConvicted === "yes" && !data.crimeDetails.trim()) {
       context.addIssue({
         code: "custom",
@@ -152,17 +225,6 @@ const applicationSchema = z
         message: "Provide the requested details.",
       });
     }
-
-    data.dependents.forEach((dependent, index) => {
-      const hasAnyValue = Object.values(dependent).some(Boolean);
-      if (hasAnyValue && !dependent.name) {
-        context.addIssue({
-          code: "custom",
-          path: ["dependents", index, "name"],
-          message: "Enter the dependent’s name.",
-        });
-      }
-    });
   });
 
 type ApplicationFormValues = z.infer<typeof applicationSchema>;
@@ -226,6 +288,7 @@ const stepFields: FieldPath<ApplicationFormValues>[][] = [
     "givenName",
     "sex",
     "civilStatus",
+    "occupation",
     "dateOfBirth",
     "placeOfBirth",
     "address",
@@ -235,7 +298,14 @@ const stepFields: FieldPath<ApplicationFormValues>[][] = [
     "validIdType",
     "validIdNumber",
   ],
-  [],
+  [
+    "motherMaidenName",
+    "fatherFullName",
+    "spouseName",
+    "dependents",
+    "husbandIncomeSource",
+    "wifeIncomeSource",
+  ],
   ["sector", "accusedOrConvicted", "crimeDetails"],
   ["typedName", "agreementAccepted", "privacyConsent"],
   [],
@@ -260,9 +330,7 @@ function createReference() {
   const date = new Date().toISOString().slice(0, 10).replaceAll("-", "");
   const bytes = new Uint8Array(3);
   window.crypto.getRandomValues(bytes);
-  const suffix = Array.from(bytes, (byte) =>
-    byte.toString(36).padStart(2, "0"),
-  )
+  const suffix = Array.from(bytes, (byte) => byte.toString(36).padStart(2, "0"))
     .join("")
     .toUpperCase()
     .slice(0, 6);
@@ -277,7 +345,12 @@ function ErrorMessage({ message }: { message?: string }) {
   ) : null;
 }
 
-export function MembershipApplicationForm({ recaptchaToken }: { recaptchaToken: string }) {
+export function MembershipApplicationForm({
+  getRecaptchaToken,
+}: {
+  getRecaptchaToken: () => Promise<string>;
+}) {
+  const latestEligibleBirthDate = getLatestEligibleBirthDate();
   const [step, setStep] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
@@ -292,6 +365,8 @@ export function MembershipApplicationForm({ recaptchaToken }: { recaptchaToken: 
     trigger,
     reset,
     formState: { errors },
+    clearErrors,
+    setError,
     setValue,
   } = useForm<ApplicationFormValues>({
     resolver: zodResolver(applicationSchema),
@@ -327,7 +402,9 @@ export function MembershipApplicationForm({ recaptchaToken }: { recaptchaToken: 
       try {
         setBarangays(await getBoholBarangays(municipality));
       } catch {
-        setBarangayLoadError("Barangays could not be loaded. Please try again.");
+        setBarangayLoadError(
+          "Barangays could not be loaded. Please try again.",
+        );
       } finally {
         if (active) setIsLoadingBarangays(false);
       }
@@ -375,6 +452,14 @@ export function MembershipApplicationForm({ recaptchaToken }: { recaptchaToken: 
   };
 
   const continueForm = async () => {
+    if (step === 1 && fields.length === 0) {
+      setError("dependents", {
+        type: "manual",
+        message: "Add at least one dependent before continuing.",
+      });
+      return;
+    }
+
     const valid = await trigger(stepFields[step], { shouldFocus: true });
     if (valid) moveToStep(Math.min(step + 1, steps.length - 1));
   };
@@ -395,66 +480,75 @@ export function MembershipApplicationForm({ recaptchaToken }: { recaptchaToken: 
         Object.values(dependent).some(Boolean),
       );
 
-      await submitApplicationWithCaptcha("applications", {
-        schemaVersion: 1,
-        source: "online",
-        reference,
-        applicantName: [data.givenName, data.middleName, data.familyName]
-          .filter(Boolean)
-          .join(" "),
-        applicantEmail: data.applicantEmail.toLowerCase(),
-        applicationType: data.membershipType,
-        profile: {
-          departmentName: data.departmentName,
-          tinNumber: data.tinNumber,
-          pmesDate: data.pmesDate,
-          familyName: data.familyName,
-          givenName: data.givenName,
-          middleName: data.middleName,
-          nickname: data.nickname,
-          sex: data.sex,
-          civilStatus: data.civilStatus,
-          occupation: data.occupation,
-          dateOfBirth: data.dateOfBirth,
-          placeOfBirth: data.placeOfBirth,
-          address: formatBoholAddress(data.address, data.barangay, data.municipality),
-          cellphone: `+63${data.cellphone}`,
-          validIdType: data.validIdType,
-          validIdNumber: data.validIdNumber,
-          motherMaidenName: data.motherMaidenName,
-          fatherFullName: data.fatherFullName,
+      const recaptchaToken = await getRecaptchaToken();
+      await submitApplicationWithCaptcha(
+        "applications",
+        {
+          schemaVersion: 1,
+          source: "online",
+          reference,
+          applicantName: [data.givenName, data.middleName, data.familyName]
+            .filter(Boolean)
+            .join(" "),
+          applicantEmail: data.applicantEmail.toLowerCase(),
+          applicationType: data.membershipType,
+          profile: {
+            departmentName: data.departmentName,
+            tinNumber: data.tinNumber,
+            pmesDate: data.pmesDate,
+            familyName: data.familyName,
+            givenName: data.givenName,
+            middleName: data.middleName,
+            nickname: data.nickname,
+            sex: data.sex,
+            civilStatus: data.civilStatus,
+            occupation: data.occupation,
+            dateOfBirth: data.dateOfBirth,
+            placeOfBirth: data.placeOfBirth,
+            address: formatBoholAddress(
+              data.address,
+              data.barangay,
+              data.municipality,
+            ),
+            cellphone: `+63${data.cellphone}`,
+            validIdType: data.validIdType,
+            validIdNumber: data.validIdNumber,
+            motherMaidenName: data.motherMaidenName,
+            fatherFullName: data.fatherFullName,
+          },
+          spouse: {
+            name: data.spouseName,
+            dateOfBirth: data.spouseDateOfBirth,
+          },
+          dependents,
+          income: {
+            husbandSource: data.husbandIncomeSource,
+            husbandEmployer: data.husbandEmployer,
+            wifeSource: data.wifeIncomeSource,
+            wifeEmployer: data.wifeEmployer,
+          },
+          sector: data.sector,
+          educationalAttainment: data.educationalAttainment,
+          affiliation: {
+            organization: data.affiliationOrganization,
+            position: data.affiliationPosition,
+          },
+          crimeDisclosure: {
+            accusedOrConvicted: data.accusedOrConvicted === "yes",
+            details: data.crimeDetails,
+          },
+          recommenderName: data.recommenderName,
+          agreement: {
+            version: agreementVersion,
+            accepted: data.agreementAccepted,
+            typedName: data.typedName,
+          },
+          privacyConsent: data.privacyConsent,
+          status: "new",
+          statusNote: "",
         },
-        spouse: {
-          name: data.spouseName,
-          dateOfBirth: data.spouseDateOfBirth,
-        },
-        dependents,
-        income: {
-          husbandSource: data.husbandIncomeSource,
-          husbandEmployer: data.husbandEmployer,
-          wifeSource: data.wifeIncomeSource,
-          wifeEmployer: data.wifeEmployer,
-        },
-        sector: data.sector,
-        educationalAttainment: data.educationalAttainment,
-        affiliation: {
-          organization: data.affiliationOrganization,
-          position: data.affiliationPosition,
-        },
-        crimeDisclosure: {
-          accusedOrConvicted: data.accusedOrConvicted === "yes",
-          details: data.crimeDetails,
-        },
-        recommenderName: data.recommenderName,
-        agreement: {
-          version: agreementVersion,
-          accepted: data.agreementAccepted,
-          typedName: data.typedName,
-        },
-        privacyConsent: data.privacyConsent,
-        status: "new",
-        statusNote: "",
-      }, recaptchaToken);
+        recaptchaToken,
+      );
 
       setSubmittedReference(reference);
       reset(defaultValues);
@@ -463,7 +557,9 @@ export function MembershipApplicationForm({ recaptchaToken }: { recaptchaToken: 
     } catch (error) {
       console.error("Unable to submit the membership application.", error);
       setSubmitError(
-        "Your application could not be submitted. Check your connection and try again, or download the manual form.",
+        error instanceof Error && error.message.startsWith("Security verification")
+          ? error.message
+          : "Your application could not be submitted. Check your connection and try again, or download the manual form.",
       );
     } finally {
       setSubmitting(false);
@@ -472,7 +568,10 @@ export function MembershipApplicationForm({ recaptchaToken }: { recaptchaToken: 
 
   const submitFromReview = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (step < steps.length - 1) { void continueForm(); return; }
+    if (step < steps.length - 1) {
+      void continueForm();
+      return;
+    }
     if (!reviewConfirmed || submitting) return;
     void handleSubmit(submitApplication)(event);
   };
@@ -491,9 +590,25 @@ export function MembershipApplicationForm({ recaptchaToken }: { recaptchaToken: 
           contact you for verification, supporting documents, orientation, or a
           handwritten signature.
         </p>
-        <button type="button" onClick={() => setSubmittedReference("")}>
-          Submit another application
-        </button>
+        <div className={styles.successNextSteps}>
+          <h4>What happens next</h4>
+          <p>
+            The TIMGAS manager will send application updates to the Gmail
+            address you provided. Please check your inbox and Spam folder
+            regularly.
+          </p>
+          <p>
+            If you do not receive a message within seven days, download and
+            complete the official membership form, then bring it to the TIMGAS
+            MPC office together with your reference number for follow-up.
+          </p>
+          <a
+            href="/downloads/Membership-Application-Form-Revised-2023.docx"
+            download
+          >
+            <FileDown aria-hidden="true" /> Download the official membership form
+          </a>
+        </div>
       </section>
     );
   }
@@ -505,8 +620,8 @@ export function MembershipApplicationForm({ recaptchaToken }: { recaptchaToken: 
           <p className="eyebrow">Official online application</p>
           <h3>Membership profile and agreement</h3>
           <p>
-            Based on the TIMGAS Membership Application Form Revised 2023.
-            Fields marked <b>*</b> are required for online submission.
+            Based on the TIMGAS Membership Application Form Revised 2023. Fields
+            marked <b>*</b> are required for online submission.
           </p>
         </div>
         <span>
@@ -583,7 +698,10 @@ export function MembershipApplicationForm({ recaptchaToken }: { recaptchaToken: 
                   maxLength={30}
                   {...register("tinNumber", {
                     onChange: (event) => {
-                      event.target.value = event.target.value.replace(/\D/g, "");
+                      event.target.value = event.target.value.replace(
+                        /\D/g,
+                        "",
+                      );
                     },
                   })}
                 />
@@ -596,8 +714,16 @@ export function MembershipApplicationForm({ recaptchaToken }: { recaptchaToken: 
               </label>
               <label>
                 Gmail address *
-                <span>TIMGAS MPC may use this address for application updates.</span>
-                <input type="email" inputMode="email" autoComplete="email" placeholder="applicant@gmail.com" {...register("applicantEmail")} />
+                <span>
+                  TIMGAS MPC may use this address for application updates.
+                </span>
+                <input
+                  type="email"
+                  inputMode="email"
+                  autoComplete="email"
+                  placeholder="applicant@gmail.com"
+                  {...register("applicantEmail")}
+                />
                 <ErrorMessage message={errors.applicantEmail?.message} />
               </label>
             </div>
@@ -614,7 +740,10 @@ export function MembershipApplicationForm({ recaptchaToken }: { recaptchaToken: 
               </label>
               <label>
                 Middle name
-                <input autoComplete="additional-name" {...register("middleName")} />
+                <input
+                  autoComplete="additional-name"
+                  {...register("middleName")}
+                />
                 <span>Optional</span>
               </label>
             </div>
@@ -647,13 +776,21 @@ export function MembershipApplicationForm({ recaptchaToken }: { recaptchaToken: 
             </div>
             <div className={styles.gridTwo}>
               <label>
-                Occupation
-                <input autoComplete="organization-title" {...register("occupation")} />
-                <span>Optional</span>
+                Occupation *
+                <input
+                  autoComplete="organization-title"
+                  required
+                  {...register("occupation")}
+                />
+                <ErrorMessage message={errors.occupation?.message} />
               </label>
               <label>
                 Date of birth *
-                <input type="date" {...register("dateOfBirth")} />
+                <input
+                  type="date"
+                  max={latestEligibleBirthDate}
+                  {...register("dateOfBirth")}
+                />
                 <ErrorMessage message={errors.dateOfBirth?.message} />
               </label>
               <label>
@@ -690,9 +827,16 @@ export function MembershipApplicationForm({ recaptchaToken }: { recaptchaToken: 
               <div className={styles.gridTwo}>
                 <label>
                   Municipality or city *
-                  <select autoComplete="address-level2" {...register("municipality")}>
+                  <select
+                    autoComplete="address-level2"
+                    {...register("municipality")}
+                  >
                     <option value="">Select in Bohol</option>
-                    {boholMunicipalities.map((municipality) => <option key={municipality} value={municipality}>{municipality}</option>)}
+                    {boholMunicipalities.map((municipality) => (
+                      <option key={municipality} value={municipality}>
+                        {municipality}
+                      </option>
+                    ))}
                   </select>
                   <ErrorMessage message={errors.municipality?.message} />
                 </label>
@@ -704,18 +848,33 @@ export function MembershipApplicationForm({ recaptchaToken }: { recaptchaToken: 
                     {...register("barangay")}
                   >
                     <option value="">
-                      {isLoadingBarangays ? "Loading barangays…" : "Select barangay"}
+                      {isLoadingBarangays
+                        ? "Loading barangays…"
+                        : "Select barangay"}
                     </option>
-                    {barangays.map((barangay) => <option key={barangay} value={barangay}>{barangay}</option>)}
+                    {barangays.map((barangay) => (
+                      <option key={barangay} value={barangay}>
+                        {barangay}
+                      </option>
+                    ))}
                   </select>
-                  {barangayLoadError ? <ErrorMessage message={barangayLoadError} /> : <ErrorMessage message={errors.barangay?.message} />}
+                  {barangayLoadError ? (
+                    <ErrorMessage message={barangayLoadError} />
+                  ) : (
+                    <ErrorMessage message={errors.barangay?.message} />
+                  )}
                 </label>
               </div>
               <div className={styles.gridTwo}>
                 <label>
                   Purok, house number, or street
-                  <input autoComplete="street-address" {...register("address")} />
-                  <span>Optional. Add this only when it applies to your address.</span>
+                  <input
+                    autoComplete="street-address"
+                    {...register("address")}
+                  />
+                  <span>
+                    Optional. Add this only when it applies to your address.
+                  </span>
                   <ErrorMessage message={errors.address?.message} />
                 </label>
                 <label>
@@ -747,7 +906,10 @@ export function MembershipApplicationForm({ recaptchaToken }: { recaptchaToken: 
                   maxLength={80}
                   {...register("validIdNumber", {
                     onChange: (event) => {
-                      event.target.value = event.target.value.replace(/\D/g, "");
+                      event.target.value = event.target.value.replace(
+                        /\D/g,
+                        "",
+                      );
                     },
                   })}
                 />
@@ -761,24 +923,28 @@ export function MembershipApplicationForm({ recaptchaToken }: { recaptchaToken: 
           <fieldset>
             <legend>Family and household information</legend>
             <p className={styles.sectionHelp}>
-              Complete the fields that apply to you. Optional fields may be
-              left blank.
+              Complete the required family, dependent, and household income
+              information below.
             </p>
             <div className={styles.gridTwo}>
               <label>
-                Mother’s maiden name
-                <input {...register("motherMaidenName")} />
-                <span>Optional</span>
+                Mother’s maiden name *
+                <input required {...register("motherMaidenName")} />
+                <ErrorMessage message={errors.motherMaidenName?.message} />
               </label>
               <label>
-                Father’s full name
-                <input {...register("fatherFullName")} />
-                <span>Optional</span>
+                Father’s full name *
+                <input required {...register("fatherFullName")} />
+                <ErrorMessage message={errors.fatherFullName?.message} />
               </label>
               <label>
-                Name of spouse
-                <input {...register("spouseName")} />
-                <span>Optional</span>
+                Name of spouse{values.civilStatus === "Married" ? " *" : ""}
+                <input
+                  required={values.civilStatus === "Married"}
+                  {...register("spouseName")}
+                />
+                {values.civilStatus !== "Married" && <span>Optional</span>}
+                <ErrorMessage message={errors.spouseName?.message} />
               </label>
               <label>
                 Spouse’s date of birth
@@ -789,19 +955,28 @@ export function MembershipApplicationForm({ recaptchaToken }: { recaptchaToken: 
 
             <div className={styles.subsectionHeading}>
               <div>
-                <h4>Dependents</h4>
-                <p>Add up to eight dependents, matching the official form.</p>
+                <h4>Dependents *</h4>
+                <p>Add at least one and up to eight dependents.</p>
               </div>
               <button
                 type="button"
-                onClick={() =>
-                  append({ name: "", dateOfBirth: "", age: "", relationship: "" })
-                }
+                onClick={() => {
+                  append({
+                    name: "",
+                    dateOfBirth: "",
+                    age: "",
+                    relationship: "",
+                  });
+                  clearErrors("dependents");
+                }}
                 disabled={fields.length >= maximumDependents}
               >
                 <Plus /> Add dependent
               </button>
             </div>
+            {fields.length === 0 && (
+              <ErrorMessage message={errors.dependents?.message} />
+            )}
             <div className={styles.dependents}>
               {fields.length === 0 ? (
                 <p className={styles.emptyRow}>No dependents added.</p>
@@ -809,30 +984,51 @@ export function MembershipApplicationForm({ recaptchaToken }: { recaptchaToken: 
                 fields.map((field, index) => (
                   <div className={styles.dependentRow} key={field.id}>
                     <label>
-                      Name
-                      <input {...register(`dependents.${index}.name`)} />
+                      Name *
+                      <input
+                        required
+                        {...register(`dependents.${index}.name`)}
+                      />
                       <ErrorMessage
                         message={errors.dependents?.[index]?.name?.message}
                       />
                     </label>
                     <label>
-                      Date of birth
+                      Date of birth *
                       <input
                         type="date"
+                        required
                         {...register(`dependents.${index}.dateOfBirth`)}
+                      />
+                      <ErrorMessage
+                        message={
+                          errors.dependents?.[index]?.dateOfBirth?.message
+                        }
                       />
                     </label>
                     <label>
-                      Age
+                      Age *
                       <input
                         inputMode="numeric"
                         maxLength={3}
+                        required
                         {...register(`dependents.${index}.age`)}
+                      />
+                      <ErrorMessage
+                        message={errors.dependents?.[index]?.age?.message}
                       />
                     </label>
                     <label>
-                      Relationship
-                      <input {...register(`dependents.${index}.relationship`)} />
+                      Relationship *
+                      <input
+                        required
+                        {...register(`dependents.${index}.relationship`)}
+                      />
+                      <ErrorMessage
+                        message={
+                          errors.dependents?.[index]?.relationship?.message
+                        }
+                      />
                     </label>
                     <button
                       type="button"
@@ -854,9 +1050,9 @@ export function MembershipApplicationForm({ recaptchaToken }: { recaptchaToken: 
             </div>
             <div className={styles.gridTwo}>
               <label>
-                Husband — source of income
-                <input {...register("husbandIncomeSource")} />
-                <span>Optional</span>
+                Husband — source of income *
+                <input required {...register("husbandIncomeSource")} />
+                <ErrorMessage message={errors.husbandIncomeSource?.message} />
               </label>
               <label>
                 Husband — office or agency
@@ -864,9 +1060,9 @@ export function MembershipApplicationForm({ recaptchaToken }: { recaptchaToken: 
                 <span>Optional</span>
               </label>
               <label>
-                Wife — source of income
-                <input {...register("wifeIncomeSource")} />
-                <span>Optional</span>
+                Wife — source of income *
+                <input required {...register("wifeIncomeSource")} />
+                <ErrorMessage message={errors.wifeIncomeSource?.message} />
               </label>
               <label>
                 Wife — office or agency
@@ -882,14 +1078,14 @@ export function MembershipApplicationForm({ recaptchaToken }: { recaptchaToken: 
             <legend>Background information</legend>
             <div className={styles.radioGroup}>
               <span>Sector *</span>
-              {(Object.keys(sectorLabels) as ApplicationFormValues["sector"][]).map(
-                (sector) => (
-                  <label key={sector}>
-                    <input type="radio" value={sector} {...register("sector")} />
-                    {sectorLabels[sector]}
-                  </label>
-                ),
-              )}
+              {(
+                Object.keys(sectorLabels) as ApplicationFormValues["sector"][]
+              ).map((sector) => (
+                <label key={sector}>
+                  <input type="radio" value={sector} {...register("sector")} />
+                  {sectorLabels[sector]}
+                </label>
+              ))}
             </div>
             <ErrorMessage message={errors.sector?.message} />
             <div className={styles.gridTwo}>
@@ -946,8 +1142,8 @@ export function MembershipApplicationForm({ recaptchaToken }: { recaptchaToken: 
                     {...register("crimeDetails")}
                   />
                   <span className={styles.characterCount} aria-live="polite">
-                    {(values.crimeDetails ?? "").length.toLocaleString()} / 5,000
-                    characters
+                    {(values.crimeDetails ?? "").length.toLocaleString()} /
+                    5,000 characters
                   </span>
                   <ErrorMessage message={errors.crimeDetails?.message} />
                 </label>
@@ -1026,19 +1222,86 @@ export function MembershipApplicationForm({ recaptchaToken }: { recaptchaToken: 
               Check the summary below. Use Previous to correct any information
               before sending it to the TIMGAS manager.
             </p>
-            <OfficialMembershipReview data={{
-              reference: "Assigned upon submission", dateApplied: "Recorded upon submission", applicantEmail: values.applicantEmail ?? "", membershipType: values.membershipType ?? "associate",
-              profile: { departmentName: values.departmentName ?? "", tinNumber: values.tinNumber ?? "", pmesDate: values.pmesDate ?? "", familyName: values.familyName ?? "", givenName: values.givenName ?? "", middleName: values.middleName ?? "", nickname: values.nickname ?? "", sex: values.sex ?? "", civilStatus: values.civilStatus ?? "", occupation: values.occupation ?? "", dateOfBirth: values.dateOfBirth ?? "", placeOfBirth: values.placeOfBirth ?? "", address: formatBoholAddress(values.address ?? "", values.barangay ?? "", values.municipality ?? ""), cellphone: values.cellphone ? `+63${values.cellphone}` : "", validIdType: values.validIdType ?? "", validIdNumber: values.validIdNumber ?? "", motherMaidenName: values.motherMaidenName ?? "", fatherFullName: values.fatherFullName ?? "" },
-              spouse: { name: values.spouseName ?? "", dateOfBirth: values.spouseDateOfBirth ?? "" }, dependents: (values.dependents ?? []).map((dependent) => ({ name: dependent.name ?? "", dateOfBirth: dependent.dateOfBirth ?? "", age: dependent.age ?? "", relationship: dependent.relationship ?? "" })), income: { husbandSource: values.husbandIncomeSource ?? "", husbandEmployer: values.husbandEmployer ?? "", wifeSource: values.wifeIncomeSource ?? "", wifeEmployer: values.wifeEmployer ?? "" }, sector: values.sector ?? "arb", educationalAttainment: values.educationalAttainment ?? "", affiliation: { organization: values.affiliationOrganization ?? "", position: values.affiliationPosition ?? "" }, crimeDisclosure: { accusedOrConvicted: values.accusedOrConvicted === "yes", details: values.crimeDetails ?? "" }, recommenderName: values.recommenderName ?? "", typedName: values.typedName ?? "" }} />
+            <OfficialMembershipReview
+              data={{
+                reference: "Assigned upon submission",
+                dateApplied: "Recorded upon submission",
+                applicantEmail: values.applicantEmail ?? "",
+                membershipType: values.membershipType ?? "associate",
+                profile: {
+                  departmentName: values.departmentName ?? "",
+                  tinNumber: values.tinNumber ?? "",
+                  pmesDate: values.pmesDate ?? "",
+                  familyName: values.familyName ?? "",
+                  givenName: values.givenName ?? "",
+                  middleName: values.middleName ?? "",
+                  nickname: values.nickname ?? "",
+                  sex: values.sex ?? "",
+                  civilStatus: values.civilStatus ?? "",
+                  occupation: values.occupation ?? "",
+                  dateOfBirth: values.dateOfBirth ?? "",
+                  placeOfBirth: values.placeOfBirth ?? "",
+                  address: formatBoholAddress(
+                    values.address ?? "",
+                    values.barangay ?? "",
+                    values.municipality ?? "",
+                  ),
+                  cellphone: values.cellphone ? `+63${values.cellphone}` : "",
+                  validIdType: values.validIdType ?? "",
+                  validIdNumber: values.validIdNumber ?? "",
+                  motherMaidenName: values.motherMaidenName ?? "",
+                  fatherFullName: values.fatherFullName ?? "",
+                },
+                spouse: {
+                  name: values.spouseName ?? "",
+                  dateOfBirth: values.spouseDateOfBirth ?? "",
+                },
+                dependents: (values.dependents ?? []).map((dependent) => ({
+                  name: dependent.name ?? "",
+                  dateOfBirth: dependent.dateOfBirth ?? "",
+                  age: dependent.age ?? "",
+                  relationship: dependent.relationship ?? "",
+                })),
+                income: {
+                  husbandSource: values.husbandIncomeSource ?? "",
+                  husbandEmployer: values.husbandEmployer ?? "",
+                  wifeSource: values.wifeIncomeSource ?? "",
+                  wifeEmployer: values.wifeEmployer ?? "",
+                },
+                sector: values.sector ?? "arb",
+                educationalAttainment: values.educationalAttainment ?? "",
+                affiliation: {
+                  organization: values.affiliationOrganization ?? "",
+                  position: values.affiliationPosition ?? "",
+                },
+                crimeDisclosure: {
+                  accusedOrConvicted: values.accusedOrConvicted === "yes",
+                  details: values.crimeDetails ?? "",
+                },
+                recommenderName: values.recommenderName ?? "",
+                typedName: values.typedName ?? "",
+              }}
+            />
             <div className={styles.finalNotice}>
               <ShieldCheck aria-hidden="true" />
               <p>
-                Your application is private. Visitors cannot read submissions;
-                only an authorized TIMGAS manager can review them through the
-                protected dashboard.
+                Your application is private. Visitors cannot read submissions,
+                only an authorized TIMGAS manager can review your application.
               </p>
             </div>
-            <label className={`${styles.checkRow} ${styles.reviewConfirmation}`}><input type="checkbox" checked={reviewConfirmed} onChange={(event) => setReviewConfirmed(event.target.checked)} /><span>I have reviewed the Membership Profile and Membership Agreement above and I am ready to submit. *</span></label>
+            <label
+              className={`${styles.checkRow} ${styles.reviewConfirmation}`}
+            >
+              <input
+                type="checkbox"
+                checked={reviewConfirmed}
+                onChange={(event) => setReviewConfirmed(event.target.checked)}
+              />
+              <span>
+                I have reviewed the Membership Profile and Membership Agreement
+                above and I am ready to submit. *
+              </span>
+            </label>
           </fieldset>
         )}
 

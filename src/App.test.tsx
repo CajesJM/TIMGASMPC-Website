@@ -118,8 +118,9 @@ describe("TIMGAS website", () => {
     expect(screen.getByLabelText(/mf \(first field\)/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/mf \(second field\)/i)).toBeInTheDocument();
     expect(within(loanDialog).getByLabelText(/amount of cbu/i)).toBeVisible();
-    expect(within(loanDialog).getByLabelText(/date released/i)).toBeVisible();
-    expect(within(loanDialog).getByText(/^optional$/i)).toBeVisible();
+    expect(
+      within(loanDialog).getByLabelText(/date released — timgas use only/i),
+    ).toHaveAttribute("readonly");
     expect(within(loanDialog).getByLabelText(/amount of savings/i)).toBeVisible();
     expect(within(loanDialog).getByText(/amount approved/i)).toBeVisible();
 
@@ -157,7 +158,36 @@ describe("TIMGAS website", () => {
     await user.click(
       within(loanDialog).getByRole("button", { name: /^continue$/i }),
     );
+    expect(
+      within(loanDialog).getByText(/add at least one property before continuing/i),
+    ).toBeVisible();
+    await user.click(
+      within(loanDialog).getByRole("button", { name: /add asset/i }),
+    );
+    await user.type(
+      within(loanDialog).getByLabelText(/property description/i),
+      "Farm equipment",
+    );
+    await user.type(within(loanDialog).getByLabelText(/value \(₱\)/i), "8000");
+    await user.click(
+      within(loanDialog).getByRole("button", { name: /^continue$/i }),
+    );
     expect(screen.getByText(/step 3 of 5/i)).toBeInTheDocument();
+    await user.click(
+      within(loanDialog).getByRole("button", { name: /^continue$/i }),
+    );
+    expect(
+      within(loanDialog).getByText(
+        /add at least one source of credit before continuing/i,
+      ),
+    ).toBeVisible();
+    await user.click(
+      within(loanDialog).getByRole("button", { name: /add debt record/i }),
+    );
+    await user.type(
+      within(loanDialog).getByLabelText(/source of credit/i),
+      "TIMGAS MPC",
+    );
     await user.click(
       within(loanDialog).getByRole("button", { name: /^continue$/i }),
     );
@@ -177,6 +207,15 @@ describe("TIMGAS website", () => {
     await user.click(screen.getByLabelText(/authorize timgas mpc to collect/i));
     expect(consentContinueButton).toBeEnabled();
     await user.click(consentContinueButton);
+    expect(
+      within(loanDialog).getByText(/spouse \/ marital consent is required/i),
+    ).toBeVisible();
+    expect(screen.getByText(/step 4 of 5/i)).toBeInTheDocument();
+    await user.type(
+      screen.getByLabelText(/spouse \/ marital consent/i),
+      "Test Spouse",
+    );
+    await user.click(consentContinueButton);
 
     expect(screen.getByText(/step 5 of 5/i)).toBeInTheDocument();
     expect(loanDialog.querySelector("legend")).toHaveTextContent(
@@ -195,9 +234,7 @@ describe("TIMGAS website", () => {
         name: /loan application form/i,
       }),
     ).toBeVisible();
-    expect(
-      within(officialLoanPreview).getByText(/no asset information was provided/i),
-    ).toBeVisible();
+    expect(within(officialLoanPreview).getByText("Farm equipment")).toBeVisible();
     expect(screen.queryByText(/loan application received/i)).not.toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: /submit loan application/i }),
@@ -215,7 +252,7 @@ describe("TIMGAS website", () => {
     expect(
       screen.getByRole("button", { name: /continue loan form/i }),
     ).toBeVisible();
-  }, 10_000);
+  }, 30_000);
 
   it("uses homepage anchors for the public navigation", () => {
     const { container } = renderApp();
