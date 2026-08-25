@@ -9,7 +9,6 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import {
-  AlertTriangle,
   ChevronLeft,
   ChevronRight,
   Eye,
@@ -181,10 +180,10 @@ export function AdminApplicationsManager({
             <tbody>
               {visible.map((item, index) => (
                 <tr key={item.id}>
-                  <td className={styles.numberCell}>
+                  <td className={styles.numberCell} data-label="No.">
                     {(currentPage - 1) * pageSize + index + 1}
                   </td>
-                  <td>
+                  <td data-label="Reference">
                     <button
                       className={styles.reference}
                       onClick={() => openApplication(item)}
@@ -192,20 +191,20 @@ export function AdminApplicationsManager({
                       {item.reference}
                     </button>
                   </td>
-                  <td>
+                  <td data-label="Applicant">
                     {item.applicantName}
                     <small>
                       {item.applicantEmail || item.profile.cellphone}
                     </small>
                   </td>
-                  <td>{membershipTypeLabels[item.applicationType]}</td>
-                  <td>{formatApplicationDate(item.submittedAt)}</td>
-                  <td>
+                  <td data-label="Type">{membershipTypeLabels[item.applicationType]}</td>
+                  <td data-label="Submitted">{formatApplicationDate(item.submittedAt)}</td>
+                  <td data-label="Status">
                     <span className={`${styles.status} ${styles[item.status]}`}>
                       {applicationStatusLabels[item.status]}
                     </span>
                   </td>
-                  <td>
+                  <td data-label="Actions">
                     <div className={styles.actions}>
                       <button
                         className={styles.viewButton}
@@ -350,9 +349,6 @@ export function AdminApplicationsManager({
             aria-labelledby="delete-application-title"
             aria-describedby="delete-application-description"
           >
-            <span className={styles.confirmIcon} aria-hidden="true">
-              <AlertTriangle />
-            </span>
             <div>
               <p>Permanent action</p>
               <h2 id="delete-application-title">Delete this application?</h2>

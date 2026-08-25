@@ -1,12 +1,27 @@
 import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
-import { updateProfile } from "firebase/auth";
+import {
+  EmailAuthProvider,
+  reauthenticateWithCredential,
+  updatePassword,
+  updateProfile,
+} from "firebase/auth";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { Camera, Pencil, Save, Trash2, UserRound, X } from "lucide-react";
+import {
+  Camera,
+  Check,
+  KeyRound,
+  Pencil,
+  Save,
+  Trash2,
+  UserRound,
+  X,
+} from "lucide-react";
 import {
   useEffect,
   useMemo,
   useRef,
   useState,
+  type CSSProperties,
   type ChangeEvent,
   type FormEvent,
 } from "react";
@@ -61,6 +76,11 @@ export function AdminProfileManager({
   });
   const [loading, setLoading] = useState(Boolean(db && user));
   const [saving, setSaving] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [changingPassword, setChangingPassword] = useState(false);
+  const [passwordError, setPasswordError] = useState("");
   const [error, setError] = useState(
     db && user ? "" : "Manager profile is unavailable.",
   );
@@ -69,6 +89,31 @@ export function AdminProfileManager({
     () => (avatar ? URL.createObjectURL(avatar) : ""),
     [avatar],
   );
+  const passwordChecks = useMemo(
+    () => [
+      { label: "At least 10 characters", passed: newPassword.length >= 10 },
+      { label: "An uppercase letter", passed: /[A-Z]/.test(newPassword) },
+      { label: "A lowercase letter", passed: /[a-z]/.test(newPassword) },
+      { label: "A number", passed: /\d/.test(newPassword) },
+      {
+        label: "A symbol, such as ! @ # or %",
+        passed: /[^A-Za-z0-9]/.test(newPassword),
+      },
+    ],
+    [newPassword],
+  );
+  const passedPasswordChecks = passwordChecks.filter((check) => check.passed).length;
+  const passwordStrength =
+    passedPasswordChecks <= 2
+      ? "Weak"
+      : passedPasswordChecks === 3
+        ? "Fair"
+        : passedPasswordChecks === 4
+          ? "Strong"
+          : "Very strong";
+  const newPasswordIsValid = passedPasswordChecks === passwordChecks.length;
+  const passwordsMatch =
+    confirmPassword.length > 0 && newPassword === confirmPassword;
 
   useEffect(() => {
     if (!db || !user) return;
@@ -274,6 +319,49 @@ export function AdminProfileManager({
     }
   };
 
+  const changePassword = async () => {
+    if (!auth || !user || !user.email) {
+      setPasswordError("Password changes are unavailable for this account.");
+      return;
+    }
+    if (!newPasswordIsValid) {
+      setPasswordError("Use a stronger password that meets every requirement.");
+      return;
+    }
+    if (!passwordsMatch) {
+      setPasswordError("The new password and confirmation do not match.");
+      return;
+    }
+
+    setChangingPassword(true);
+    setPasswordError("");
+    try {
+      const credential = EmailAuthProvider.credential(user.email, currentPassword);
+      await reauthenticateWithCredential(user, credential);
+      await updatePassword(user, newPassword);
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+      showToast("Password changed successfully. Keep it private.", "success");
+    } catch (changeError) {
+      console.error("Unable to change the manager password.", changeError);
+      const code =
+        typeof changeError === "object" && changeError && "code" in changeError
+          ? String(changeError.code)
+          : "";
+      const message =
+        code === "auth/invalid-credential" || code === "auth/wrong-password"
+          ? "Your current password is incorrect."
+          : code === "auth/too-many-requests"
+            ? "Too many attempts. Please wait a moment and try again."
+            : "Your password could not be changed. Please try again.";
+      setPasswordError(message);
+      showToast(message, "error");
+    } finally {
+      setChangingPassword(false);
+    }
+  };
+
   return (
     <section
       className={styles.manager}
@@ -415,6 +503,107 @@ export function AdminProfileManager({
             <input type="email" value={user?.email ?? ""} disabled readOnly />
           </label>
         </div>
+        <section className={styles.passwordPanel} aria-labelledby="password-heading">
+          <div className={styles.passwordHeading}>
+            <span className={styles.passwordIcon} aria-hidden="true">
+              <KeyRound />
+            </span>
+            <div>
+              <h3 id="password-heading">Change password</h3>
+              <p>Confirm your current password before setting a new one.</p>
+            </div>
+          </div>
+          <div
+            className={styles.passwordForm}
+            onKeyDown={(event) => {
+              if (event.key !== "Enter") return;
+              event.preventDefault();
+              if (
+                !changingPassword &&
+                !loading &&
+                currentPassword &&
+                newPasswordIsValid &&
+                passwordsMatch
+              ) {
+                void changePassword();
+              }
+            }}
+          >
+            <label>
+              Current password
+              <input
+                type="password"
+                value={currentPassword}
+                onChange={(event) => setCurrentPassword(event.target.value)}
+                autoComplete="current-password"
+                disabled={changingPassword || loading}
+              />
+            </label>
+            <label>
+              New password
+              <input
+                type="password"
+                value={newPassword}
+                onChange={(event) => setNewPassword(event.target.value)}
+                autoComplete="new-password"
+                disabled={changingPassword || loading}
+              />
+            </label>
+            <label>
+              Confirm new password
+              <input
+                type="password"
+                value={confirmPassword}
+                onChange={(event) => setConfirmPassword(event.target.value)}
+                autoComplete="new-password"
+                disabled={changingPassword || loading}
+              />
+              {confirmPassword && (
+                <small className={passwordsMatch ? styles.match : styles.noMatch}>
+                  {passwordsMatch ? "Passwords match." : "Passwords do not match."}
+                </small>
+              )}
+            </label>
+            <div
+              className={styles.passwordGuidance}
+              data-strength={passwordStrength.toLowerCase().replace(" ", "-")}
+              aria-live="polite"
+            >
+              <div className={styles.strengthLine}>
+                <span>Password strength</span>
+                <strong data-strength={passwordStrength.toLowerCase().replace(" ", "-")}>
+                  {newPassword ? passwordStrength : "Not set"}
+                </strong>
+              </div>
+              <div className={styles.strengthMeter} aria-hidden="true">
+                <i style={{ "--strength": `${passedPasswordChecks * 20}%` } as CSSProperties} />
+              </div>
+              <ul>
+                {passwordChecks.map((check) => (
+                  <li key={check.label} className={check.passed ? styles.checkPassed : ""}>
+                    <Check aria-hidden="true" />
+                    {check.label}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            {passwordError && <p className={styles.error} role="alert">{passwordError}</p>}
+            <button
+              className={styles.passwordSubmit}
+              type="button"
+              onClick={() => void changePassword()}
+              disabled={
+                changingPassword ||
+                loading ||
+                !currentPassword ||
+                !newPasswordIsValid ||
+                !passwordsMatch
+              }
+            >
+              <KeyRound /> {changingPassword ? "Changing password…" : "Change password"}
+            </button>
+          </div>
+        </section>
         <p className={styles.note}>
           The email address is managed through Firebase Authentication and
           cannot be changed from this form.

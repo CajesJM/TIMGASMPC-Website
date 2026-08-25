@@ -191,8 +191,61 @@
 .submit svg { width: 1rem; height: 1rem; }
 .submit:disabled { cursor: not-allowed; opacity: .5; }
 
+.passwordPanel {
+  display: grid;
+  gap: 1rem;
+  padding: clamp(.9rem, 2vw, 1.1rem);
+  background: #f8fbf9;
+  border: 1px solid #dce8e0;
+  border-radius: .72rem;
+}
+.passwordHeading { display: flex; gap: .75rem; align-items: center; }
+.passwordIcon {
+  display: grid;
+  width: 2.35rem;
+  height: 2.35rem;
+  flex: 0 0 auto;
+  place-items: center;
+  color: var(--color-brand-800);
+  background: #e9f4ed;
+  border: 1px solid #cfe3d6;
+  border-radius: .62rem;
+}
+.passwordIcon svg { width: 1.05rem; height: 1.05rem; }
+.passwordHeading h3 { margin: 0; color: var(--color-brand-950); font-family: var(--font-sans); font-size: .92rem; }
+.passwordHeading p { margin: .18rem 0 0; color: var(--color-text-muted); font-size: .71rem; }
+.passwordForm { display: grid; gap: .8rem; }
+.passwordForm label { max-width: none; }
+.passwordForm label small { margin-top: -.1rem; font-size: .66rem; font-weight: 600; }
+.match { color: #277549; }.noMatch { color: #a23737; }
+.passwordGuidance {
+  display: grid;
+  gap: .55rem;
+  max-width: 42rem;
+  padding: .75rem;
+  background: #fff;
+  border: 1px solid #dce7df;
+  border-radius: .6rem;
+}
+.strengthLine { display: flex; align-items: center; justify-content: space-between; gap: .75rem; color: var(--color-text-muted); font-size: .66rem; font-weight: 700; }
+.strengthLine strong { color: #8a5a17; font-size: .66rem; }
+.strengthLine strong[data-strength="fair"] { color: #9a721b; }.strengthLine strong[data-strength="strong"] { color: #277549; }.strengthLine strong[data-strength="very-strong"] { color: #165c3a; }
+.strengthMeter { height: .35rem; overflow: hidden; background: #e7ede9; border-radius: 999px; }
+.strengthMeter i { display: block; width: var(--strength); height: 100%; background: #c79329; border-radius: inherit; transition: width .2s ease, background-color .2s ease; }
+.passwordGuidance[data-strength="strong"] .strengthMeter i { background: #438260; }
+.passwordGuidance[data-strength="very-strong"] .strengthMeter i { background: #1d6b46; }
+.passwordGuidance ul { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .38rem .65rem; margin: 0; padding: 0; list-style: none; }
+.passwordGuidance li { display: flex; gap: .3rem; align-items: center; color: #76827c; font-size: .63rem; line-height: 1.3; }
+.passwordGuidance li svg { width: .72rem; height: .72rem; color: #aeb9b2; }.passwordGuidance .checkPassed { color: #236a43; }.passwordGuidance .checkPassed svg { color: #277549; }
+.passwordSubmit { display: inline-flex; min-height: 2.55rem; width: fit-content; gap: .45rem; align-items: center; justify-content: center; padding: .55rem .8rem; color: #fff; background: var(--color-brand-800); border: 0; border-radius: .5rem; font-size: .72rem; font-weight: 750; cursor: pointer; }
+.passwordSubmit svg { width: .9rem; height: .9rem; }.passwordSubmit:disabled { cursor: not-allowed; opacity: .52; }
+
 @media (min-width: 42rem) {
   .fields { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .passwordForm { grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: start; }
+  .passwordGuidance,
+  .passwordForm > .error { grid-column: 1 / -1; }
+  .passwordSubmit { grid-column: 1 / -1; }
   .submit { justify-self: start; }
 }
 
@@ -201,4 +254,5 @@
   .editToggle > span { display: none; }
   .avatarEditor { align-items: flex-start; }
   .avatarButtons { display: grid; }
+  .passwordGuidance ul { grid-template-columns: 1fr; }
 }

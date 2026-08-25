@@ -8,8 +8,8 @@ import {
   Timestamp,
   where,
 } from "firebase/firestore";
-import { CircleCheckBig, Clock3, FileText, Inbox } from "lucide-react";
-import { useEffect, useState } from "react";
+import { ArrowDown, CircleCheckBig, Clock3, FileText, Inbox } from "lucide-react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { Link } from "react-router-dom";
 import { db } from "../../../lib/firestore";
 import {
@@ -69,6 +69,15 @@ const pipelineStatuses: ApplicationStatus[] = [
   "released",
 ];
 
+const chartColors: Record<ApplicationStatus, string> = {
+  new: "#1976a8",
+  in_review: "#c78c16",
+  for_verification: "#7a54a4",
+  approved: "#287a4d",
+  disapproved: "#bc4848",
+  released: "#197d86",
+};
+
 function isApplicationStatus(value: unknown): value is ApplicationStatus {
   return typeof value === "string" && value in statusLabels;
 }
@@ -83,6 +92,37 @@ function formatSubmittedAt(value: Timestamp | null) {
     dateStyle: "medium",
     timeStyle: "short",
   }).format(value.toDate());
+}
+
+function useAnimatedNumber(value: number, loading: boolean) {
+  const [displayValue, setDisplayValue] = useState(0);
+  const previousValue = useRef(0);
+
+  useEffect(() => {
+    if (loading) return;
+
+    const startValue = previousValue.current;
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const duration = reducedMotion ? 0 : 700;
+    const startedAt = performance.now();
+    let frameId = 0;
+
+    const animate = (now: number) => {
+      const progress = duration === 0 ? 1 : Math.min((now - startedAt) / duration, 1);
+      const easedProgress = 1 - (1 - progress) ** 3;
+      setDisplayValue(Math.round(startValue + (value - startValue) * easedProgress));
+      if (progress < 1) {
+        frameId = window.requestAnimationFrame(animate);
+      } else {
+        previousValue.current = value;
+      }
+    };
+
+    frameId = window.requestAnimationFrame(animate);
+    return () => window.cancelAnimationFrame(frameId);
+  }, [loading, value]);
+
+  return displayValue;
 }
 
 export function DashboardPage() {
@@ -121,8 +161,8 @@ export function DashboardPage() {
             getCountFromServer(membershipRef),
             getCountFromServer(loanRef),
             Promise.all(pipelineStatuses.map(countStatus)),
-            getDocs(query(membershipRef, orderBy("submittedAt", "desc"), limit(6))),
-            getDocs(query(loanRef, orderBy("submittedAt", "desc"), limit(6))),
+            getDocs(query(membershipRef, orderBy("submittedAt", "desc"), limit(5))),
+            getDocs(query(loanRef, orderBy("submittedAt", "desc"), limit(5))),
           ]);
 
         const counts = Object.fromEntries(
@@ -189,7 +229,7 @@ export function DashboardPage() {
                 (right.submittedAt?.toMillis() ?? 0) -
                 (left.submittedAt?.toMillis() ?? 0),
             )
-            .slice(0, 6),
+            .slice(0, 5),
         );
       } catch (error) {
         console.error("Unable to load the manager dashboard.", error);
@@ -208,6 +248,23 @@ export function DashboardPage() {
     (total, value) => total + value,
     0,
   );
+  const animatedTotalApplications = useAnimatedNumber(metrics.totalApplications, loading);
+  const animatedNewApplications = useAnimatedNumber(metrics.newApplications, loading);
+  const animatedInProgress = useAnimatedNumber(metrics.inProgress, loading);
+  const animatedApproved = useAnimatedNumber(metrics.approved, loading);
+  const animatedTotalPipeline = useAnimatedNumber(totalPipeline, loading);
+  let chartPosition = 0;
+  const chartStops = pipelineStatuses.map((status) => {
+    const segment = totalPipeline === 0 ? 0 : (pipeline[status] / totalPipeline) * 100;
+    const start = chartPosition;
+    chartPosition += segment;
+    return `${chartColors[status]} ${start}% ${chartPosition}%`;
+  });
+  const chartStyle = {
+    background: totalPipeline > 0
+      ? `conic-gradient(${chartStops.join(", ")})`
+      : "conic-gradient(#e8efea 0deg 360deg)",
+  } as CSSProperties;
 
   return (
     <div className={pageStyles.content}>
@@ -235,7 +292,7 @@ export function DashboardPage() {
           <article>
             <div>
               <span>Total submissions</span>
-              <strong>{loading ? "—" : metrics.totalApplications}</strong>
+              <strong>{loading ? "—" : animatedTotalApplications}</strong>
             </div>
             <FileText />
             <small>All Easy Apply records</small>
@@ -243,7 +300,7 @@ export function DashboardPage() {
           <article>
             <div>
               <span>New applications</span>
-              <strong>{loading ? "—" : metrics.newApplications}</strong>
+              <strong>{loading ? "—" : animatedNewApplications}</strong>
             </div>
             <Inbox />
             <small>Awaiting initial review</small>
@@ -251,7 +308,7 @@ export function DashboardPage() {
           <article>
             <div>
               <span>In progress</span>
-              <strong>{loading ? "—" : metrics.inProgress}</strong>
+              <strong>{loading ? "—" : animatedInProgress}</strong>
             </div>
             <Clock3 />
             <small>In review or verification</small>
@@ -259,21 +316,64 @@ export function DashboardPage() {
           <article>
             <div>
               <span>Approved</span>
-              <strong>{loading ? "—" : metrics.approved}</strong>
+              <strong>{loading ? "—" : animatedApproved}</strong>
             </div>
             <CircleCheckBig />
             <small>Approved or released applications</small>
           </article>
         </section>
       </div>
+      <section className={styles.chartSection} aria-label="Processing overview">
+        <div className={styles.sectionHead}>
+          <div>
+            <p className={styles.sectionLabel}>Processing overview</p>
+            <h2>Application status distribution</h2>
+            <p>A live view of where Easy Apply records are in the review process.</p>
+          </div>
+        </div>
+        <div className={styles.chartContent}>
+          <div
+            className={styles.donut}
+            style={chartStyle}
+            role="img"
+            aria-label={loading ? "Loading application status distribution" : `${totalPipeline} applications across six review statuses`}
+          >
+            <div>
+              <strong>{loading ? "—" : animatedTotalPipeline}</strong>
+              <span>applications</span>
+            </div>
+          </div>
+          <div className={styles.chartLegend}>
+            {pipelineStatuses.map((status) => {
+              const percentage = totalPipeline === 0 ? 0 : (pipeline[status] / totalPipeline) * 100;
+              return (
+              <div key={status}>
+                <div className={styles.legendMeta}>
+                  <span style={{ backgroundColor: chartColors[status] }} aria-hidden="true" />
+                  <p>{statusLabels[status]}</p>
+                  <strong>{loading ? "—" : pipeline[status]}</strong>
+                </div>
+                <i className={styles.legendBar} aria-hidden="true">
+                  <b
+                    style={{
+                      "--bar-progress": `${percentage}%`,
+                      "--bar-color": chartColors[status],
+                    } as CSSProperties}
+                  />
+                </i>
+              </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
       <section className={styles.tableSection} id="applications">
         <div className={styles.sectionHead}>
           <div>
             <p className={styles.sectionLabel}>Easy Apply</p>
             <h2>Recent applications</h2>
-            <p>The six latest membership and loan applications submitted online.</p>
+            <p>The five latest membership and loan applications submitted online.</p>
           </div>
-          <Link to="/manager/applications">View all applications</Link>
         </div>
         {loading ? (
           <p className={styles.empty}>Loading applications…</p>
@@ -286,6 +386,7 @@ export function DashboardPage() {
             </span>
           </div>
         ) : (
+          <>
           <div className={styles.tableWrap}>
             <table>
               <thead>
@@ -298,8 +399,12 @@ export function DashboardPage() {
                 </tr>
               </thead>
               <tbody>
-                {applications.map((item) => (
-                  <tr key={item.id}>
+                {applications.map((item, index) => (
+                  <tr
+                    key={item.id}
+                    className={`${styles.recentRow} ${index === applications.length - 1 ? styles.fadedRow : ""}`}
+                    style={{ "--row-delay": `${index * 70}ms` } as CSSProperties}
+                  >
                     <td>
                       <Link
                         to={`/manager/applications?type=${item.applicationGroup}`}
@@ -323,40 +428,12 @@ export function DashboardPage() {
               </tbody>
             </table>
           </div>
+          <Link className={styles.showMore} to="/manager/applications">
+            Show more applications
+            <ArrowDown size={15} aria-hidden="true" />
+          </Link>
+          </>
         )}
-      </section>
-      <section className={styles.bottomGrid} aria-label="Application pipeline">
-        <article>
-          <div className={styles.sectionHead}>
-            <div>
-              <p className={styles.sectionLabel}>Processing overview</p>
-              <h2>Application pipeline</h2>
-              <p>Distribution of submissions by current review status.</p>
-            </div>
-          </div>
-          <div className={styles.pipeline}>
-            {pipelineStatuses.map(
-              (status) => {
-                const value = pipeline[status];
-                const width =
-                  totalPipeline === 0
-                    ? 0
-                    : Math.round((value / totalPipeline) * 100);
-                return (
-                  <div key={status}>
-                    <p>
-                      <span>{statusLabels[status]}</span>
-                      <strong>{loading ? "—" : value}</strong>
-                    </p>
-                    <i>
-                      <b style={{ width: `${width}%` }} />
-                    </i>
-                  </div>
-                );
-              },
-            )}
-          </div>
-        </article>
       </section>
     </div>
   );

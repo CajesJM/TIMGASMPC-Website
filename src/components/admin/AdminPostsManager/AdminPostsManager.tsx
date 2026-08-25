@@ -71,6 +71,8 @@ export function AdminPostsManager({ showToast }: AdminPostsManagerProps) {
   const [categoryFilter, setCategoryFilter] = useState<"all" | PostCategory>(
     "all",
   );
+  const [deleteTarget, setDeleteTarget] = useState<PublishedPost | null>(null);
+  const [deleting, setDeleting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const publishedListRef = useRef<HTMLDivElement>(null);
 
@@ -264,12 +266,10 @@ export function AdminPostsManager({ showToast }: AdminPostsManagerProps) {
     }
   };
 
-  const removePost = async (post: PublishedPost) => {
-    if (
-      !db ||
-      !window.confirm(`Delete “${post.title}”? This cannot be undone.`)
-    )
-      return;
+  const removePost = async () => {
+    if (!db || !deleteTarget) return;
+    const post = deleteTarget;
+    setDeleting(true);
     setError("");
     try {
       await deleteDoc(doc(db, "posts", post.id));
@@ -284,6 +284,7 @@ export function AdminPostsManager({ showToast }: AdminPostsManagerProps) {
         );
       }
       if (editingId === post.id) resetForm();
+      setDeleteTarget(null);
       showToast(
         photoCleanupFailed
           ? "Post deleted from Firestore, but its photo could not be removed from Storage."
@@ -295,6 +296,8 @@ export function AdminPostsManager({ showToast }: AdminPostsManagerProps) {
       const failureMessage = "The post could not be deleted. Please try again.";
       setError(failureMessage);
       showToast(failureMessage, "error");
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -527,7 +530,7 @@ export function AdminPostsManager({ showToast }: AdminPostsManagerProps) {
                       </button>
                       <button
                         type="button"
-                        onClick={() => void removePost(post)}
+                        onClick={() => setDeleteTarget(post)}
                       >
                         <Trash2 /> Delete
                       </button>
@@ -563,6 +566,49 @@ export function AdminPostsManager({ showToast }: AdminPostsManagerProps) {
           )}
         </div>
       </div>
+      {deleteTarget && (
+        <div
+          className={styles.confirmBackdrop}
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget && !deleting) {
+              setDeleteTarget(null);
+            }
+          }}
+        >
+          <section
+            className={styles.confirmDialog}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="delete-post-title"
+            aria-describedby="delete-post-description"
+          >
+            <div>
+              <p>Permanent action</p>
+              <h2 id="delete-post-title">Delete this public post?</h2>
+              <p id="delete-post-description">
+                You are about to permanently delete <strong>{deleteTarget.title}</strong>.
+                Its published content and uploaded photo cannot be restored.
+              </p>
+            </div>
+            <footer>
+              <button
+                type="button"
+                onClick={() => setDeleteTarget(null)}
+                disabled={deleting}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => void removePost()}
+                disabled={deleting}
+              >
+                {deleting ? "Deleting…" : "Delete post"}
+              </button>
+            </footer>
+          </section>
+        </div>
+      )}
     </section>
   );
 }

@@ -9,7 +9,6 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import {
-  AlertTriangle,
   ChevronLeft,
   ChevronRight,
   Eye,
@@ -244,10 +243,10 @@ export function AdminLoanApplicationsManager({
             <tbody>
               {visible.map((item, index) => (
                 <tr key={item.id}>
-                  <td className={styles.numberCell}>
+                  <td className={styles.numberCell} data-label="No.">
                     {(currentPage - 1) * pageSize + index + 1}
                   </td>
-                  <td>
+                  <td data-label="Reference">
                     <button
                       className={styles.reference}
                       onClick={() => openApplication(item)}
@@ -255,19 +254,19 @@ export function AdminLoanApplicationsManager({
                       {item.reference}
                     </button>
                   </td>
-                  <td>
+                  <td data-label="Applicant">
                     {item.applicantName}
                     <small>{item.applicantEmail || item.address}</small>
                   </td>
-                  <td>{loanTypeLabels[item.typeOfLoan]}</td>
-                  <td>{formatPeso(item.amountApplied)}</td>
-                  <td>{dateFiled(item)}</td>
-                  <td>
+                  <td data-label="Loan type">{loanTypeLabels[item.typeOfLoan]}</td>
+                  <td data-label="Amount">{formatPeso(item.amountApplied)}</td>
+                  <td data-label="Submitted">{dateFiled(item)}</td>
+                  <td data-label="Status">
                     <span className={`${styles.status} ${styles[item.status]}`}>
                       {loanStatusLabels[item.status]}
                     </span>
                   </td>
-                  <td>
+                  <td data-label="Actions">
                     <div className={styles.actions}>
                       <button
                         className={styles.viewButton}
@@ -842,9 +841,6 @@ export function AdminLoanApplicationsManager({
             aria-labelledby="delete-loan-title"
             aria-describedby="delete-loan-description"
           >
-            <span className={styles.confirmIcon} aria-hidden="true">
-              <AlertTriangle />
-            </span>
             <div>
               <p>Permanent action</p>
               <h2 id="delete-loan-title">Delete this loan application?</h2>
