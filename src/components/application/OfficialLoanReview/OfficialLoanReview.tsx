@@ -1,4 +1,5 @@
 import timgasLogo from "../../../assets/images/timgas-logo.png";
+import { ensureBoholAddress } from "../../../features/applications/boholLocations";
 import {
   loanPaymentModeLabels,
   loanTypeOptions,
@@ -48,6 +49,7 @@ function formatPeso(value: string | number | undefined) {
 }
 
 export function OfficialLoanReview({ data }: { data: OfficialLoanReviewData }) {
+  const applicantAddress = ensureBoholAddress(data.address);
   return (
     <div className={styles.viewport} aria-label="Official loan application preview">
       <article className={styles.document}>
@@ -71,7 +73,7 @@ export function OfficialLoanReview({ data }: { data: OfficialLoanReviewData }) {
         </section>
 
         <p className={styles.statement}>
-          I, <span>{data.applicantName}</span> of <span>{data.address}</span> hereby applies for:
+          I, <span>{data.applicantName}</span> of <span>{applicantAddress}</span> hereby applies for:
         </p>
         <p className={styles.line}><b>Applicant Gmail:</b><span>{data.applicantEmail}</span></p>
         <div className={styles.optionLine}>

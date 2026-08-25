@@ -66,11 +66,14 @@ function MembershipProfile({ data }: { data: OfficialMembershipReviewData }) {
 
 function MembershipAgreement({ data }: { data: OfficialMembershipReviewData }) {
   const applicantName = data.typedName || [data.profile.givenName, data.profile.middleName, data.profile.familyName].filter(Boolean).join(" ");
+  const residence = data.profile.address
+    .replace(/,?\s*Bohol(?:,\s*Philippines)?\s*$/i, "")
+    .trim();
   return <article className={`${styles.page} ${styles.agreementPage}`} aria-label="Membership agreement">
     <DocumentHeader title="MEMBERSHIP AGREEMENT" place="Poblacion, Trinidad, Bohol" />
     <p className={styles.agreementDate}><b>Date</b><Line value={data.dateApplied} /></p>
     <p>The Board of Directors<br />TIMGAS Multipurpose Cooperative<br />Poblacion, Trinidad, Bohol</p>
-    <p className={styles.agreementLead}>I, <Line value={applicantName} />, a resident of <Line value={data.profile.address} />, Bohol, <b>HEREBY AGREE TO BE A MEMBER OF THE TIMGAS MULTIPURPOSE COOPERATIVE</b>, Poblacion, Trinidad, Bohol. I will take the training <b>“Basic Cooperative Course”</b> as prescribed for the prospective members and I understand the purposes and objectives of this cooperative.</p>
+    <p className={styles.agreementLead}>I, <Line value={applicantName} />, a resident of <Line value={residence} />, Bohol, <b>HEREBY AGREE TO BE A MEMBER OF THE TIMGAS MULTIPURPOSE COOPERATIVE</b>, Poblacion, Trinidad, Bohol. I will take the training <b>“Basic Cooperative Course”</b> as prescribed for the prospective members and I understand the purposes and objectives of this cooperative.</p>
     <h4>Terms and Conditions:</h4>
     <ol className={styles.terms}>
       <li>To comply with the provisions of the Articles of Cooperation and By-Laws and Policies set by the Board of Directors, the General Assembly as well as the acts of the duly constituted authorities, and failure to do so on my part, the cooperative at its option may impose on me any of the following:<ol type="a"><li>Fines</li><li>Suspension</li><li>Expulsion from membership whereupon all my shareholdings shall be answerable for all my liabilities to the cooperative.</li></ol></li>

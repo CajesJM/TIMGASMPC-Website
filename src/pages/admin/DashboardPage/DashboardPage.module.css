@@ -9,32 +9,38 @@
   color: #7b2828;
   background: #fff0f0;
   border: 1px solid #e4bcbc;
+  border-radius: .65rem;
   font-size: 0.8rem;
 }
 .metrics {
   display: grid;
-  gap: 0.85rem;
-  margin: 1rem 0;
+  gap: .8rem;
+  margin: 1rem 0 1.15rem;
 }
 .metrics article {
   position: relative;
-  min-height: 8.5rem;
+  min-height: 7.6rem;
   overflow: hidden;
-  padding: 1.2rem;
+  padding: 1.05rem;
   background: white;
-  border: 1px solid var(--color-border);
-  border-radius: 0.45rem;
-  box-shadow: 0 0.35rem 1.2rem rgb(13 54 39 / 0.045);
+  border: 1px solid #dce6e0;
+  border-radius: .8rem;
+  box-shadow: 0 .45rem 1.5rem rgb(13 54 39 / 4%);
+  transition: border-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
+}
+.metrics article:hover {
+  border-color: #c8dacf;
+  box-shadow: 0 .7rem 1.8rem rgb(13 54 39 / 7%);
+  transform: translateY(-2px);
 }
 .metrics article > svg {
   position: absolute;
-  top: 1.1rem;
-  right: 1.1rem;
-  padding: 0.55rem;
-  box-sizing: content-box;
-  color: var(--color-brand-700);
-  background: var(--color-brand-50);
-  border-radius: 0.7rem;
+  top: 1rem;
+  right: 1rem;
+  width: 1.2rem;
+  height: 1.2rem;
+  color: #7a978a;
+  stroke-width: 1.8;
 }
 .metrics article div {
   display: grid;
@@ -46,7 +52,7 @@
 .metrics strong {
   margin-top: 0.45rem;
   color: var(--color-brand-950);
-  font-size: clamp(1.65rem, 3vw, 2rem);
+  font-size: clamp(1.5rem, 3vw, 1.85rem);
   line-height: 1;
 }
 .metrics small {
@@ -59,22 +65,22 @@
 .bottomGrid > article {
   overflow: hidden;
   background: white;
-  border: 1px solid var(--color-border);
-  border-radius: 0.45rem;
-  box-shadow: 0 0.35rem 1.2rem rgb(13 54 39 / 0.04);
+  border: 1px solid #dce6e0;
+  border-radius: .8rem;
+  box-shadow: 0 .45rem 1.5rem rgb(13 54 39 / 4%);
 }
 .sectionHead {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  padding: 1.2rem;
+  padding: 1.05rem 1.15rem;
   border-bottom: 1px solid var(--color-border);
 }
 .sectionHead h2 {
   margin: 0;
   font-family: var(--font-sans);
-  font-size: 1rem;
+  font-size: .96rem;
 }
 .sectionHead p {
   margin: 0.2rem 0 0;
@@ -122,14 +128,14 @@
 }
 .tableWrap th,
 .tableWrap td {
-  padding: 0.9rem 1.2rem;
+  padding: .78rem 1.15rem;
   text-align: left;
   border-bottom: 1px solid #edf0ee;
   font-size: 0.77rem;
 }
 .tableWrap th {
   color: var(--color-text-muted);
-  background: #fafbfa;
+  background: #f7faf8;
   font-size: 0.68rem;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -137,6 +143,8 @@
 .tableWrap td strong {
   color: var(--color-brand-800);
 }
+.tableWrap tbody tr { transition: background 120ms ease; }
+.tableWrap tbody tr:hover { background: #f8fbf9; }
 .referenceLink {
   color: var(--color-brand-800);
   font-weight: 800;
@@ -183,8 +191,9 @@
 }
 .pipeline {
   display: grid;
-  gap: 1rem;
-  padding: 1.2rem;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: 1rem 1.5rem;
+  padding: 1.15rem;
 }
 .pipeline p {
   display: flex;
@@ -198,7 +207,7 @@
 }
 .pipeline i {
   display: block;
-  height: 0.45rem;
+  height: .38rem;
   overflow: hidden;
   background: var(--color-brand-100);
   border-radius: var(--radius-pill);
@@ -219,4 +228,12 @@
   .metrics {
     grid-template-columns: repeat(4, 1fr);
   }
+}
+@media (max-width: 39.99rem) {
+  .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .metrics article { min-height: 6.9rem; padding: .9rem; }
+  .metrics article > svg { top: .85rem; right: .85rem; width: 1rem; height: 1rem; }
+  .metrics span { max-width: calc(100% - 1.3rem); font-size: .7rem; }
+  .metrics small { font-size: .62rem; line-height: 1.35; }
+  .sectionHead { align-items: flex-start; flex-direction: column; }
 }

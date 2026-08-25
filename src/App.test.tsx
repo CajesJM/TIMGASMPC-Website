@@ -131,7 +131,16 @@ describe("TIMGAS website", () => {
       within(loanDialog).getByLabelText(/gmail address/i),
       "test.borrower@gmail.com",
     );
-    await user.type(screen.getByLabelText(/address in bohol/i), "Trinidad, Bohol");
+    await user.type(within(loanDialog).getByLabelText(/purok, house number, or street/i), "Purok 5");
+    await user.selectOptions(
+      within(loanDialog).getByLabelText(/municipality or city/i),
+      "Trinidad",
+    );
+    await within(loanDialog).findByRole("option", { name: "Poblacion" });
+    await user.selectOptions(
+      within(loanDialog).getByLabelText(/^barangay/i),
+      "Poblacion",
+    );
     const purposeField = screen.getByLabelText(/purpose of loan/i);
     expect(purposeField).toHaveAttribute("maxlength", "5000");
     expect(within(loanDialog).getByText("0 / 5,000 characters")).toBeVisible();

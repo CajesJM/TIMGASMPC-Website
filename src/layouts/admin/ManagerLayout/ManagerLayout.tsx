@@ -191,6 +191,7 @@ export function ManagerLayout() {
       to: "/manager/profile",
     },
   ];
+  const pageMeta = navigation.find(({ id }) => id === activeSection) ?? navigation[0];
 
   return (
     <div
@@ -214,6 +215,14 @@ export function ManagerLayout() {
           </div>
         )}
       </div>
+      {open && (
+        <button
+          className={styles.sidebarBackdrop}
+          type="button"
+          onClick={() => setOpen(false)}
+          aria-label="Close manager navigation"
+        />
+      )}
       <aside className={`${styles.sidebar} ${open ? styles.open : ""}`}>
         <div className={styles.sidebarHead}>
           <BrandMark inverse compact iconOnly={isSidebarCollapsed} />
@@ -237,6 +246,7 @@ export function ManagerLayout() {
             {isSidebarCollapsed ? <ChevronsRight /> : <ChevronsLeft />}
           </button>
         </div>
+        <p className={`${styles.navCaption} ${styles.sidebarLabel}`}>Workspace</p>
         <nav aria-label="Manager navigation">
           {navigation.map(({ id, label, icon: Icon, to }) => (
             <Link
@@ -283,7 +293,11 @@ export function ManagerLayout() {
           >
             <Menu />
           </button>
-          <div className={styles.profile}>
+          <div className={styles.topbarContext}>
+            <small>Manager workspace</small>
+            <strong>{pageMeta.label}</strong>
+          </div>
+          <Link className={styles.profile} to="/manager/profile" aria-label="Open manager profile">
             <span>
               {managerIdentity.avatarUrl ? (
                 <img src={managerIdentity.avatarUrl} alt="" />
@@ -298,7 +312,7 @@ export function ManagerLayout() {
               <strong>{managerIdentity.fullName}</strong>
               <small>{managerIdentity.position}</small>
             </div>
-          </div>
+          </Link>
         </header>
         <Outlet
           context={

@@ -55,8 +55,11 @@ export function ContactPage() {
               alt="Front entrance of the TIMGAS Multi-Purpose Cooperative office"
             />
             <figcaption>
-              <MapPin size={20} aria-hidden="true" />
+              <span className={styles.locationIcon}>
+                <MapPin size={18} aria-hidden="true" />
+              </span>
               <div>
+                <small>Office location</small>
                 <h2>TIMGAS Cooperative Office</h2>
                 <p>Purok 5, Poblacion, Trinidad, Bohol</p>
               </div>

@@ -2,9 +2,9 @@
   margin-top: 1rem;
   overflow: hidden;
   background: white;
-  border: 1px solid var(--color-border);
-  border-radius: 0.45rem;
-  box-shadow: 0 0.35rem 1.2rem rgb(13 54 39 / 0.04);
+  border: 1px solid #dce6e0;
+  border-radius: .85rem;
+  box-shadow: 0 .5rem 1.6rem rgb(13 54 39 / 5%);
 }
 .heading {
   display: flex;
@@ -12,13 +12,13 @@
   align-items: end;
   justify-content: space-between;
   gap: 1rem;
-  padding: 1.25rem;
+  padding: 1.05rem 1.15rem;
   border-bottom: 1px solid var(--color-border);
 }
 .heading h2 {
   margin: 0.15rem 0 0.3rem;
   font-family: var(--font-sans);
-  font-size: clamp(1.15rem, 2vw, 1.45rem);
+  font-size: clamp(1.05rem, 2vw, 1.3rem);
 }
 .heading p {
   margin: 0;
@@ -27,7 +27,8 @@
 .heading > span {
   padding: 0.3rem 0.65rem;
   color: var(--color-brand-800);
-  background: var(--color-brand-50);
+  background: #eef6f1;
+  border: 1px solid #d8e8df;
   border-radius: var(--radius-pill);
   font-size: 0.72rem;
   font-weight: 700;
@@ -39,7 +40,7 @@
   display: grid;
   gap: 1rem;
   padding: clamp(1rem, 3vw, 1.4rem);
-  background: #fcfdfc;
+  background: #f8fbf9;
   border-bottom: 1px solid var(--color-border);
 }
 .formHeading {
@@ -94,8 +95,8 @@
   padding: 0.7rem 0.75rem;
   color: var(--color-text);
   background: white;
-  border: 1px solid #cbd4cf;
-  border-radius: var(--radius-sm);
+  border: 1px solid #cfdcd5;
+  border-radius: .55rem;
   font: inherit;
   font-weight: 400;
 }
@@ -122,7 +123,9 @@
   gap: 0.6rem;
   padding: 0.65rem 0.75rem;
   color: var(--color-brand-800);
-  background: var(--color-brand-50);
+  background: #eef6f1;
+  border: 1px solid #d9e7df;
+  border-radius: .55rem;
   font-size: 0.73rem;
 }
 .file span {
@@ -187,13 +190,9 @@
   min-height: 2.75rem;
   padding: 0.65rem 1rem;
   color: white;
-  background: linear-gradient(
-    135deg,
-    var(--color-brand-800),
-    var(--color-brand-700)
-  );
+  background: var(--color-brand-800);
   border: 0;
-  border-radius: var(--radius-sm);
+  border-radius: .55rem;
   box-shadow: 0 0.45rem 1rem rgb(21 88 59 / 0.14);
   font-size: 0.78rem;
   font-weight: 700;
@@ -286,7 +285,9 @@
   gap: 0.9rem;
   padding: 1rem 0;
   border-top: 1px solid var(--color-border);
+  transition: background 140ms ease;
 }
+.list article:hover { background: #fafcfa; }
 .list article > img,
 .noPhoto {
   width: 5.5rem;
@@ -346,11 +347,13 @@
   color: var(--color-brand-800);
   background: transparent;
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
+  border-radius: .45rem;
   font-size: 0.66rem;
   font-weight: 700;
   cursor: pointer;
 }
+.controls button:hover { background: #eef6f1; border-color: #c5d9ce; }
+.controls button:last-child:hover { background: #fff2f2; border-color: #eccaca; }
 .controls button:last-child {
   color: #8b3030;
 }
@@ -399,7 +402,7 @@
   color: var(--color-brand-800);
   background: white;
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
+  border-radius: .5rem;
   font-size: 0.68rem;
   font-weight: 700;
   cursor: pointer;

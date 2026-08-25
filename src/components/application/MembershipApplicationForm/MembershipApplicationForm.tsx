@@ -16,6 +16,12 @@ import {
   type FieldPath,
 } from "react-hook-form";
 import { z } from "zod";
+import {
+  boholMunicipalities,
+  formatBoholAddress,
+  getBoholBarangays,
+  getCachedBoholBarangays,
+} from "../../../features/applications/boholLocations";
 import { db } from "../../../lib/firestore";
 import { submitApplicationWithCaptcha } from "../../../lib/applicationSubmission";
 import { OfficialMembershipReview } from "../OfficialMembershipReview/OfficialMembershipReview";
@@ -78,7 +84,9 @@ const applicationSchema = z
     occupation: optionalText(),
     dateOfBirth: requiredText("Date of birth", 10),
     placeOfBirth: requiredText("Place of birth", 180),
-    address: requiredText("Address", 300),
+    address: optionalText(300),
+    barangay: requiredText("Barangay", 120),
+    municipality: z.string().refine((value) => boholMunicipalities.includes(value as (typeof boholMunicipalities)[number]), "Choose a municipality or city in Bohol."),
     cellphone: z
       .string()
       .regex(
@@ -175,6 +183,8 @@ const defaultValues: ApplicationFormValues = {
   dateOfBirth: "",
   placeOfBirth: "",
   address: "",
+  barangay: "",
+  municipality: "",
   cellphone: "",
   validIdType: "",
   validIdNumber: "",
@@ -219,6 +229,8 @@ const stepFields: FieldPath<ApplicationFormValues>[][] = [
     "dateOfBirth",
     "placeOfBirth",
     "address",
+    "barangay",
+    "municipality",
     "cellphone",
     "validIdType",
     "validIdNumber",
@@ -280,6 +292,7 @@ export function MembershipApplicationForm({ recaptchaToken }: { recaptchaToken: 
     trigger,
     reset,
     formState: { errors },
+    setValue,
   } = useForm<ApplicationFormValues>({
     resolver: zodResolver(applicationSchema),
     defaultValues,
@@ -290,6 +303,40 @@ export function MembershipApplicationForm({ recaptchaToken }: { recaptchaToken: 
     name: "dependents",
   });
   const values = useWatch({ control });
+  const [barangays, setBarangays] = useState<string[]>([]);
+  const [isLoadingBarangays, setIsLoadingBarangays] = useState(false);
+  const [barangayLoadError, setBarangayLoadError] = useState("");
+
+  useEffect(() => {
+    const municipality = values.municipality ?? "";
+    setValue("barangay", "", { shouldValidate: false });
+    let active = true;
+    void (async () => {
+      await Promise.resolve();
+      if (!active) return;
+
+      const cachedBarangays = getCachedBoholBarangays(municipality);
+      setBarangays(cachedBarangays);
+      setBarangayLoadError("");
+      if (!municipality || cachedBarangays.length) {
+        setIsLoadingBarangays(false);
+        return;
+      }
+
+      setIsLoadingBarangays(true);
+      try {
+        setBarangays(await getBoholBarangays(municipality));
+      } catch {
+        setBarangayLoadError("Barangays could not be loaded. Please try again.");
+      } finally {
+        if (active) setIsLoadingBarangays(false);
+      }
+    })();
+
+    return () => {
+      active = false;
+    };
+  }, [setValue, values.municipality]);
   const stepFourConsentsAccepted = Boolean(
     values.agreementAccepted && values.privacyConsent,
   );
@@ -370,7 +417,7 @@ export function MembershipApplicationForm({ recaptchaToken }: { recaptchaToken: 
           occupation: data.occupation,
           dateOfBirth: data.dateOfBirth,
           placeOfBirth: data.placeOfBirth,
-          address: data.address,
+          address: formatBoholAddress(data.address, data.barangay, data.municipality),
           cellphone: `+63${data.cellphone}`,
           validIdType: data.validIdType,
           validIdNumber: data.validIdNumber,
@@ -639,15 +686,45 @@ export function MembershipApplicationForm({ recaptchaToken }: { recaptchaToken: 
                 <ErrorMessage message={errors.cellphone?.message} />
               </label>
             </div>
-            <label>
-              Complete address *
-              <textarea
-                rows={3}
-                autoComplete="street-address"
-                {...register("address")}
-              />
-              <ErrorMessage message={errors.address?.message} />
-            </label>
+            <div className={styles.gridTwo}>
+              <div className={styles.gridTwo}>
+                <label>
+                  Municipality or city *
+                  <select autoComplete="address-level2" {...register("municipality")}>
+                    <option value="">Select in Bohol</option>
+                    {boholMunicipalities.map((municipality) => <option key={municipality} value={municipality}>{municipality}</option>)}
+                  </select>
+                  <ErrorMessage message={errors.municipality?.message} />
+                </label>
+                <label>
+                  Barangay *
+                  <select
+                    autoComplete="address-level3"
+                    disabled={!values.municipality || isLoadingBarangays}
+                    {...register("barangay")}
+                  >
+                    <option value="">
+                      {isLoadingBarangays ? "Loading barangays…" : "Select barangay"}
+                    </option>
+                    {barangays.map((barangay) => <option key={barangay} value={barangay}>{barangay}</option>)}
+                  </select>
+                  {barangayLoadError ? <ErrorMessage message={barangayLoadError} /> : <ErrorMessage message={errors.barangay?.message} />}
+                </label>
+              </div>
+              <div className={styles.gridTwo}>
+                <label>
+                  Purok, house number, or street
+                  <input autoComplete="street-address" {...register("address")} />
+                  <span>Optional. Add this only when it applies to your address.</span>
+                  <ErrorMessage message={errors.address?.message} />
+                </label>
+                <label>
+                  Province
+                  <input value="Bohol" readOnly aria-readonly="true" />
+                  <span>Fixed for TIMGAS online applications.</span>
+                </label>
+              </div>
+            </div>
             <div className={styles.gridTwo}>
               <label>
                 Valid ID type *
@@ -951,7 +1028,7 @@ export function MembershipApplicationForm({ recaptchaToken }: { recaptchaToken: 
             </p>
             <OfficialMembershipReview data={{
               reference: "Assigned upon submission", dateApplied: "Recorded upon submission", applicantEmail: values.applicantEmail ?? "", membershipType: values.membershipType ?? "associate",
-              profile: { departmentName: values.departmentName ?? "", tinNumber: values.tinNumber ?? "", pmesDate: values.pmesDate ?? "", familyName: values.familyName ?? "", givenName: values.givenName ?? "", middleName: values.middleName ?? "", nickname: values.nickname ?? "", sex: values.sex ?? "", civilStatus: values.civilStatus ?? "", occupation: values.occupation ?? "", dateOfBirth: values.dateOfBirth ?? "", placeOfBirth: values.placeOfBirth ?? "", address: values.address ?? "", cellphone: values.cellphone ? `+63${values.cellphone}` : "", validIdType: values.validIdType ?? "", validIdNumber: values.validIdNumber ?? "", motherMaidenName: values.motherMaidenName ?? "", fatherFullName: values.fatherFullName ?? "" },
+              profile: { departmentName: values.departmentName ?? "", tinNumber: values.tinNumber ?? "", pmesDate: values.pmesDate ?? "", familyName: values.familyName ?? "", givenName: values.givenName ?? "", middleName: values.middleName ?? "", nickname: values.nickname ?? "", sex: values.sex ?? "", civilStatus: values.civilStatus ?? "", occupation: values.occupation ?? "", dateOfBirth: values.dateOfBirth ?? "", placeOfBirth: values.placeOfBirth ?? "", address: formatBoholAddress(values.address ?? "", values.barangay ?? "", values.municipality ?? ""), cellphone: values.cellphone ? `+63${values.cellphone}` : "", validIdType: values.validIdType ?? "", validIdNumber: values.validIdNumber ?? "", motherMaidenName: values.motherMaidenName ?? "", fatherFullName: values.fatherFullName ?? "" },
               spouse: { name: values.spouseName ?? "", dateOfBirth: values.spouseDateOfBirth ?? "" }, dependents: (values.dependents ?? []).map((dependent) => ({ name: dependent.name ?? "", dateOfBirth: dependent.dateOfBirth ?? "", age: dependent.age ?? "", relationship: dependent.relationship ?? "" })), income: { husbandSource: values.husbandIncomeSource ?? "", husbandEmployer: values.husbandEmployer ?? "", wifeSource: values.wifeIncomeSource ?? "", wifeEmployer: values.wifeEmployer ?? "" }, sector: values.sector ?? "arb", educationalAttainment: values.educationalAttainment ?? "", affiliation: { organization: values.affiliationOrganization ?? "", position: values.affiliationPosition ?? "" }, crimeDisclosure: { accusedOrConvicted: values.accusedOrConvicted === "yes", details: values.crimeDetails ?? "" }, recommenderName: values.recommenderName ?? "", typedName: values.typedName ?? "" }} />
             <div className={styles.finalNotice}>
               <ShieldCheck aria-hidden="true" />

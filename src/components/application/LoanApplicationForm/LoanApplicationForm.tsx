@@ -17,6 +17,12 @@ import {
 } from "react-hook-form";
 import { z } from "zod";
 import {
+  boholMunicipalities,
+  formatBoholAddress,
+  getBoholBarangays,
+  getCachedBoholBarangays,
+} from "../../../features/applications/boholLocations";
+import {
   loanPaymentModeLabels,
   loanPaymentModes,
   loanTypeOptions,
@@ -67,7 +73,9 @@ const loanApplicationSchema = z.object({
     .refine((value) => value.toLowerCase().endsWith("@gmail.com"), {
       message: "Use a Gmail address ending in @gmail.com.",
     }),
-  address: requiredText("Address", 300),
+  address: optionalText(300),
+  barangay: requiredText("Barangay", 120),
+  municipality: z.string().refine((value) => boholMunicipalities.includes(value as (typeof boholMunicipalities)[number]), "Choose a municipality or city in Bohol."),
   typeOfLoan: z.enum(
     ["prodn", "hon", "salary", "express", "sbl", "mf_first", "mf_second"],
     { message: "Choose the loan type shown in the official form." },
@@ -132,6 +140,8 @@ const defaultValues: LoanFormValues = {
   applicantName: "",
   applicantEmail: "",
   address: "",
+  barangay: "",
+  municipality: "",
   typeOfLoan: "prodn",
   purposeOfLoan: "",
   paymentMode: "monthly",
@@ -165,6 +175,8 @@ const stepFields: FieldPath<LoanFormValues>[][] = [
     "applicantName",
     "applicantEmail",
     "address",
+    "barangay",
+    "municipality",
     "typeOfLoan",
     "purposeOfLoan",
     "paymentMode",
@@ -223,6 +235,7 @@ export function LoanApplicationForm({
     trigger,
     reset,
     formState: { errors },
+    setValue,
   } = useForm<LoanFormValues>({
     resolver: zodResolver(loanApplicationSchema),
     defaultValues,
@@ -231,6 +244,40 @@ export function LoanApplicationForm({
   const assets = useFieldArray({ control, name: "assets" });
   const debts = useFieldArray({ control, name: "debts" });
   const values = useWatch({ control });
+  const [barangays, setBarangays] = useState<string[]>([]);
+  const [isLoadingBarangays, setIsLoadingBarangays] = useState(false);
+  const [barangayLoadError, setBarangayLoadError] = useState("");
+
+  useEffect(() => {
+    const municipality = values.municipality ?? "";
+    setValue("barangay", "", { shouldValidate: false });
+    let active = true;
+    void (async () => {
+      await Promise.resolve();
+      if (!active) return;
+
+      const cachedBarangays = getCachedBoholBarangays(municipality);
+      setBarangays(cachedBarangays);
+      setBarangayLoadError("");
+      if (!municipality || cachedBarangays.length) {
+        setIsLoadingBarangays(false);
+        return;
+      }
+
+      setIsLoadingBarangays(true);
+      try {
+        setBarangays(await getBoholBarangays(municipality));
+      } catch {
+        setBarangayLoadError("Barangays could not be loaded. Please try again.");
+      } finally {
+        if (active) setIsLoadingBarangays(false);
+      }
+    })();
+
+    return () => {
+      active = false;
+    };
+  }, [setValue, values.municipality]);
   const purposeCharacterCount = values.purposeOfLoan?.length ?? 0;
   const requiredConsentsAccepted = Boolean(
     values.agreementAccepted &&
@@ -314,7 +361,7 @@ export function LoanApplicationForm({
           reference,
           applicantName: data.applicantName,
           applicantEmail: data.applicantEmail.toLowerCase(),
-          address: data.address,
+          address: formatBoholAddress(data.address, data.barangay, data.municipality),
           typeOfLoan: data.typeOfLoan,
           purposeOfLoan: data.purposeOfLoan,
           paymentMode: data.paymentMode,
@@ -479,6 +526,7 @@ export function LoanApplicationForm({
                 <label>
                   Date released
                   <input type="date" {...register("dateReleased")} />
+                  <span>Optional</span>
                   <ErrorMessage message={errors.dateReleased?.message} />
                 </label>
                 <label>
@@ -521,9 +569,37 @@ export function LoanApplicationForm({
                 <ErrorMessage message={errors.applicantEmail?.message} />
               </label>
               <label>
-                Address in Bohol, Philippines *
+                Municipality or city *
+                <select autoComplete="address-level2" {...register("municipality")}>
+                  <option value="">Select in Bohol</option>
+                  {boholMunicipalities.map((municipality) => <option key={municipality} value={municipality}>{municipality}</option>)}
+                </select>
+                <ErrorMessage message={errors.municipality?.message} />
+              </label>
+              <label>
+                Barangay *
+                <select
+                  autoComplete="address-level3"
+                  disabled={!values.municipality || isLoadingBarangays}
+                  {...register("barangay")}
+                >
+                  <option value="">
+                    {isLoadingBarangays ? "Loading barangays…" : "Select barangay"}
+                  </option>
+                  {barangays.map((barangay) => <option key={barangay} value={barangay}>{barangay}</option>)}
+                </select>
+                {barangayLoadError ? <ErrorMessage message={barangayLoadError} /> : <ErrorMessage message={errors.barangay?.message} />}
+              </label>
+              <label>
+                Purok, house number, or street
                 <input autoComplete="street-address" {...register("address")} />
+                <span>Optional. Add this only when it applies to your address.</span>
                 <ErrorMessage message={errors.address?.message} />
+              </label>
+              <label>
+                Province
+                <input value="Bohol" readOnly aria-readonly="true" />
+                <span>Fixed for TIMGAS online applications.</span>
               </label>
             </div>
             <div className={styles.loanTypes}>
@@ -812,7 +888,7 @@ export function LoanApplicationForm({
               data={{
                 applicantName: values.applicantName ?? "",
                 applicantEmail: values.applicantEmail ?? "",
-                address: values.address ?? "",
+                address: formatBoholAddress(values.address ?? "", values.barangay ?? "", values.municipality ?? ""),
                 typeOfLoan: values.typeOfLoan ?? "prodn",
                 purposeOfLoan: values.purposeOfLoan ?? "",
                 paymentMode: values.paymentMode ?? "monthly",
