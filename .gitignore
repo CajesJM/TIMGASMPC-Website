@@ -26,6 +26,16 @@ service-account*.json
 .vite-preview*.log
 .docx-qa/
 
+# Temporary workspace and document-rendering output
+.tmp-*/
+tmp/
+temp/
+
+# Local editor metadata
+.vscode/
+.idea/
+*.code-workspace
+
 # Package-manager logs
 npm-debug.log*
 yarn-debug.log*

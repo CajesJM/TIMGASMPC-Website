@@ -1,0 +1,288 @@
+.viewport {
+  overflow-x: auto;
+  margin-top: 1rem;
+  padding: clamp(0.5rem, 2vw, 1rem);
+  background: #e8ece9;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  scrollbar-gutter: stable;
+}
+.document {
+  width: 100%;
+  min-width: 42rem;
+  max-width: 52rem;
+  margin: 0 auto;
+  padding: clamp(1.25rem, 4vw, 3rem);
+  color: #111;
+  background: #fff;
+  box-shadow: 0 0.4rem 1.5rem rgb(0 0 0 / 10%);
+  font-family: Arial, sans-serif;
+  font-size: 0.76rem;
+  line-height: 1.35;
+}
+.header {
+  display: grid;
+  grid-template-columns: 4.6rem 1fr 4.6rem;
+  align-items: center;
+  text-align: center;
+}
+.header img {
+  width: 4.35rem;
+  height: 4.35rem;
+  object-fit: contain;
+}
+.header div {
+  display: grid;
+  justify-items: center;
+}
+.header p {
+  margin: 0;
+  font-weight: 700;
+}
+.header small {
+  display: block;
+  font-size: 0.65rem;
+}
+.header h3 {
+  grid-column: 1 / -1;
+  margin: 1.2rem 0 1rem;
+  color: #111;
+  font-family: Arial, sans-serif;
+  font-size: 1rem;
+  text-decoration: underline;
+}
+.twoColumnLines {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.55rem 2rem;
+  margin: 0.7rem 0;
+}
+.twoColumnLines p {
+  display: grid;
+  grid-template-columns: auto minmax(4rem, 1fr);
+  gap: 0.45rem;
+  align-items: end;
+  margin: 0;
+}
+.twoColumnLines span,
+.statement span,
+.line span {
+  min-height: 1.25rem;
+  padding: 0 0.2rem;
+  border-bottom: 1px solid #111;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.statement {
+  margin: 1rem 0;
+  line-height: 1.8;
+}
+.line {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.4rem;
+  align-items: end;
+  margin: 0.7rem 0;
+}
+.optionLine {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.8rem;
+  align-items: center;
+  margin: 0.65rem 0;
+}
+.optionLine span {
+  white-space: nowrap;
+}
+.checked {
+  color: var(--color-brand-800);
+  font-weight: 800;
+}
+.document h4 {
+  margin: 1.1rem 0 0.35rem;
+  color: #111;
+  font-family: Arial, sans-serif;
+  font-size: 0.8rem;
+}
+.formTable {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+}
+.formTable th,
+.formTable td {
+  height: 1.8rem;
+  padding: 0.25rem 0.35rem;
+  border: 1px solid #111;
+  overflow-wrap: anywhere;
+  text-align: left;
+}
+.formTable th {
+  background: #f3f3f3;
+  font-size: 0.65rem;
+  text-align: center;
+}
+.formTable td {
+  font-size: 0.68rem;
+}
+.formTable .emptyRecord {
+  height: auto;
+  padding: 0.65rem;
+  color: #555;
+  font-style: italic;
+  text-align: center;
+}
+.agreementText {
+  margin: 1rem 0;
+  text-align: justify;
+  text-indent: 1.5rem;
+}
+.agreementText p {
+  margin: 0.6rem 0;
+}
+.signatureGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.8rem 2.5rem;
+  margin: 1.5rem 0 0;
+}
+.signatureGrid div {
+  display: grid;
+  text-align: center;
+}
+.signatureGrid span {
+  min-height: 1.5rem;
+  border-bottom: 1px solid #111;
+  font-weight: 600;
+}
+.signatureGrid b {
+  margin-top: 0.25rem;
+  font-size: 0.65rem;
+  font-weight: 500;
+}
+
+@media (max-width: 39.99rem) {
+  .viewport {
+    margin-right: -1rem;
+    margin-left: -1rem;
+    padding: 0.5rem;
+    border-right: 0;
+    border-left: 0;
+    border-radius: 0;
+  }
+
+  .document {
+    min-width: 100%;
+    padding: 1rem 0.75rem;
+    font-size: 0.72rem;
+  }
+
+  .header {
+    grid-template-columns: 3.5rem 1fr 3.5rem;
+    gap: 0.5rem;
+  }
+
+  .header img {
+    width: 3.2rem;
+    height: 3.2rem;
+  }
+
+  .header p {
+    font-size: 0.7rem;
+  }
+
+  .header small {
+    font-size: 0.6rem;
+  }
+
+  .header h3 {
+    margin: 1rem 0 0.75rem;
+    font-size: 0.85rem;
+  }
+
+  .twoColumnLines {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+    margin: 0.5rem 0;
+  }
+
+  .twoColumnLines p {
+    grid-template-columns: auto minmax(3rem, 1fr);
+    gap: 0.3rem;
+    font-size: 0.7rem;
+  }
+
+  .statement {
+    margin: 0.75rem 0;
+    font-size: 0.7rem;
+    line-height: 1.6;
+  }
+
+  .line {
+    gap: 0.3rem;
+    margin: 0.5rem 0;
+    font-size: 0.7rem;
+  }
+
+  .optionLine {
+    gap: 0.3rem 0.6rem;
+    margin: 0.5rem 0;
+    font-size: 0.7rem;
+  }
+
+  .optionLine span {
+    font-size: 0.7rem;
+  }
+
+  .document h4 {
+    margin: 0.9rem 0 0.3rem;
+    font-size: 0.75rem;
+  }
+
+  .formTable {
+    font-size: 0.65rem;
+  }
+
+  .formTable th,
+  .formTable td {
+    height: auto;
+    min-height: 1.5rem;
+    padding: 0.3rem 0.25rem;
+    font-size: 0.62rem;
+  }
+
+  .formTable th {
+    font-size: 0.6rem;
+  }
+
+  .formTable .emptyRecord {
+    padding: 0.5rem;
+    font-size: 0.65rem;
+  }
+
+  .agreementText {
+    margin: 0.75rem 0;
+    text-indent: 1rem;
+    font-size: 0.68rem;
+    line-height: 1.6;
+  }
+
+  .agreementText p {
+    margin: 0.5rem 0;
+  }
+
+  .signatureGrid {
+    grid-template-columns: 1fr;
+    gap: 1.2rem;
+    margin: 1.2rem 0 0;
+  }
+
+  .signatureGrid span {
+    min-height: 1.3rem;
+    font-size: 0.7rem;
+  }
+
+  .signatureGrid b {
+    font-size: 0.6rem;
+  }
+}

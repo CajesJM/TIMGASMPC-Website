@@ -1,14 +1,15 @@
 import { useOutletContext, useSearchParams } from "react-router-dom";
-import { AdminApplicationsManager } from "../../../components/admin/AdminApplicationsManager/AdminApplicationsManager";
-import { AdminLoanApplicationsManager } from "../../../components/admin/AdminLoanApplicationsManager/AdminLoanApplicationsManager";
-import type { ManagerOutletContext } from "../../../layouts/admin/ManagerLayout/ManagerLayout";
-import pageStyles from "../../../styles/admin/AdminPage.module.css";
-import styles from "./ManagerApplicationsPage.module.css";
+import { AdminApplicationsManager } from "@/components/admin/applications/AdminApplicationsManager/AdminApplicationsManager";
+import { AdminLoanApplicationsManager } from "@/components/admin/applications/AdminLoanApplicationsManager/AdminLoanApplicationsManager";
+import type { ManagerOutletContext } from "@/components/admin/layout/ManagerLayout/ManagerLayout";
+import pageStyles from "@/styles/admin/pages/AdminPage.module.css";
+import styles from "@/styles/admin/pages/ManagerApplicationsPage.module.css";
 
 export function ManagerApplicationsPage() {
   const { showToast } = useOutletContext<ManagerOutletContext>();
   const [searchParams, setSearchParams] = useSearchParams();
-  const applicationType = searchParams.get("type") === "loan" ? "loan" : "membership";
+  const applicationType =
+    searchParams.get("type") === "loan" ? "loan" : "membership";
   const selectApplicationType = (type: "membership" | "loan") => {
     setSearchParams(type === "loan" ? { type: "loan" } : {}, { replace: true });
   };
@@ -30,7 +31,9 @@ export function ManagerApplicationsPage() {
           type="button"
           role="tab"
           aria-selected={applicationType === "membership"}
-          className={applicationType === "membership" ? styles.active : undefined}
+          className={
+            applicationType === "membership" ? styles.active : undefined
+          }
           onClick={() => selectApplicationType("membership")}
         >
           Membership applications

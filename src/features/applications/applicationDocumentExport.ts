@@ -9,10 +9,12 @@ type CapturedPage = {
 };
 
 function safeFileName(value: string) {
-  return value
-    .trim()
-    .replace(/[^a-zA-Z0-9_-]+/g, "-")
-    .replace(/^-+|-+$/g, "") || "TIMGAS-application";
+  return (
+    value
+      .trim()
+      .replace(/[^a-zA-Z0-9_-]+/g, "-")
+      .replace(/^-+|-+$/g, "") || "TIMGAS-application"
+  );
 }
 
 function downloadBlob(blob: Blob, fileName: string) {
@@ -132,9 +134,8 @@ async function downloadPdf(pages: CapturedPage[], fileName: string) {
 }
 
 async function downloadDocx(pages: CapturedPage[], fileName: string) {
-  const { Document, ImageRun, Packer, PageBreak, Paragraph } = await import(
-    "docx"
-  );
+  const { Document, ImageRun, Packer, PageBreak, Paragraph } =
+    await import("docx");
   const maximumWidth = 720;
   const maximumHeight = 960;
   const children = pages.flatMap((page, index) => {
@@ -210,7 +211,10 @@ async function waitForPrintAssets(frameDocument: Document) {
   );
 }
 
-export async function printApplicationDocument(root: HTMLElement, title: string) {
+export async function printApplicationDocument(
+  root: HTMLElement,
+  title: string,
+) {
   const pages = await capturePages(root);
   const frame = document.createElement("iframe");
   frame.setAttribute("aria-hidden", "true");

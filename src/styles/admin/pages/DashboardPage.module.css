@@ -1,0 +1,433 @@
+.overview,
+.tableSection,
+.chartSection {
+  scroll-margin-top: 5.5rem;
+}
+.error {
+  margin-top: 1.5rem;
+  padding: 0.8rem 1rem;
+  color: #7b2828;
+  background: #fff0f0;
+  border: 1px solid #e4bcbc;
+  border-radius: 0.65rem;
+  font-size: 0.8rem;
+}
+.metrics {
+  display: grid;
+  gap: 0.8rem;
+  margin: 1rem 0 1.15rem;
+}
+.metrics article {
+  position: relative;
+  min-height: 7.6rem;
+  overflow: hidden;
+  padding: 1.05rem;
+  background: white;
+  border: 1px solid #dce6e0;
+  border-radius: 0.8rem;
+  box-shadow: 0 0.45rem 1.5rem rgb(13 54 39 / 4%);
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease,
+    transform 150ms ease;
+}
+.metrics article:hover {
+  border-color: #c8dacf;
+  box-shadow: 0 0.7rem 1.8rem rgb(13 54 39 / 7%);
+  transform: translateY(-2px);
+}
+.metrics article > svg {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 1.2rem;
+  height: 1.2rem;
+  color: #7a978a;
+  stroke-width: 1.8;
+}
+.metrics article div {
+  display: grid;
+}
+.metrics span {
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+}
+.metrics strong {
+  margin-top: 0.45rem;
+  color: var(--color-brand-950);
+  font-size: clamp(1.5rem, 3vw, 1.85rem);
+  line-height: 1;
+}
+.metrics small {
+  display: block;
+  margin-top: 0.55rem;
+  color: #718079;
+  font-size: 0.7rem;
+}
+.tableSection,
+.chartSection {
+  overflow: hidden;
+  background: white;
+  border: 1px solid #dce6e0;
+  border-radius: 0.8rem;
+  box-shadow: 0 0.45rem 1.5rem rgb(13 54 39 / 4%);
+}
+.sectionHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.05rem 1.15rem;
+  border-bottom: 1px solid var(--color-border);
+}
+.sectionHead h2 {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 0.96rem;
+}
+.sectionHead p {
+  margin: 0.2rem 0 0;
+  font-size: 0.75rem;
+}
+.sectionHead .sectionLabel {
+  margin: 0 0 0.25rem;
+  color: var(--color-gold-600);
+  font-size: 0.64rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.tableWrap {
+  overflow-x: auto;
+}
+.empty {
+  min-height: 12rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 2rem;
+  color: var(--color-text-muted);
+  text-align: center;
+}
+.empty svg {
+  width: 2rem;
+  height: 2rem;
+  color: var(--color-brand-600);
+}
+.empty strong {
+  color: var(--color-brand-950);
+}
+.empty span {
+  max-width: 32rem;
+  font-size: 0.8rem;
+}
+.tableWrap table {
+  width: 100%;
+  border-collapse: collapse;
+  white-space: nowrap;
+}
+.tableWrap th,
+.tableWrap td {
+  padding: 0.78rem 1.15rem;
+  text-align: left;
+  border-bottom: 1px solid #edf0ee;
+  font-size: 0.77rem;
+}
+.tableWrap th {
+  color: var(--color-text-muted);
+  background: #f7faf8;
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.tableWrap td strong {
+  color: var(--color-brand-800);
+}
+.tableWrap tbody tr {
+  transition: background 120ms ease;
+}
+.tableWrap tbody tr:hover {
+  background: #f8fbf9;
+}
+.recentRow {
+  animation: recent-row-in 0.46s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: var(--row-delay);
+}
+.fadedRow {
+  opacity: 0.44;
+  mask-image: linear-gradient(
+    90deg,
+    transparent,
+    #000 9%,
+    #000 91%,
+    transparent
+  );
+  animation-name: faded-recent-row-in;
+}
+.fadedRow:hover {
+  opacity: 0.78;
+  animation: none;
+}
+@keyframes recent-row-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes faded-recent-row-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 0.44;
+    transform: translateY(0);
+  }
+}
+.showMore {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  min-height: 2.75rem;
+  color: rgb(20 89 63 / 58%);
+  border-top: 1px solid #edf0ee;
+  font-size: 0.76rem;
+  font-weight: 800;
+  text-decoration: none;
+  opacity: 0.58;
+  transition:
+    color 150ms ease,
+    background 150ms ease,
+    opacity 150ms ease;
+}
+.showMore svg {
+  transition: transform 150ms ease;
+}
+.showMore:hover,
+.showMore:focus-visible {
+  color: var(--color-brand-950);
+  opacity: 1;
+  background: #f7faf8;
+  text-decoration: underline;
+}
+.showMore:hover svg,
+.showMore:focus-visible svg {
+  transform: translateY(2px);
+}
+.referenceLink {
+  color: var(--color-brand-800);
+  font-weight: 800;
+  text-decoration: none;
+}
+.referenceLink:hover,
+.referenceLink:focus-visible {
+  text-decoration: underline;
+}
+.status {
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-pill);
+  font-size: 0.67rem;
+  font-weight: 700;
+}
+.new {
+  color: #1b5d8f;
+  background: #e4f1fb;
+}
+.inreview {
+  color: #79570f;
+  background: #fbf0d4;
+}
+.forverification {
+  color: #68468e;
+  background: #f0e8f8;
+}
+.approved {
+  color: #226845;
+  background: #e3f2ea;
+}
+.disapproved {
+  color: #8a2828;
+  background: #fbe7e7;
+}
+.released {
+  color: #235d66;
+  background: #e3f2f4;
+}
+.chartSection {
+  margin-top: 1rem;
+}
+.chartContent {
+  display: grid;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1.15rem;
+  background: #fbfdfb;
+}
+.donut {
+  position: relative;
+  display: grid;
+  width: min(11rem, 48vw);
+  aspect-ratio: 1;
+  place-items: center;
+  justify-self: center;
+  border-radius: 50%;
+  box-shadow:
+    inset 0 0 0 1px #dfe8e2,
+    0 0.45rem 1.1rem rgb(13 54 39 / 5%);
+}
+.donut::before {
+  position: absolute;
+  inset: 1.25rem;
+  background: white;
+  border-radius: inherit;
+  content: "";
+}
+.donut > div {
+  position: relative;
+  display: grid;
+  place-items: center;
+  text-align: center;
+}
+.donut strong {
+  color: var(--color-brand-950);
+  font-size: clamp(1.65rem, 4vw, 2.15rem);
+  line-height: 1;
+}
+.donut span {
+  margin-top: 0.25rem;
+  color: var(--color-text-muted);
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+.chartLegend {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.45rem 0.85rem;
+}
+.chartLegend > div {
+  min-height: 2.4rem;
+  padding: 0.45rem 0.55rem;
+  background: #fff;
+  border: 1px solid #e4ece6;
+  border-radius: 0.5rem;
+}
+.legendMeta {
+  display: grid;
+  grid-template-columns: 0.55rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.45rem;
+}
+.legendMeta > span {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+}
+.legendMeta p,
+.legendMeta strong {
+  margin: 0;
+  font-size: 0.7rem;
+}
+.legendMeta p {
+  overflow: hidden;
+  color: var(--color-text-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.legendMeta strong {
+  color: var(--color-brand-950);
+}
+.legendBar {
+  display: block;
+  height: 0.2rem;
+  overflow: hidden;
+  margin: 0.35rem 0 0 1rem;
+  background: #edf2ee;
+  border-radius: var(--radius-pill);
+}
+.legendBar b {
+  display: block;
+  width: var(--bar-progress);
+  height: 100%;
+  background: var(--bar-color, var(--color-brand-700));
+  border-radius: inherit;
+  transform: scaleX(0);
+  transform-origin: left;
+  animation: status-bar-in 0.72s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+@keyframes status-bar-in {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@media (min-width: 40rem) {
+  .metrics {
+    grid-template-columns: 1fr 1fr;
+  }
+  .chartContent {
+    grid-template-columns: minmax(12rem, 0.72fr) minmax(20rem, 1.28fr);
+  }
+}
+@media (min-width: 64rem) {
+  .metrics {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+@media (max-width: 39.99rem) {
+  .metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .metrics article {
+    min-height: 6.9rem;
+    padding: 0.9rem;
+  }
+  .metrics article > svg {
+    top: 0.85rem;
+    right: 0.85rem;
+    width: 1rem;
+    height: 1rem;
+  }
+  .metrics span {
+    max-width: calc(100% - 1.3rem);
+    font-size: 0.7rem;
+  }
+  .metrics small {
+    font-size: 0.62rem;
+    line-height: 1.35;
+  }
+  .sectionHead {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .chartLegend {
+    gap: 0.35rem;
+  }
+  .chartLegend > div {
+    padding: 0.42rem;
+  }
+  .legendMeta p,
+  .legendMeta strong {
+    font-size: 0.65rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .legendBar b,
+  .recentRow,
+  .showMore,
+  .showMore svg {
+    animation: none;
+    transition: none;
+  }
+  .legendBar b {
+    transform: none;
+  }
+}

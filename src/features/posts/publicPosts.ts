@@ -1,4 +1,4 @@
-import { isPostCategory, type PublishedPost } from "./postTypes";
+import { isPostCategory, type PublishedPost } from "@/features/posts/postTypes";
 
 type FirestoreValue = { stringValue?: string };
 type FirestoreDocument = {

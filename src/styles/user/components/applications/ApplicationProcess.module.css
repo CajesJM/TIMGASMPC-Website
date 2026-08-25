@@ -1,0 +1,267 @@
+.scene {
+  position: relative;
+  min-height: 155vh;
+  background: #f7faf8;
+}
+
+.panel {
+  position: sticky;
+  top: 0;
+  display: grid;
+  min-height: 100svh;
+  align-content: center;
+  padding-block: clamp(2.5rem, 6vw, 5rem);
+}
+
+.heading {
+  width: min(100% - 2rem, var(--container));
+  margin-inline: auto;
+  text-align: center;
+}
+
+.heading h2 {
+  max-width: 36rem;
+  margin: 0 auto;
+  font-size: clamp(1.9rem, 3.6vw, 2.7rem);
+  line-height: 1.1;
+  text-wrap: balance;
+}
+
+.heading > p:last-child {
+  max-width: 40rem;
+  margin: 0.7rem auto 0;
+  color: var(--color-text-muted);
+  font-size: clamp(0.88rem, 1.35vw, 0.98rem);
+}
+
+.map {
+  position: relative;
+  width: min(100% - 2rem, var(--container));
+  height: clamp(18rem, 28vw, 23rem);
+  margin: clamp(1.5rem, 4vw, 3rem) auto 0;
+}
+
+.path {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.pathBase,
+.pathProgress {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.pathBase {
+  stroke: #d6e6dc;
+  stroke-width: 3;
+}
+
+.pathProgress {
+  stroke: var(--color-brand-700);
+  stroke-width: 3.5;
+  stroke-dasharray: 1 1;
+  stroke-dashoffset: calc(1 - var(--process-progress));
+  transition: stroke-dashoffset 130ms linear;
+}
+
+.stepList {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.stepList li {
+  position: absolute;
+  width: min(22%, 14.5rem);
+  min-width: 9rem;
+  color: var(--color-brand-950);
+  opacity: 0.45;
+  transform: translateY(0.45rem);
+  transition:
+    opacity 300ms ease,
+    transform 300ms ease;
+}
+
+.stepList li[data-active="true"] {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.step1 {
+  top: 61%;
+  left: 0;
+}
+
+.step2 {
+  top: 9%;
+  left: 26%;
+}
+
+.step3 {
+  top: 58%;
+  left: 52%;
+}
+
+.step4 {
+  top: 13%;
+  left: 78%;
+}
+
+.marker {
+  display: grid;
+  width: 2.2rem;
+  height: 2.2rem;
+  place-items: center;
+  color: white;
+  background: var(--color-brand-800);
+  border: 4px solid #f7faf8;
+  border-radius: 50%;
+  box-shadow: 0 0.35rem 1rem rgb(7 32 24 / 0.12);
+  font-size: 0.64rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+}
+
+.stepCopy {
+  margin-top: 0.55rem;
+}
+
+.stepCopy h3 {
+  margin: 0;
+  font-size: clamp(0.9rem, 1.35vw, 1.05rem);
+  line-height: 1.25;
+}
+
+.stepCopy p {
+  margin: 0.35rem 0 0;
+  color: var(--color-text-muted);
+  font-size: clamp(0.72rem, 1.08vw, 0.82rem);
+  line-height: 1.45;
+}
+
+@media (min-width: 48rem) {
+  .heading,
+  .map {
+    width: min(100% - 3rem, var(--container));
+  }
+}
+
+@media (max-width: 47.99rem) {
+  .scene {
+    min-height: 155vh;
+  }
+
+  .panel {
+    position: sticky;
+    min-height: 100svh;
+    padding-block: 2.25rem;
+  }
+
+  .heading {
+    text-align: left;
+  }
+
+  .heading h2,
+  .heading > p:last-child {
+    margin-inline: 0;
+  }
+
+  .map {
+    height: clamp(20rem, 82vw, 26rem);
+    margin-top: 1.25rem;
+  }
+
+  .path {
+    display: none;
+  }
+
+  .map::before,
+  .map::after {
+    position: absolute;
+    top: 1rem;
+    bottom: 1rem;
+    left: 1rem;
+    width: 2px;
+    content: "";
+    border-radius: var(--radius-pill);
+  }
+
+  .map::before {
+    background: #d6e6dc;
+  }
+
+  .map::after {
+    background: var(--color-brand-700);
+    transform: scaleY(var(--process-progress));
+    transform-origin: top;
+    transition: transform 130ms linear;
+  }
+
+  .stepList {
+    position: absolute;
+    inset: 0;
+  }
+
+  .stepList li,
+  .step1,
+  .step2,
+  .step3,
+  .step4 {
+    position: absolute;
+    left: 0;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    width: 100%;
+    min-width: 0;
+    gap: 0.75rem;
+    padding: 0;
+    border: 0;
+  }
+
+  .step1 {
+    top: 0;
+  }
+
+  .step2 {
+    top: 30%;
+  }
+
+  .step3 {
+    top: 60%;
+  }
+
+  .step4 {
+    top: 84%;
+  }
+
+  .marker {
+    width: 2rem;
+    height: 2rem;
+    border: 3px solid #f7faf8;
+    box-shadow: none;
+  }
+
+  .stepCopy {
+    margin: 0;
+    padding: 0.1rem 0 0.25rem;
+  }
+
+  .stepCopy p {
+    max-width: 28rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pathProgress,
+  .map::after,
+  .stepList li {
+    transition: none;
+  }
+}

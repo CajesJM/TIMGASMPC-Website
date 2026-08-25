@@ -1,0 +1,250 @@
+.header {
+  position: sticky;
+  z-index: 50;
+  top: 0;
+  height: 4.5rem;
+  background: rgb(255 255 255 / 78%);
+  border-bottom: 1px solid rgb(218 229 223 / 45%);
+  box-shadow: 0 1px 0 rgb(255 255 255 / 45%);
+  backdrop-filter: blur(18px) saturate(135%);
+  transition:
+    box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 280ms cubic-bezier(0.4, 0, 0.2, 1),
+    height 0ms;
+  will-change: box-shadow;
+}
+
+@media (min-width: 64rem) {
+  .header {
+    height: 5.5rem;
+  }
+}
+
+.header.scrolled {
+  border-bottom-color: var(--color-border);
+  background: rgb(255 255 255 / 90%);
+  box-shadow:
+    0 1px 3px rgb(10 37 28 / 0.04),
+    0 8px 20px rgb(10 37 28 / 0.06);
+}
+
+.inner {
+  display: flex;
+  height: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+/* Mobile: compact but still readable brand treatment */
+@media (max-width: 64rem) {
+  .logo :global(.brand) {
+    gap: 0.3rem;
+  }
+
+  .logo :global(.mark) {
+    width: 2.15rem;
+    height: 2.15rem;
+  }
+
+  .logo :global(.copy strong) {
+    font-size: 0.82rem;
+    font-weight: 700;
+  }
+
+  .logo :global(.copy small) {
+    font-size: 0.42rem;
+    margin-top: 0.08rem;
+    letter-spacing: 0.1em;
+  }
+}
+
+.menuButton {
+  display: grid;
+  width: 2.5rem;
+  height: 2.5rem;
+  place-items: center;
+  color: var(--color-brand-900);
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition:
+    background-color 200ms ease,
+    transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.menuButton svg {
+  width: 1.35rem;
+  height: 1.35rem;
+}
+
+.menuButton:hover {
+  background: var(--color-brand-50);
+}
+
+.menuButton:active {
+  transform: scale(0.95);
+}
+.nav {
+  position: absolute;
+  top: 4.5rem;
+  right: 0;
+  left: 0;
+  display: none;
+  padding: 0.625rem 0.625rem 0.875rem;
+  background: rgb(255 255 255 / 92%);
+  border-bottom: 1px solid var(--color-border);
+  box-shadow:
+    0 4px 6px rgb(10 37 28 / 0.04),
+    0 12px 24px rgb(10 37 28 / 0.08);
+  backdrop-filter: blur(18px) saturate(135%);
+  animation: slideDown 280ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.nav.open {
+  display: grid;
+  gap: 0.1rem;
+}
+
+.nav > a:not(.apply) {
+  position: relative;
+  padding: 0.5rem 0.75rem;
+  color: var(--color-text-muted);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+  transition:
+    color 200ms cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 200ms cubic-bezier(0.4, 0, 0.2, 1),
+    transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nav > a:hover:not(.apply) {
+  color: var(--color-brand-800);
+  background: var(--color-brand-50);
+  transform: translateX(2px);
+}
+
+.nav > a:active:not(.apply) {
+  transform: translateX(2px) scale(0.98);
+}
+
+.nav > a:focus-visible:not(.apply) {
+  outline: 2px solid var(--color-brand-700);
+  outline-offset: 2px;
+}
+
+.nav > a.active:not(.apply) {
+  color: var(--color-brand-900);
+  background: rgb(255 255 255 / 0.6);
+}
+
+.nav > a.active:not(.apply)::before {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 3px;
+  height: 60%;
+  content: "";
+  background: linear-gradient(
+    to bottom,
+    var(--color-gold-500),
+    var(--color-gold-600)
+  );
+  border-radius: 0 99px 99px 0;
+  transform: translateY(-50%);
+}
+
+.apply {
+  margin-top: 0.4rem;
+  min-height: 2.55rem;
+  font-size: 0.78rem;
+  padding: 0.55rem 0.8rem;
+}
+@media (min-width: 64rem) {
+  .menuButton {
+    display: none;
+  }
+
+  .nav {
+    position: static;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    animation: none;
+  }
+
+  .nav > a:not(.apply) {
+    padding: 0.75rem 0.9rem;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    background: transparent;
+  }
+
+  .nav > a:hover:not(.apply) {
+    background: var(--color-brand-50);
+    transform: translateY(-1px);
+  }
+
+  .nav > a:active:not(.apply) {
+    transform: translateY(0) scale(0.98);
+  }
+
+  .nav > a.active:not(.apply) {
+    color: var(--color-brand-900);
+    background: transparent;
+  }
+
+  .nav > a.active:not(.apply)::before {
+    display: none;
+  }
+
+  .nav > a.active:not(.apply)::after {
+    position: absolute;
+    top: auto;
+    right: 0.25rem;
+    bottom: 0.125rem;
+    left: 0.25rem;
+    width: auto;
+    height: 2px;
+    content: "";
+    background: linear-gradient(
+      to right,
+      var(--color-gold-500),
+      var(--color-gold-600)
+    );
+    border-radius: 99px;
+    transition:
+      transform 300ms cubic-bezier(0.4, 0, 0.2, 1),
+      opacity 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .apply {
+    margin: 0 0 0 0.5rem;
+  }
+}

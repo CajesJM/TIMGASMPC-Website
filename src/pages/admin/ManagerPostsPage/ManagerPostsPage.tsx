@@ -1,7 +1,7 @@
 import { useOutletContext } from "react-router-dom";
-import { AdminPostsManager } from "../../../components/admin/AdminPostsManager/AdminPostsManager";
-import type { ManagerOutletContext } from "../../../layouts/admin/ManagerLayout/ManagerLayout";
-import styles from "../../../styles/admin/AdminPage.module.css";
+import { AdminPostsManager } from "@/components/admin/posts/AdminPostsManager/AdminPostsManager";
+import type { ManagerOutletContext } from "@/components/admin/layout/ManagerLayout/ManagerLayout";
+import styles from "@/styles/admin/pages/AdminPage.module.css";
 
 export function ManagerPostsPage() {
   const { showToast } = useOutletContext<ManagerOutletContext>();

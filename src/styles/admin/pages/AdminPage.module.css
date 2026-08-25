@@ -1,0 +1,61 @@
+.content {
+  width: min(100% - 1.5rem, 82rem);
+  margin: 0 auto;
+  padding: clamp(0.85rem, 2vw, 1.2rem) 0 3rem;
+}
+.welcome {
+  position: relative;
+  display: flex;
+  min-height: 5.9rem;
+  overflow: hidden;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: clamp(0.9rem, 2vw, 1.2rem);
+  color: var(--color-text);
+  background: linear-gradient(115deg, #fff 0%, #f2f8f4 70%, #e4f1e9 100%);
+  border: 1px solid #d8e5dd;
+  border-radius: 0.9rem;
+  box-shadow: 0 0.7rem 2rem rgb(10 58 40 / 6%);
+}
+.welcome::after {
+  position: absolute;
+  top: -5rem;
+  right: -2.5rem;
+  width: 10rem;
+  height: 10rem;
+  background: rgb(25 104 72 / 7%);
+  border: 1.6rem solid rgb(255 255 255 / 28%);
+  border-radius: 50%;
+  content: "";
+}
+.welcome > div:first-child {
+  position: relative;
+  z-index: 1;
+  max-width: 45rem;
+}
+.welcome :global(.eyebrow) {
+  color: var(--color-gold-700);
+}
+.welcome h1 {
+  margin: 0.15rem 0 0.3rem;
+  color: var(--color-brand-950);
+  font-family: var(--font-sans);
+  font-size: clamp(1.18rem, 2.2vw, 1.45rem);
+  letter-spacing: -0.035em;
+  line-height: 1.12;
+}
+.welcome p:last-child {
+  max-width: 42rem;
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: clamp(0.72rem, 1.25vw, 0.8rem);
+  line-height: 1.5;
+}
+
+@media (min-width: 64rem) {
+  .content {
+    width: min(100% - 3rem, 82rem);
+  }
+}

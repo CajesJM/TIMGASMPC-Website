@@ -1,0 +1,813 @@
+.formShell,
+.success {
+  width: 100%;
+  max-width: 68rem;
+  margin: 0 auto;
+  padding: clamp(1rem, 3vw, 2rem);
+  background: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 0.8rem 2.4rem rgb(14 53 39 / 7%);
+}
+
+.formShell,
+.success {
+  max-width: 66rem;
+  padding: clamp(1rem, 2.4vw, 1.6rem);
+  border-color: #d9e5de;
+  border-radius: 0.75rem;
+  box-shadow: 0 1rem 2.75rem rgb(14 53 39 / 8%);
+}
+
+.formIntro {
+  gap: 1.25rem;
+  padding: clamp(0.9rem, 2vw, 1.15rem);
+  background: linear-gradient(135deg, #f5fbf7, #edf6f0);
+  border: 1px solid #d7e7de;
+  border-radius: 0.6rem;
+}
+
+.formIntro h3,
+.success h3 {
+  color: var(--color-brand-950);
+}
+
+.formIntro > span {
+  align-self: start;
+  padding: 0.4rem 0.65rem;
+  color: var(--color-brand-800);
+  background: #fff;
+  border: 1px solid #d2e1d8;
+}
+
+.progress {
+  margin: 1.25rem 0 1.5rem;
+}
+
+.progress li > span {
+  width: 2rem;
+  height: 2rem;
+  background: #f9fcfa;
+  border-color: #ceddd4;
+}
+
+.formShell legend {
+  margin-bottom: 0.4rem;
+  color: var(--color-brand-950);
+}
+
+.sectionHelp {
+  max-width: 48rem;
+  margin-bottom: 1.15rem;
+  line-height: 1.55;
+}
+
+.gridTwo,
+.gridThree {
+  gap: 1rem 1.1rem;
+  margin-bottom: 1.1rem;
+}
+
+.formShell label {
+  gap: 0.45rem;
+  color: #263a31;
+  font-size: 0.78rem;
+  letter-spacing: 0.005em;
+}
+
+.formShell input,
+.formShell select,
+.formShell textarea {
+  min-height: 2.85rem;
+  padding: 0.72rem 0.85rem;
+  background: #fbfdfb;
+  border-color: #cbd9d0;
+  border-radius: 0.45rem;
+  box-shadow: inset 0 1px 0 rgb(11 65 42 / 3%);
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    background-color 160ms ease;
+}
+
+.formShell input:hover,
+.formShell select:hover,
+.formShell textarea:hover {
+  border-color: #a9c4b5;
+}
+
+.formShell input:focus-visible,
+.formShell select:focus-visible,
+.formShell textarea:focus-visible {
+  background: #fff;
+  border-color: var(--color-brand-700);
+  box-shadow: 0 0 0 3px rgb(30 119 83 / 14%);
+  outline: 0;
+}
+
+.loanTypes,
+.cooperativeFields,
+.entryRow,
+.debtEntry,
+.reviewConfirmation {
+  border-color: #d8e4dc;
+  border-radius: 0.45rem;
+}
+
+.loanTypes,
+.cooperativeFields {
+  background: #f6fbf8;
+}
+
+.entryRow,
+.debtEntry {
+  background: #fbfdfb;
+}
+
+.agreementNotice,
+.finalNotice {
+  padding: 0.9rem 1rem;
+  background: #fff9e8;
+  border: 1px solid #ead9a9;
+  border-left: 0;
+  border-radius: 0.45rem;
+}
+
+.formActions {
+  margin-top: 1.25rem;
+  background: rgb(255 255 255 / 97%);
+}
+
+.formIntro {
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  align-items: start;
+}
+.formIntro h3,
+.success h3 {
+  margin: 0.25rem 0 0.4rem;
+  font-size: clamp(1.35rem, 3vw, 2rem);
+}
+.formIntro p,
+.success p {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+.formIntro > span {
+  flex: none;
+  padding: 0.45rem 0.7rem;
+  color: var(--color-brand-800);
+  background: var(--color-gold-100);
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.progress {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.35rem;
+  margin: 1.6rem 0 1.8rem;
+  padding: 0;
+  list-style: none;
+}
+.progress li {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 0.35rem;
+  color: var(--color-text-muted);
+  text-align: center;
+}
+.progress li::before {
+  position: absolute;
+  top: 0.9rem;
+  right: 50%;
+  left: -50%;
+  height: 1px;
+  background: var(--color-border);
+  content: "";
+}
+.progress li:first-child::before {
+  display: none;
+}
+.progress li > span {
+  z-index: 1;
+  display: grid;
+  width: 1.8rem;
+  height: 1.8rem;
+  place-items: center;
+  background: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+.progress svg {
+  width: 1rem;
+}
+.progress small {
+  max-width: 8.5rem;
+  font-size: 0.7rem;
+  line-height: 1.25;
+}
+.currentStep > span,
+.completedStep > span {
+  color: #fff;
+  background: var(--color-brand-700) !important;
+  border-color: var(--color-brand-700) !important;
+}
+.currentStep small {
+  color: var(--color-brand-900);
+  font-weight: 800;
+}
+
+.formShell fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.formShell legend {
+  margin-bottom: 0.3rem;
+  color: var(--color-brand-900);
+  font-family: var(--font-display);
+  font-size: clamp(1.2rem, 2vw, 1.55rem);
+  font-weight: 700;
+}
+.sectionHelp {
+  margin: 0 0 1.25rem;
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+}
+.cooperativeFields {
+  display: grid;
+  gap: 0.8rem;
+  margin: 0 0 1.2rem;
+  padding: 1rem;
+  background: #f7faf8;
+  border: 1px solid var(--color-border);
+  border-left: 3px solid var(--color-gold-500);
+}
+.cooperativeFields > div {
+  display: grid;
+  gap: 0.15rem;
+}
+.cooperativeFields > div span {
+  color: var(--color-gold-700);
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.cooperativeFields > div strong {
+  color: var(--color-brand-950);
+  font-size: 0.95rem;
+}
+.applicantRecordFields {
+  display: grid !important;
+  gap: 0.75rem;
+}
+.formShell input.readOnlyReleaseDate,
+.formShell input.readOnlyReleaseDate:hover,
+.formShell input.readOnlyReleaseDate:focus-visible {
+  color: #6f7c75;
+  background: #e9efeb;
+  border-color: #d6dfd9;
+  box-shadow: none;
+  outline: 0;
+  cursor: not-allowed;
+  opacity: 0.68;
+}
+.cooperativeNote {
+  margin: 0;
+  padding-top: 0.7rem;
+  color: var(--color-text-muted);
+  border-top: 1px solid var(--color-border);
+  font-size: 0.75rem;
+}
+.cooperativeNote strong {
+  color: var(--color-brand-900);
+}
+.gridTwo,
+.gridThree {
+  display: grid;
+  gap: 0.9rem 1rem;
+  margin-bottom: 1rem;
+  align-items: start;
+}
+.formShell label {
+  display: grid;
+  gap: 0.4rem;
+  color: var(--color-text);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+.formShell label > span {
+  color: var(--color-text-muted);
+  font-size: 0.69rem;
+  font-weight: 500;
+}
+.formShell input,
+.formShell select,
+.formShell textarea {
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.7rem 0.8rem;
+  color: var(--color-text);
+  background: #fff;
+  border: 1px solid #cbd5d0;
+  border-radius: var(--radius-sm);
+  font: inherit;
+  font-size: 0.9rem;
+}
+.formShell textarea {
+  resize: vertical;
+}
+.formShell input:focus-visible,
+.formShell select:focus-visible,
+.formShell textarea:focus-visible {
+  border-color: var(--color-brand-700);
+  outline: 3px solid rgb(30 119 83 / 16%);
+}
+.characterCount {
+  justify-self: end;
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+.fieldError {
+  color: #a52929;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.loanTypes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem 1.1rem;
+  margin: 0.4rem 0 1rem;
+  padding: 0.9rem 1rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+}
+.loanTypes > span {
+  width: 100%;
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+.loanTypes label {
+  display: flex;
+  gap: 0.35rem;
+  align-items: center;
+  font-weight: 600;
+}
+.loanTypes input,
+.checkRow input {
+  width: 1rem;
+  min-height: 1rem;
+  accent-color: var(--color-brand-700);
+}
+
+.listHeading {
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  align-items: center;
+  margin: 1rem 0 0.75rem;
+}
+.listHeading button,
+.formActions button,
+.success button {
+  display: inline-flex;
+  gap: 0.4rem;
+  justify-content: center;
+  align-items: center;
+  min-height: 2.65rem;
+  padding: 0.65rem 1rem;
+  color: #fff;
+  background: var(--color-brand-800);
+  border: 0;
+  border-radius: var(--radius-sm);
+  font-weight: 800;
+  cursor: pointer;
+}
+.listHeading button:disabled,
+.formActions button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.listHeading svg,
+.formActions svg {
+  width: 1rem;
+}
+.emptyList {
+  padding: 1rem;
+  color: var(--color-text-muted);
+  background: var(--color-surface);
+  border: 1px dashed #bbc8c1;
+  text-align: center;
+  font-size: 0.8rem;
+}
+.entryRow,
+.debtEntry {
+  position: relative;
+  display: grid;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+  padding: 1rem 3rem 1rem 1rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+}
+.entryRow > button,
+.debtEntry > button {
+  position: absolute;
+  top: 0.7rem;
+  right: 0.7rem;
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  color: #9b2e2e;
+  background: #fff;
+  border: 1px solid #e1caca;
+  border-radius: 50%;
+  cursor: pointer;
+}
+.entryRow > button svg,
+.debtEntry > button svg {
+  width: 1rem;
+}
+
+.agreementNotice,
+.finalNotice {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.75rem;
+  margin: 1rem 0;
+  padding: 1rem;
+  background: var(--color-gold-100);
+  border-left: 3px solid var(--color-gold-500);
+}
+.agreementNotice svg,
+.finalNotice svg {
+  width: 1.2rem;
+  color: var(--color-brand-800);
+}
+.agreementNotice h4 {
+  margin: 0;
+}
+.agreementNotice p,
+.finalNotice p {
+  margin: 0.25rem 0 0;
+  font-size: 0.8rem;
+  line-height: 1.55;
+}
+.checkRow {
+  display: flex !important;
+  gap: 0.65rem;
+  align-items: start;
+  margin-top: 0.9rem;
+  line-height: 1.5;
+  font-weight: 600 !important;
+}
+.checkRow input {
+  flex: none;
+  margin-top: 0.18rem;
+}
+.checkRow span {
+  color: var(--color-text) !important;
+  font-size: 0.8rem !important;
+}
+.reviewConfirmation {
+  padding: 0.85rem 1rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+}
+
+.formActions {
+  position: sticky;
+  bottom: -1px;
+  z-index: 2;
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  margin: 1.5rem calc(clamp(1rem, 3vw, 2rem) * -1)
+    calc(clamp(1rem, 3vw, 2rem) * -1);
+  padding: 0.85rem clamp(1rem, 3vw, 2rem);
+  background: rgb(255 255 255 / 96%);
+  border-top: 1px solid var(--color-border);
+  box-shadow: 0 -0.6rem 1.5rem rgb(14 53 39 / 5%);
+  backdrop-filter: blur(8px);
+}
+.formActions button:first-child:not(:last-child) {
+  color: var(--color-brand-900);
+  background: #fff;
+  border: 1px solid var(--color-border);
+}
+.submitError {
+  margin: 1rem 0 0;
+  padding: 0.8rem;
+  color: #842323;
+  background: #fff0f0;
+  border-left: 3px solid #b73131;
+  font-size: 0.82rem;
+}
+.honeypot {
+  position: absolute;
+  left: -10000px;
+}
+.success {
+  display: grid;
+  justify-items: start;
+  gap: 0.75rem;
+}
+.success > svg {
+  width: 2.4rem;
+  height: 2.4rem;
+  color: var(--color-success);
+}
+.successNextSteps {
+  width: 100%;
+  margin-top: 0.25rem;
+  padding: 1rem;
+  background: #f4f9f6;
+  border: 1px solid #d7e5dc;
+  border-radius: 0.55rem;
+}
+.successNextSteps h4 {
+  margin: 0 0 0.45rem;
+  color: var(--color-brand-950);
+  font-size: 1rem;
+}
+.successNextSteps p + p {
+  margin-top: 0.65rem;
+}
+.successNextSteps a {
+  display: inline-flex;
+  gap: 0.45rem;
+  align-items: center;
+  margin-top: 0.9rem;
+  color: var(--color-brand-800);
+  font-size: 0.85rem;
+  font-weight: 800;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2rem;
+}
+.successNextSteps a:hover {
+  color: var(--color-brand-950);
+}
+.successNextSteps a:focus-visible {
+  border-radius: 0.2rem;
+  outline: 3px solid rgb(30 119 83 / 18%);
+  outline-offset: 3px;
+}
+.successNextSteps a svg {
+  width: 1rem;
+  height: 1rem;
+  flex: none;
+}
+
+@media (min-width: 40rem) {
+  .applicantRecordFields {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .gridTwo,
+  .entryRow {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .gridThree {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .debtEntry {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 62rem) {
+  .debtEntry {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 39.99rem) {
+  .formShell,
+  .success {
+    padding: 1rem;
+    border-radius: var(--radius-sm);
+  }
+  .formIntro {
+    display: grid;
+  }
+  .formIntro > span {
+    display: none;
+  }
+  .formIntro h3 {
+    font-size: 1.35rem;
+  }
+  .progress {
+    display: flex;
+    overflow-x: auto;
+    justify-content: space-between;
+    padding-bottom: 0.5rem;
+  }
+  .progress li {
+    min-width: 2.1rem;
+    flex: 1 0 2.1rem;
+  }
+  .progress li::before {
+    z-index: 0;
+    display: block;
+    top: 1rem;
+    background: #c7d9cf;
+  }
+  .progress small {
+    display: none;
+  }
+  .loanTypes {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .loanTypes > span {
+    grid-column: 1 / -1;
+  }
+  .listHeading {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .formActions {
+    align-items: stretch;
+    flex-direction: column-reverse;
+    margin-right: -1rem;
+    margin-bottom: -1rem;
+    margin-left: -1rem;
+    padding: 0.75rem 1rem;
+  }
+  .formActions button {
+    width: 100%;
+  }
+
+  .formShell fieldset {
+    margin-bottom: 1rem;
+  }
+  .formShell legend {
+    font-size: 1.1rem;
+    margin-bottom: 0.6rem;
+  }
+  .sectionHelp {
+    font-size: 0.85rem;
+    margin-bottom: 1rem;
+    line-height: 1.6;
+  }
+
+  .finalNotice {
+    margin: 1rem 0;
+    padding: 0.75rem 0.85rem;
+    font-size: 0.8rem;
+  }
+
+  .finalNotice svg {
+    width: 1.4rem;
+    height: 1.4rem;
+  }
+
+  .finalNotice p {
+    line-height: 1.55;
+  }
+
+  .reviewConfirmation {
+    padding: 0.85rem 1rem;
+    margin-top: 1rem;
+  }
+
+  .reviewConfirmation span {
+    font-size: 0.8rem;
+    line-height: 1.5;
+  }
+
+  .checkRow input[type="checkbox"] {
+    flex-shrink: 0;
+    width: 1.1rem;
+    height: 1.1rem;
+    margin-top: 0.1rem;
+  }
+
+  .mobileActionsHidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(0.75rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .formShell {
+    scroll-behavior: auto;
+  }
+}
+
+/* Final visual overrides, kept after responsive rules to preserve the form's layout on every step. */
+.formIntro {
+  gap: 1.25rem;
+  padding: clamp(0.9rem, 2vw, 1.15rem);
+  background: linear-gradient(135deg, #f5fbf7, #edf6f0);
+  border: 1px solid #d7e7de;
+  border-radius: 0.6rem;
+}
+.formIntro h3,
+.success h3,
+.formShell legend {
+  color: var(--color-brand-950);
+}
+.formIntro > span {
+  align-self: start;
+  padding: 0.4rem 0.65rem;
+  color: var(--color-brand-800);
+  background: #fff;
+  border: 1px solid #d2e1d8;
+}
+.progress {
+  margin: 1.25rem 0 1.5rem;
+}
+.progress li > span {
+  width: 2rem;
+  height: 2rem;
+  background: #f9fcfa;
+  border-color: #ceddd4;
+}
+.sectionHelp {
+  max-width: 48rem;
+  margin-bottom: 1.15rem;
+  line-height: 1.55;
+}
+.gridTwo,
+.gridThree {
+  gap: 1rem 1.1rem;
+  margin-bottom: 1.1rem;
+}
+.formShell label {
+  gap: 0.45rem;
+  color: #263a31;
+  font-size: 0.78rem;
+  letter-spacing: 0.005em;
+}
+.formShell input,
+.formShell select,
+.formShell textarea {
+  min-height: 2.85rem;
+  padding: 0.72rem 0.85rem;
+  background: #fbfdfb;
+  border-color: #cbd9d0;
+  border-radius: 0.45rem;
+  box-shadow: inset 0 1px 0 rgb(11 65 42 / 3%);
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    background-color 160ms ease;
+}
+.formShell input:hover,
+.formShell select:hover,
+.formShell textarea:hover {
+  border-color: #a9c4b5;
+}
+.formShell input:focus-visible,
+.formShell select:focus-visible,
+.formShell textarea:focus-visible {
+  background: #fff;
+  border-color: var(--color-brand-700);
+  box-shadow: 0 0 0 3px rgb(30 119 83 / 14%);
+  outline: 0;
+}
+.loanTypes,
+.cooperativeFields,
+.entryRow,
+.debtEntry,
+.reviewConfirmation {
+  border-color: #d8e4dc;
+  border-radius: 0.45rem;
+}
+.loanTypes,
+.cooperativeFields {
+  background: #f6fbf8;
+}
+.entryRow,
+.debtEntry {
+  background: #fbfdfb;
+}
+.agreementNotice,
+.finalNotice {
+  padding: 0.9rem 1rem;
+  background: #fff9e8;
+  border: 1px solid #ead9a9;
+  border-left: 0;
+  border-radius: 0.45rem;
+}
+.formActions {
+  margin-top: 1.25rem;
+  background: rgb(255 255 255 / 97%);
+}
+.formActions {
+  transition:
+    opacity 180ms ease,
+    transform 180ms ease;
+}

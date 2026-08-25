@@ -8,18 +8,24 @@ import {
   Timestamp,
   where,
 } from "firebase/firestore";
-import { ArrowDown, CircleCheckBig, Clock3, FileText, Inbox } from "lucide-react";
+import {
+  ArrowDown,
+  CircleCheckBig,
+  Clock3,
+  FileText,
+  Inbox,
+} from "lucide-react";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { Link } from "react-router-dom";
-import { db } from "../../../lib/firestore";
+import { db } from "@/services/firebase/firestore";
 import {
   loanStatusLabels,
   loanTypeLabels,
   type LoanStatus,
   type LoanType,
-} from "../../../features/applications/loanApplicationTypes";
-import pageStyles from "../../../styles/admin/AdminPage.module.css";
-import styles from "./DashboardPage.module.css";
+} from "@/features/applications/loanApplicationTypes";
+import pageStyles from "@/styles/admin/pages/AdminPage.module.css";
+import styles from "@/styles/admin/pages/DashboardPage.module.css";
 
 type ApplicationStatus = LoanStatus;
 
@@ -102,15 +108,20 @@ function useAnimatedNumber(value: number, loading: boolean) {
     if (loading) return;
 
     const startValue = previousValue.current;
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const reducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
     const duration = reducedMotion ? 0 : 700;
     const startedAt = performance.now();
     let frameId = 0;
 
     const animate = (now: number) => {
-      const progress = duration === 0 ? 1 : Math.min((now - startedAt) / duration, 1);
+      const progress =
+        duration === 0 ? 1 : Math.min((now - startedAt) / duration, 1);
       const easedProgress = 1 - (1 - progress) ** 3;
-      setDisplayValue(Math.round(startValue + (value - startValue) * easedProgress));
+      setDisplayValue(
+        Math.round(startValue + (value - startValue) * easedProgress),
+      );
       if (progress < 1) {
         frameId = window.requestAnimationFrame(animate);
       } else {
@@ -150,23 +161,35 @@ export function DashboardPage() {
         const loanRef = collection(firestore, "loanApplications");
         const countStatus = async (status: ApplicationStatus) => {
           const [membership, loan] = await Promise.all([
-            getCountFromServer(query(membershipRef, where("status", "==", status))),
+            getCountFromServer(
+              query(membershipRef, where("status", "==", status)),
+            ),
             getCountFromServer(query(loanRef, where("status", "==", status))),
           ]);
           return membership.data().count + loan.data().count;
         };
 
-        const [totalMembership, totalLoans, statusCounts, membershipRecent, loanRecent] =
-          await Promise.all([
-            getCountFromServer(membershipRef),
-            getCountFromServer(loanRef),
-            Promise.all(pipelineStatuses.map(countStatus)),
-            getDocs(query(membershipRef, orderBy("submittedAt", "desc"), limit(5))),
-            getDocs(query(loanRef, orderBy("submittedAt", "desc"), limit(5))),
-          ]);
+        const [
+          totalMembership,
+          totalLoans,
+          statusCounts,
+          membershipRecent,
+          loanRecent,
+        ] = await Promise.all([
+          getCountFromServer(membershipRef),
+          getCountFromServer(loanRef),
+          Promise.all(pipelineStatuses.map(countStatus)),
+          getDocs(
+            query(membershipRef, orderBy("submittedAt", "desc"), limit(5)),
+          ),
+          getDocs(query(loanRef, orderBy("submittedAt", "desc"), limit(5))),
+        ]);
 
         const counts = Object.fromEntries(
-          pipelineStatuses.map((itemStatus, index) => [itemStatus, statusCounts[index]]),
+          pipelineStatuses.map((itemStatus, index) => [
+            itemStatus,
+            statusCounts[index],
+          ]),
         ) as Record<ApplicationStatus, number>;
 
         setPipeline(counts);
@@ -180,7 +203,9 @@ export function DashboardPage() {
         const membershipItems: Application[] = membershipRecent.docs.map(
           (document) => {
             const data = document.data();
-            const status = isApplicationStatus(data.status) ? data.status : "new";
+            const status = isApplicationStatus(data.status)
+              ? data.status
+              : "new";
             return {
               id: document.id,
               reference:
@@ -248,22 +273,30 @@ export function DashboardPage() {
     (total, value) => total + value,
     0,
   );
-  const animatedTotalApplications = useAnimatedNumber(metrics.totalApplications, loading);
-  const animatedNewApplications = useAnimatedNumber(metrics.newApplications, loading);
+  const animatedTotalApplications = useAnimatedNumber(
+    metrics.totalApplications,
+    loading,
+  );
+  const animatedNewApplications = useAnimatedNumber(
+    metrics.newApplications,
+    loading,
+  );
   const animatedInProgress = useAnimatedNumber(metrics.inProgress, loading);
   const animatedApproved = useAnimatedNumber(metrics.approved, loading);
   const animatedTotalPipeline = useAnimatedNumber(totalPipeline, loading);
   let chartPosition = 0;
   const chartStops = pipelineStatuses.map((status) => {
-    const segment = totalPipeline === 0 ? 0 : (pipeline[status] / totalPipeline) * 100;
+    const segment =
+      totalPipeline === 0 ? 0 : (pipeline[status] / totalPipeline) * 100;
     const start = chartPosition;
     chartPosition += segment;
     return `${chartColors[status]} ${start}% ${chartPosition}%`;
   });
   const chartStyle = {
-    background: totalPipeline > 0
-      ? `conic-gradient(${chartStops.join(", ")})`
-      : "conic-gradient(#e8efea 0deg 360deg)",
+    background:
+      totalPipeline > 0
+        ? `conic-gradient(${chartStops.join(", ")})`
+        : "conic-gradient(#e8efea 0deg 360deg)",
   } as CSSProperties;
 
   return (
@@ -274,8 +307,8 @@ export function DashboardPage() {
             <p className="eyebrow">Easy Apply workspace</p>
             <h1>Application and content overview</h1>
             <p>
-              Review recent membership and loan applications, and manage the information
-              published on the TIMGAS MPC website.
+              Review recent membership and loan applications, and manage the
+              information published on the TIMGAS MPC website.
             </p>
           </div>
         </div>
@@ -328,7 +361,9 @@ export function DashboardPage() {
           <div>
             <p className={styles.sectionLabel}>Processing overview</p>
             <h2>Application status distribution</h2>
-            <p>A live view of where Easy Apply records are in the review process.</p>
+            <p>
+              A live view of where Easy Apply records are in the review process.
+            </p>
           </div>
         </div>
         <div className={styles.chartContent}>
@@ -336,7 +371,11 @@ export function DashboardPage() {
             className={styles.donut}
             style={chartStyle}
             role="img"
-            aria-label={loading ? "Loading application status distribution" : `${totalPipeline} applications across six review statuses`}
+            aria-label={
+              loading
+                ? "Loading application status distribution"
+                : `${totalPipeline} applications across six review statuses`
+            }
           >
             <div>
               <strong>{loading ? "—" : animatedTotalPipeline}</strong>
@@ -345,23 +384,31 @@ export function DashboardPage() {
           </div>
           <div className={styles.chartLegend}>
             {pipelineStatuses.map((status) => {
-              const percentage = totalPipeline === 0 ? 0 : (pipeline[status] / totalPipeline) * 100;
+              const percentage =
+                totalPipeline === 0
+                  ? 0
+                  : (pipeline[status] / totalPipeline) * 100;
               return (
-              <div key={status}>
-                <div className={styles.legendMeta}>
-                  <span style={{ backgroundColor: chartColors[status] }} aria-hidden="true" />
-                  <p>{statusLabels[status]}</p>
-                  <strong>{loading ? "—" : pipeline[status]}</strong>
+                <div key={status}>
+                  <div className={styles.legendMeta}>
+                    <span
+                      style={{ backgroundColor: chartColors[status] }}
+                      aria-hidden="true"
+                    />
+                    <p>{statusLabels[status]}</p>
+                    <strong>{loading ? "—" : pipeline[status]}</strong>
+                  </div>
+                  <i className={styles.legendBar} aria-hidden="true">
+                    <b
+                      style={
+                        {
+                          "--bar-progress": `${percentage}%`,
+                          "--bar-color": chartColors[status],
+                        } as CSSProperties
+                      }
+                    />
+                  </i>
                 </div>
-                <i className={styles.legendBar} aria-hidden="true">
-                  <b
-                    style={{
-                      "--bar-progress": `${percentage}%`,
-                      "--bar-color": chartColors[status],
-                    } as CSSProperties}
-                  />
-                </i>
-              </div>
               );
             })}
           </div>
@@ -372,7 +419,9 @@ export function DashboardPage() {
           <div>
             <p className={styles.sectionLabel}>Easy Apply</p>
             <h2>Recent applications</h2>
-            <p>The five latest membership and loan applications submitted online.</p>
+            <p>
+              The five latest membership and loan applications submitted online.
+            </p>
           </div>
         </div>
         {loading ? (
@@ -381,57 +430,57 @@ export function DashboardPage() {
           <div className={styles.empty}>
             <FileText aria-hidden="true" />
             <strong>No applications yet</strong>
-            <span>
-              New membership and loan submissions will appear here.
-            </span>
+            <span>New membership and loan submissions will appear here.</span>
           </div>
         ) : (
           <>
-          <div className={styles.tableWrap}>
-            <table>
-              <thead>
-                <tr>
-                  <th>Reference</th>
-                  <th>Applicant</th>
-                  <th>Application type</th>
-                  <th>Submitted</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {applications.map((item, index) => (
-                  <tr
-                    key={item.id}
-                    className={`${styles.recentRow} ${index === applications.length - 1 ? styles.fadedRow : ""}`}
-                    style={{ "--row-delay": `${index * 70}ms` } as CSSProperties}
-                  >
-                    <td>
-                      <Link
-                        to={`/manager/applications?type=${item.applicationGroup}`}
-                        className={styles.referenceLink}
-                      >
-                        {item.reference}
-                      </Link>
-                    </td>
-                    <td>{item.applicantName}</td>
-                    <td>{item.applicationType}</td>
-                    <td>{formatSubmittedAt(item.submittedAt)}</td>
-                    <td>
-                      <span
-                        className={`${styles.status} ${styles[statusClassNames[item.status]]}`}
-                      >
-                        {statusLabels[item.status]}
-                      </span>
-                    </td>
+            <div className={styles.tableWrap}>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Reference</th>
+                    <th>Applicant</th>
+                    <th>Application type</th>
+                    <th>Submitted</th>
+                    <th>Status</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          <Link className={styles.showMore} to="/manager/applications">
-            Show more applications
-            <ArrowDown size={15} aria-hidden="true" />
-          </Link>
+                </thead>
+                <tbody>
+                  {applications.map((item, index) => (
+                    <tr
+                      key={item.id}
+                      className={`${styles.recentRow} ${index === applications.length - 1 ? styles.fadedRow : ""}`}
+                      style={
+                        { "--row-delay": `${index * 70}ms` } as CSSProperties
+                      }
+                    >
+                      <td>
+                        <Link
+                          to={`/manager/applications?type=${item.applicationGroup}`}
+                          className={styles.referenceLink}
+                        >
+                          {item.reference}
+                        </Link>
+                      </td>
+                      <td>{item.applicantName}</td>
+                      <td>{item.applicationType}</td>
+                      <td>{formatSubmittedAt(item.submittedAt)}</td>
+                      <td>
+                        <span
+                          className={`${styles.status} ${styles[statusClassNames[item.status]]}`}
+                        >
+                          {statusLabels[item.status]}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <Link className={styles.showMore} to="/manager/applications">
+              Show more applications
+              <ArrowDown size={15} aria-hidden="true" />
+            </Link>
           </>
         )}
       </section>

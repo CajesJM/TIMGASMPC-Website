@@ -165,9 +165,7 @@ export function parseLoanApplication(
     address: text(data.address),
     typeOfLoan: isLoanType(data.typeOfLoan) ? data.typeOfLoan : "prodn",
     purposeOfLoan: text(data.purposeOfLoan),
-    paymentMode: isPaymentMode(data.paymentMode)
-      ? data.paymentMode
-      : "monthly",
+    paymentMode: isPaymentMode(data.paymentMode) ? data.paymentMode : "monthly",
     numberOfMonths: number(data.numberOfMonths),
     amountApplied: number(data.amountApplied),
     assets: Array.isArray(data.assets)
