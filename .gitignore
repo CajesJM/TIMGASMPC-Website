@@ -1,5 +1,6 @@
 # Dependencies and build output
 .freebuff/
+drafts/
 node_modules/
 dist/
 coverage/

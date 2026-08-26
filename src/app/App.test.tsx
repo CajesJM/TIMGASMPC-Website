@@ -77,17 +77,17 @@ describe("TIMGAS website", () => {
       "/downloads/Loan-Application-Form.xls",
     );
     await user.click(screen.getByRole("button", { name: /apply online/i }));
-    const membershipCaptcha = screen.getByRole("dialog", {
+    const membershipCaptcha = await screen.findByRole("dialog", {
       name: /verify before continuing/i,
     });
     await user.click(
       within(membershipCaptcha).getByRole("checkbox", { name: /i’m not a robot/i }),
     );
     expect(
-      screen.getByRole("heading", { name: /membership profile and agreement/i }),
+      await screen.findByRole("heading", { name: /membership profile and agreement/i }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("dialog", { name: /apply online to timgas mpc/i }),
+      await screen.findByRole("dialog", { name: /apply online to timgas mpc/i }),
     ).toBeVisible();
     expect(screen.getByLabelText(/family name/i)).toBeVisible();
     await user.keyboard("{Escape}");
@@ -99,20 +99,20 @@ describe("TIMGAS website", () => {
     ).toBeVisible();
 
     await user.click(screen.getByRole("button", { name: /apply for a loan/i }));
-    const loanCaptcha = screen.getByRole("dialog", {
+    const loanCaptcha = await screen.findByRole("dialog", {
       name: /verify before continuing/i,
     });
     await user.click(
       within(loanCaptcha).getByRole("checkbox", { name: /i’m not a robot/i }),
     );
     expect(
-      screen.getByRole("dialog", { name: /apply for a timgas mpc loan/i }),
+      await screen.findByRole("dialog", { name: /apply for a timgas mpc loan/i }),
     ).toBeVisible();
     const loanDialog = screen.getByRole("dialog", {
       name: /apply for a timgas mpc loan/i,
     });
     expect(
-      screen.getByRole("heading", { name: /loan application form/i }),
+      await screen.findByRole("heading", { name: /loan application form/i }),
     ).toBeInTheDocument();
     expect(screen.getByLabelText(/applicant\/member borrower/i)).toBeVisible();
     expect(screen.getByLabelText(/mf \(first field\)/i)).toBeInTheDocument();

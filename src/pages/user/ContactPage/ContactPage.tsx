@@ -1,6 +1,12 @@
 import { ArrowUpRight, Mail, MapPin, Phone } from "lucide-react";
 import { PageHeader } from "@/components/shared/PageHeader/PageHeader";
 import officeImage from "@/assets/images/office/timgas-office.jpg";
+import office640Avif from "@/assets/images/office/optimized/office-640.avif";
+import office960Avif from "@/assets/images/office/optimized/office-960.avif";
+import office1440Avif from "@/assets/images/office/optimized/office-1440.avif";
+import office640Webp from "@/assets/images/office/optimized/office-640.webp";
+import office960Webp from "@/assets/images/office/optimized/office-960.webp";
+import office1440Webp from "@/assets/images/office/optimized/office-1440.webp";
 import styles from "@/styles/user/pages/ContentPage.module.css";
 
 export function ContactPage() {
@@ -50,10 +56,26 @@ export function ContactPage() {
           </div>
 
           <figure className={styles.officePhoto}>
-            <img
-              src={officeImage}
-              alt="Front entrance of the TIMGAS Multi-Purpose Cooperative office"
-            />
+            <picture>
+              <source
+                type="image/avif"
+                srcSet={`${office640Avif} 640w, ${office960Avif} 960w, ${office1440Avif} 1440w`}
+                sizes="(min-width: 48rem) 50vw, 92vw"
+              />
+              <source
+                type="image/webp"
+                srcSet={`${office640Webp} 640w, ${office960Webp} 960w, ${office1440Webp} 1440w`}
+                sizes="(min-width: 48rem) 50vw, 92vw"
+              />
+              <img
+                src={officeImage}
+                alt="Front entrance of the TIMGAS Multi-Purpose Cooperative office"
+                width="1448"
+                height="1086"
+                loading="lazy"
+                decoding="async"
+              />
+            </picture>
             <figcaption>
               <span className={styles.locationIcon}>
                 <MapPin size={18} aria-hidden="true" />

@@ -1,5 +1,6 @@
-import logo from "@/assets/images/brand/timgas-logo.png";
 import styles from "@/styles/shared/components/BrandMark.module.css";
+
+const logo = "/timgas-logo-256.webp";
 
 type BrandMarkProps = {
   compact?: boolean;

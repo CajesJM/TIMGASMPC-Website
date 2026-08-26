@@ -60,6 +60,7 @@ const showcaseGroups: Array<{
 ];
 
 export function NewsPage() {
+  const [shouldLoadPosts, setShouldLoadPosts] = useState(false);
   const [posts, setPosts] = useState<PublishedPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadFailed, setLoadFailed] = useState(false);
@@ -78,6 +79,7 @@ export function NewsPage() {
   const carouselRefs = useRef<
     Partial<Record<NewsCategory, HTMLDivElement | null>>
   >({});
+  const sectionRef = useRef<HTMLDivElement>(null);
   const dragState = useRef({ active: false, startX: 0, startScroll: 0 });
   const crossfadeTimers = useRef<Partial<Record<NewsCategory, number>>>({});
 
@@ -91,6 +93,27 @@ export function NewsPage() {
   );
 
   useEffect(() => {
+    const section = sectionRef.current;
+    if (!section || typeof IntersectionObserver === "undefined") {
+      setShouldLoadPosts(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        setShouldLoadPosts(true);
+        observer.disconnect();
+      },
+      { rootMargin: "800px 0px" },
+    );
+
+    observer.observe(section);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!shouldLoadPosts) return;
     let active = true;
     void fetchPublishedPosts()
       .then((publishedPosts) => {
@@ -106,7 +129,7 @@ export function NewsPage() {
     return () => {
       active = false;
     };
-  }, []);
+  }, [shouldLoadPosts]);
 
   useEffect(() => {
     const measureCarousels = () => {
@@ -241,7 +264,7 @@ export function NewsPage() {
   const newsPosts = posts.filter((post) => post.category !== "certification");
 
   return (
-    <div id="news">
+    <div id="news" ref={sectionRef}>
       <PageHeader
         headingLevel={2}
         eyebrow="News and notices"

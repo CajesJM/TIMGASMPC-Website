@@ -5,12 +5,9 @@ import {
   HandCoins,
   UsersRound,
 } from "lucide-react";
-import { useCallback, useRef, useState } from "react";
-import { LoanApplicationForm } from "@/components/user/applications/LoanApplicationForm/LoanApplicationForm";
-import { MembershipApplicationForm } from "@/components/user/applications/MembershipApplicationForm/MembershipApplicationForm";
+import { lazy, Suspense, useCallback, useRef, useState } from "react";
 import { ApplicationModal } from "@/components/user/applications/MembershipApplicationModal/MembershipApplicationModal";
 import { ApplicationProcess } from "@/components/user/applications/ApplicationProcess/ApplicationProcess";
-import { RecaptchaGate } from "@/components/user/security/RecaptchaGate/RecaptchaGate";
 import { Button } from "@/components/shared/Button/Button";
 import { PageHeader } from "@/components/shared/PageHeader/PageHeader";
 import styles from "@/styles/user/pages/ContentPage.module.css";
@@ -32,6 +29,31 @@ type PendingCaptcha = {
 };
 
 const maximumCachedCaptchaAge = 90_000;
+
+const loadMembershipApplicationForm = () =>
+  import(
+    "@/components/user/applications/MembershipApplicationForm/MembershipApplicationForm"
+  );
+const loadLoanApplicationForm = () =>
+  import(
+    "@/components/user/applications/LoanApplicationForm/LoanApplicationForm"
+  );
+const loadRecaptchaGate = () =>
+  import("@/components/user/security/RecaptchaGate/RecaptchaGate");
+
+const MembershipApplicationForm = lazy(() =>
+  loadMembershipApplicationForm().then((module) => ({
+    default: module.MembershipApplicationForm,
+  })),
+);
+const LoanApplicationForm = lazy(() =>
+  loadLoanApplicationForm().then((module) => ({
+    default: module.LoanApplicationForm,
+  })),
+);
+const RecaptchaGate = lazy(() =>
+  loadRecaptchaGate().then((module) => ({ default: module.RecaptchaGate })),
+);
 
 export function MembershipPage() {
   const [showOnlineForm, setShowOnlineForm] = useState(false);
@@ -58,6 +80,9 @@ export function MembershipPage() {
   };
 
   const requestOpeningCaptcha = (target: ApplicationTarget) => {
+    void loadRecaptchaGate();
+    if (target === "membership") void loadMembershipApplicationForm();
+    else void loadLoanApplicationForm();
     setCaptchaPurpose("opening");
     setCaptchaTarget(target);
   };
@@ -205,9 +230,17 @@ export function MembershipPage() {
           closeLabel="Close membership application"
           idPrefix="membership"
         >
-          <MembershipApplicationForm
-            getRecaptchaToken={() => getRecaptchaToken("membership")}
-          />
+          <Suspense
+            fallback={
+              <div className={pageStyles.formLoading} role="status">
+                Preparing the secure membership application…
+              </div>
+            }
+          >
+            <MembershipApplicationForm
+              getRecaptchaToken={() => getRecaptchaToken("membership")}
+            />
+          </Suspense>
         </ApplicationModal>
       )}
 
@@ -221,20 +254,36 @@ export function MembershipPage() {
           closeLabel="Close loan application"
           idPrefix="loan"
         >
-          <LoanApplicationForm
-            getRecaptchaToken={() => getRecaptchaToken("loan")}
-          />
+          <Suspense
+            fallback={
+              <div className={pageStyles.formLoading} role="status">
+                Preparing the secure loan application…
+              </div>
+            }
+          >
+            <LoanApplicationForm
+              getRecaptchaToken={() => getRecaptchaToken("loan")}
+            />
+          </Suspense>
         </ApplicationModal>
       )}
 
       {captchaTarget && (
-        <RecaptchaGate
-          applicationName={captchaTarget === "loan" ? "loan application" : "membership application"}
-          open
-          purpose={captchaPurpose}
-          onClose={closeCaptcha}
-          onVerified={completeCaptcha}
-        />
+        <Suspense
+          fallback={
+            <div className={pageStyles.securityLoading} role="status">
+              Preparing the security check…
+            </div>
+          }
+        >
+          <RecaptchaGate
+            applicationName={captchaTarget === "loan" ? "loan application" : "membership application"}
+            open
+            purpose={captchaPurpose}
+            onClose={closeCaptcha}
+            onVerified={completeCaptcha}
+          />
+        </Suspense>
       )}
 
       <section className={styles.cta}>

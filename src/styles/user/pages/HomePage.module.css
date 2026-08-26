@@ -7,16 +7,20 @@
   color: white;
   background: var(--color-brand-950);
 }
-.heroImage,
+.heroMedia,
 .heroOverlay {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
 }
-.heroImage {
+.heroMedia {
   left: 25%;
   width: 75%;
+}
+.heroImage {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
   object-position: 58% 72%;
 }
@@ -348,9 +352,11 @@
       linear-gradient(90deg, rgb(229 243 234 / 0.97), rgb(229 243 234 / 0.86)),
       linear-gradient(0deg, rgb(229 243 234 / 0.5) 0%, transparent 66%);
   }
-  .heroImage {
+  .heroMedia {
     left: 0;
     width: 100%;
+  }
+  .heroImage {
     object-position: 60% 65%;
   }
   .hero h1 {

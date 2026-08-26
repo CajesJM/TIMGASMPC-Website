@@ -152,3 +152,24 @@
     width: 100%;
   }
 }
+.formLoading {
+  display: grid;
+  min-height: 16rem;
+  place-items: center;
+  color: var(--color-brand-800);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.securityLoading {
+  position: fixed;
+  z-index: 10000;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: white;
+  background: rgb(5 43 31 / 0.78);
+  font-size: 0.9rem;
+  font-weight: 700;
+  backdrop-filter: blur(0.35rem);
+}

@@ -4,8 +4,12 @@ import styles from "@/styles/user/components/home/PhotoCarousel.module.css";
 
 export type CarouselPhoto = {
   src: string;
+  avifSrcSet?: string;
+  webpSrcSet?: string;
   alt: string;
   caption: string;
+  width?: number;
+  height?: number;
 };
 
 type PhotoCarouselProps = {
@@ -78,12 +82,31 @@ export function PhotoCarousel({ ariaLabel, photos }: PhotoCarouselProps) {
             style={{ transform: `translateX(-${currentIndex * 100}%)` }}
           >
             {photos.map((photo, index) => (
-              <img
-                key={photo.src}
-                src={photo.src}
-                alt={photo.alt}
-                aria-hidden={index !== currentIndex}
-              />
+              <picture key={photo.src}>
+                {photo.avifSrcSet && (
+                  <source
+                    type="image/avif"
+                    srcSet={photo.avifSrcSet}
+                    sizes="(min-width: 64rem) 42vw, 92vw"
+                  />
+                )}
+                {photo.webpSrcSet && (
+                  <source
+                    type="image/webp"
+                    srcSet={photo.webpSrcSet}
+                    sizes="(min-width: 64rem) 42vw, 92vw"
+                  />
+                )}
+                <img
+                  src={photo.src}
+                  alt={photo.alt}
+                  aria-hidden={index !== currentIndex}
+                  width={photo.width}
+                  height={photo.height}
+                  loading="lazy"
+                  decoding="async"
+                />
+              </picture>
             ))}
           </span>
         </button>
