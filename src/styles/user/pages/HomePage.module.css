@@ -341,6 +341,11 @@
   }
 }
 @media (max-width: 40rem) {
+  .impact {
+    padding-top: 1.75rem;
+    padding-bottom: 3.25rem;
+  }
+
   .kicker::before {
     display: none;
   }
@@ -349,8 +354,15 @@
   }
   .heroOverlay {
     background:
-      linear-gradient(90deg, rgb(229 243 234 / 0.97), rgb(229 243 234 / 0.86)),
-      linear-gradient(0deg, rgb(229 243 234 / 0.5) 0%, transparent 66%);
+      linear-gradient(
+        90deg,
+        rgb(229 243 234 / 0.82) 0%,
+        rgb(229 243 234 / 0.72) 42%,
+        rgb(229 243 234 / 0.38) 68%,
+        rgb(229 243 234 / 0.12) 86%,
+        transparent 100%
+      ),
+      linear-gradient(0deg, rgb(229 243 234 / 0.16) 0%, transparent 62%);
   }
   .heroMedia {
     left: 0;

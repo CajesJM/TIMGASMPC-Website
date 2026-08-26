@@ -450,7 +450,6 @@ export function NewsPage() {
             </div>
           ) : (
             <div className={styles.emptyNews}>
-              <Bell aria-hidden="true" />
               <div>
                 <p className="eyebrow">Current status</p>
                 <h2>

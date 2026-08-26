@@ -324,6 +324,24 @@
   }
 }
 
+@media (max-width: 47.99rem) {
+  .purposeSection {
+    padding-block: 1.75rem;
+  }
+
+  .purposeGrid {
+    gap: 0.75rem;
+  }
+
+  .purposeGrid article {
+    padding: 0.9rem 1rem;
+  }
+
+  .purposeGrid h2 {
+    margin-bottom: 0.35rem;
+  }
+}
+
 @media (min-width: 68rem) {
   .valueGrid {
     grid-template-columns: repeat(6, minmax(0, 1fr));
