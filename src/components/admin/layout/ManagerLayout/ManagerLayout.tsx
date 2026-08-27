@@ -11,6 +11,7 @@ import {
   LogOut,
   Megaphone,
   Menu,
+  MessageCircle,
   TriangleAlert,
   UserRound,
   X,
@@ -262,6 +263,21 @@ export function ManagerLayout() {
           ))}
         </nav>
         <div className={styles.sidebarFoot}>
+          <p
+            className={`${styles.navCaption} ${styles.sidebarLabel} ${styles.sidebarFootCaption}`}
+          >
+            Support
+          </p>
+          <a
+            href="https://cajesjm.vercel.app"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={isSidebarCollapsed ? "Contact developer" : undefined}
+            title={isSidebarCollapsed ? "Contact developer" : undefined}
+          >
+            <MessageCircle />
+            <span className={styles.sidebarLabel}>Contact developer</span>
+          </a>
           <Link
             to="/"
             aria-label={isSidebarCollapsed ? "View public website" : undefined}
